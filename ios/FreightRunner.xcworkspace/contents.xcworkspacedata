@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:FontAwesome5_Pro_Regular.ttf">
+   </FileRef>
+   <FileRef
+      location = "group:FontAwesome5Pro-Regular.otf">
+   </FileRef>
+   <FileRef
+      location = "group:FontAwesome5Pro-Solid.otf">
+   </FileRef>
+   <FileRef
+      location = "group:NunitoSans-Bold.ttf">
+   </FileRef>
+   <FileRef
+      location = "group:NunitoSans-Regular.ttf">
+   </FileRef>
+   <FileRef
+      location = "group:NunitoSans-SemiBold.ttf">
+   </FileRef>
+   <FileRef
+      location = "group:PTSerif-Bold.ttf">
+   </FileRef>
+   <FileRef
+      location = "group:PTSerif-BoldItalic.ttf">
+   </FileRef>
+   <FileRef
+      location = "group:PTSerif-Italic.ttf">
+   </FileRef>
+   <FileRef
+      location = "group:PTSerif-Regular.ttf">
+   </FileRef>
+   <FileRef
+      location = "group:FreightRunner.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+</Workspace>
