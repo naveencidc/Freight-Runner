@@ -142,7 +142,6 @@ export const refershToken = async ({ navigation }: any) => {
     userToken === "null"
   ) {
     navigateAndSimpleReset("Landing");
-    // navigation.navigate('Landing');
   } else {
     //No need to send header for this api that's why used axios directly to call api
     await axios
@@ -255,7 +254,6 @@ export const navigateToScreenAfterApproval = async (
         } else {
           /**Navigate to Home */
           navigateAndSimpleReset("main");
-          // navigation.navigate("Home", { loadDetail: loadDetail });
         }
       } else {
         navigation.navigate("RegistrationApprovedScreen", {
@@ -758,6 +756,26 @@ export const registerDevice = (userId: string, deviceId: string) => {
     endpoint: `users/${userId}/devices`,
     data: { device: { playerId: deviceId } },
   });
+};
+
+export const getBankAccountToken = async (config: {
+  accountHolderName: string;
+  accountNumber: string;
+  routingNumber: string;
+}) => {
+  const { accountHolderName, accountNumber, routingNumber } = config;
+  return await axios.post(
+    "https://api.stripe.com/v1/tokens",
+    `bank_account[country]=US&bank_account[currency]=usd&bank_account[account_holder_name]=${accountHolderName}&bank_account[account_holder_type]=company&bank_account[routing_number]=${routingNumber}&bank_account[account_number]=${accountNumber}`,
+    {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        Authorization: `Bearer ${Config.STRIPE_SECRET_KEY}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        offset: new Date().getTimezoneOffset(),
+      },
+    }
+  );
 };
 
 export const createPersonalBankAccount = (values: {
