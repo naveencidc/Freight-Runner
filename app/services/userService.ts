@@ -6,15 +6,15 @@
  * Copyright © 2022 FreightRunner. All rights reserved.
  *************************************************/
 
-import axios from 'axios';
-import Config from 'react-native-config';
-import {destroy, fetch, post, patch, put} from '.';
-import storage from '../helpers/storage';
+import axios from "axios";
+import Config from "react-native-config";
+import { destroy, fetch, post, patch, put } from ".";
+import storage from "../helpers/storage";
 import {
   camelCaseResponseTransformer as responseTransformer,
   snakeCaseRequestTransformer as requestTransformer,
-} from './transformers';
-import moment from 'moment';
+} from "./transformers";
+import moment from "moment";
 import {
   ChangePasswordAttributes,
   Email,
@@ -22,10 +22,10 @@ import {
   Session,
   SignInAttemptAttributes,
   User,
-} from '../types/global';
-import {Platform} from 'react-native';
-import deviceInfoModule from 'react-native-device-info';
-import {navigateAndSimpleReset} from '../utils/Utility';
+} from "../types/global";
+import { Platform } from "react-native";
+import deviceInfoModule from "react-native-device-info";
+import { navigateAndSimpleReset } from "../utils/Utility";
 
 let userTokenRenewalTimer: any;
 
@@ -45,8 +45,8 @@ export type UpdateUserType = {
 
 //Login User
 
-export const LoginUser = (config: {email: string; password: string}) => {
-  const {email, password} = config;
+export const LoginUser = (config: { email: string; password: string }) => {
+  const { email, password } = config;
   return post({
     endpoint: `auth/login`,
     data: {
@@ -61,19 +61,19 @@ export const LoginUser = (config: {email: string; password: string}) => {
 
 export const setUserTokenRenewalTimer = (
   expires_seconds: number,
-  navigation: any,
+  navigation: any
 ) => {
-  console.log('****refersh token called****', expires_seconds);
+  console.log("****refersh token called****", expires_seconds);
   if (userTokenRenewalTimer === undefined) {
     userTokenRenewalTimer = setInterval(() => {
-      refershToken({navigation});
+      refershToken({ navigation });
     }, (expires_seconds - 600) * 1000);
   }
 };
 
-const _checkIsLatestVersionAvailable = async obj => {
-  const currentArray = deviceInfoModule.getVersion().split('.');
-  const latestArray = obj.lver.split('.');
+const _checkIsLatestVersionAvailable = async (obj) => {
+  const currentArray = deviceInfoModule.getVersion().split(".");
+  const latestArray = obj.lver.split(".");
   for (let i = 0; i < latestArray.length; i++) {
     // eslint-disable-next-line radix
     if (parseInt(latestArray[i]) > parseInt(currentArray[i])) {
@@ -86,62 +86,62 @@ const _checkIsLatestVersionAvailable = async obj => {
   return false;
 };
 
-export const checkMinimumVersion = async ({navigation}: any) => {
+export const checkMinimumVersion = async ({ navigation }: any) => {
   let isUpdateAvailable = undefined;
   await axios
     .get(
-      'https://freightrunner-app-configs.s3.us-east-2.amazonaws.com/app-config/config.json',
+      "https://freightrunner-app-configs.s3.us-east-2.amazonaws.com/app-config/config.json"
     )
-    .then(async response => {
+    .then(async (response) => {
       if (response.data.mnt === 1) {
-        navigation.navigate('MaintenanceScreen');
+        navigation.navigate("MaintenanceScreen");
       } else {
-        if (Platform.OS === 'ios') {
+        if (Platform.OS === "ios") {
           if (!response.data.vri[deviceInfoModule.getVersion()]) {
-            navigation.navigate('UpdateScreen', {
+            navigation.navigate("UpdateScreen", {
               isCompulsory: true,
               isLoggedIn: false,
             });
           } else {
             isUpdateAvailable = await _checkIsLatestVersionAvailable(
-              response.data.vri,
+              response.data.vri
             );
-            console.log('-isUpdateAvailable-', isUpdateAvailable);
+            console.log("-isUpdateAvailable-", isUpdateAvailable);
             return isUpdateAvailable;
           }
         } else {
           if (!response.data.vra[deviceInfoModule.getVersion()]) {
-            navigation.navigate('UpdateScreen', {
+            navigation.navigate("UpdateScreen", {
               isCompulsory: true,
               isLoggedIn: false,
             });
           } else {
             isUpdateAvailable = await _checkIsLatestVersionAvailable(
-              response.data.vri,
+              response.data.vri
             );
-            console.log('-isUpdateAvailable-', isUpdateAvailable);
+            console.log("-isUpdateAvailable-", isUpdateAvailable);
           }
         }
       }
     })
-    .catch(err => {
-      console.log('Version error', err);
+    .catch((err) => {
+      console.log("Version error", err);
     });
   return isUpdateAvailable;
 };
 
-export const refershToken = async ({navigation}: any) => {
+export const refershToken = async ({ navigation }: any) => {
   let returnResponse = undefined;
   // await storage.remove("tokens");
-  const userToken: any = await storage.get('tokens'); // Get previous tokens
-  console.log('----', userToken);
+  const userToken: any = await storage.get("tokens"); // Get previous tokens
+  console.log("----", userToken);
   if (
     !userToken ||
     !userToken.refresh ||
     userToken === null ||
-    userToken === 'null'
+    userToken === "null"
   ) {
-    navigateAndSimpleReset('Landing');
+    navigateAndSimpleReset("Landing");
     // navigation.navigate('Landing');
   } else {
     //No need to send header for this api that's why used axios directly to call api
@@ -149,24 +149,24 @@ export const refershToken = async ({navigation}: any) => {
       .post(`${Config.API_HOST}/v1/auth/refresh-tokens`, {
         refreshToken: userToken.refresh.token,
       })
-      .then(async response => {
-        console.log('response api response', response);
-        await storage.set('tokens', response.data); // To update new token when app loads
+      .then(async (response) => {
+        console.log("response api response", response);
+        await storage.set("tokens", response.data); // To update new token when app loads
         setUserTokenRenewalTimer(
           response.data.access.expires_seconds,
-          navigation,
+          navigation
         );
         returnResponse = response;
-        console.log('returnResponse', returnResponse);
+        console.log("returnResponse", returnResponse);
         // return response;
       })
-      .catch(async e => {
+      .catch(async (e) => {
         if (
           e.response.data.code === 401 &&
-          e.response.data.message === 'Please authenticate'
+          e.response.data.message === "Please authenticate"
         ) {
-          await storage.remove('tokens');
-          navigateAndSimpleReset('Landing');
+          await storage.remove("tokens");
+          navigateAndSimpleReset("Landing");
         }
         returnResponse = e.response;
       });
@@ -220,12 +220,12 @@ export const getUserProfileDetails = (user_id: number) => {
   });
 };
 export const navigateToScreenAfterApproval = async (
-  {navigation}: any,
+  { navigation }: any,
   onboardingStatus: any,
   global: any,
-  loadDetail: any,
+  loadDetail: any
 ) => {
-  const userDetail: any = await storage.get('userData');
+  const userDetail: any = await storage.get("userData");
   // await storage.remove("tokens");
   // navigation.navigate("Login");
   // global.myDispatch({
@@ -234,16 +234,16 @@ export const navigateToScreenAfterApproval = async (
   await getUserProfileDetails(userDetail.user_id)
     .then(async (response: any) => {
       global.myDispatch({
-        type: 'GET_USER_PROFILE_DETAILS',
+        type: "GET_USER_PROFILE_DETAILS",
         payload: response.data,
       });
       let w9formindex = response.data.documentDetails.findIndex(
-        (object: any) => object.document_type === 'w9-form',
+        (object: any) => object.document_type === "w9-form"
       );
       const driverlicense = response.data.documentDetails.findIndex(
         (object: any) => {
           return object.document_type === "driver's_license";
-        },
+        }
       );
       if (w9formindex !== -1 && driverlicense !== -1) {
         /**
@@ -251,28 +251,29 @@ export const navigateToScreenAfterApproval = async (
         2 - Welcome screen not yet viewed
        **/
         if (onboardingStatus.is_welcome_screen_viewed === 2) {
-          navigation.navigate('WelcomeScreen');
+          navigation.navigate("WelcomeScreen");
         } else {
           /**Navigate to Home */
-          navigation.navigate('Home', {loadDetail: loadDetail});
+          navigateAndSimpleReset("main");
+          // navigation.navigate("Home", { loadDetail: loadDetail });
         }
       } else {
-        navigation.navigate('RegistrationApprovedScreen', {
+        navigation.navigate("RegistrationApprovedScreen", {
           profileDetail: response.data,
         });
       }
     })
-    .catch(e => {
-      console.log('Navigation failed', e.response);
-      navigation.navigate('Login');
+    .catch((e) => {
+      console.log("Navigation failed", e.response);
+      navigation.navigate("Login");
     });
 };
 export const navigateToScreen = async (
-  {navigation}: any,
+  { navigation }: any,
   global: any,
-  loadDetail: any,
+  loadDetail: any
 ) => {
-  const userDetail: any = await storage.get('userData');
+  const userDetail: any = await storage.get("userData");
   await getOnbardingStatus(userDetail.user_id)
     .then(async (response: any) => {
       let completedStep = response.data.completed_step;
@@ -287,77 +288,77 @@ export const navigateToScreen = async (
       await getUserProfileDetails(userDetail.user_id).then(
         async (userDetailResponse: any) => {
           userData = userDetailResponse.data;
-        },
+        }
       );
       if (response.data.profile_status === 1) {
         // await navigateToScreenAfterApproval({ navigation }, response.data, global, loadDetail);
         if (completedStep === 0) {
-          navigation.navigate('TruckList', {isFromOnboarding: true});
+          navigation.navigate("TruckList", { isFromOnboarding: true });
         } else if (completedStep === 1) {
-          navigation.navigate('TrailerList', {isFromOnboarding: true});
+          navigation.navigate("TrailerList", { isFromOnboarding: true });
         } else if (completedStep === 2) {
-          navigation.navigate('RegistrationTypesCargoDetailScreen');
+          navigation.navigate("RegistrationTypesCargoDetailScreen");
         } else if (completedStep === 3) {
-          navigation.navigate('RegistrationInsuranceRequirementsScreen');
+          navigation.navigate("RegistrationInsuranceRequirementsScreen");
         } else if (completedStep === 4) {
           if (
             userData?.partnerProfile?.partnerProfileDetails?.is_business === 1
           ) {
-            navigation.navigate('RegistrationBusinessAddressScreen');
+            navigation.navigate("RegistrationBusinessAddressScreen");
           } else {
-            navigation.navigate('RegistrationServiceAreasScreen');
+            navigation.navigate("RegistrationServiceAreasScreen");
           }
         } else if (completedStep === 5) {
           if (
             userData?.partnerProfile?.partnerProfileDetails?.is_business === 1
           ) {
-            navigation.navigate('RegistrationServiceAreasScreen');
+            navigation.navigate("RegistrationServiceAreasScreen");
           } else {
             await navigateToScreenAfterApproval(
-              {navigation},
+              { navigation },
               response.data,
               global,
-              loadDetail,
+              loadDetail
             );
           }
         } else if (completedStep === 6) {
           await navigateToScreenAfterApproval(
-            {navigation},
+            { navigation },
             response.data,
             global,
-            loadDetail,
+            loadDetail
           );
         } else if (completedStep === 7) {
           await navigateToScreenAfterApproval(
-            {navigation},
+            { navigation },
             response.data,
             global,
-            loadDetail,
+            loadDetail
           );
         } else if (completedStep === 8) {
-          navigation.navigate('Home');
+          // navigation.navigate("Home");
           await navigateToScreenAfterApproval(
-            {navigation},
+            { navigation },
             response.data,
             global,
-            loadDetail,
+            loadDetail
           );
         }
       } else if (response.data.profile_status === 4) {
-        navigation.navigate('RegistrationRejectedScreen');
+        navigation.navigate("RegistrationRejectedScreen");
       } else if (response.data.profile_status === 3) {
-        navigation.navigate('RegistrationUnderReviewScreen');
+        navigation.navigate("RegistrationUnderReviewScreen");
       }
     })
-    .catch(e => {
-      console.log('Navigation failed', e.response);
-      navigation.navigate('Login');
+    .catch((e) => {
+      console.log("Navigation failed", e.response);
+      navigation.navigate("Login");
       // returnResponse = e.response;
     });
 };
 
-export const createStripeConnectedAccount = (config: {params: object}) => {
-  const {params} = config;
+export const createStripeConnectedAccount = (config: { params: object }) => {
+  const { params } = config;
   return post({
     endpoint: `stripe/createaccount`,
     data: params,
@@ -372,7 +373,7 @@ export const addbankaccount = (config: {
   primary: number;
   stripe_token: string;
 }) => {
-  const {name, last_4_digits, routing_number, primary, stripe_token} = config;
+  const { name, last_4_digits, routing_number, primary, stripe_token } = config;
   return post({
     endpoint: `stripe/addbankaccount`,
     data: {
@@ -392,7 +393,7 @@ export const addCard = (config: {
   primary: number;
   stripe_token: string;
 }) => {
-  const {name, last_4_digits, primary, stripe_token} = config;
+  const { name, last_4_digits, primary, stripe_token } = config;
   return post({
     endpoint: `stripe/addcard`,
     data: {
@@ -420,7 +421,7 @@ export const getPaymentMethodDetails = (config: {
   paymentMethodDtls: string;
   type: string;
 }) => {
-  const {paymentMethodDtls, type} = config;
+  const { paymentMethodDtls, type } = config;
   return post({
     endpoint: `stripe/getPaymentMethod`,
     data: {
@@ -431,8 +432,8 @@ export const getPaymentMethodDetails = (config: {
 };
 
 /**Delete a payment method*/
-export const deletePaymentMethod = (config: {paymentMethodDtls: string}) => {
-  const {paymentMethodDtls} = config;
+export const deletePaymentMethod = (config: { paymentMethodDtls: string }) => {
+  const { paymentMethodDtls } = config;
   return destroy({
     endpoint: `stripe/deletePaymentMethod`,
     data: {
@@ -441,16 +442,16 @@ export const deletePaymentMethod = (config: {paymentMethodDtls: string}) => {
   });
 };
 /**Get User Bids Lists for a load */
-export const getUserBidsList = (config: {load_id: string}) => {
-  const {load_id} = config;
+export const getUserBidsList = (config: { load_id: string }) => {
+  const { load_id } = config;
   return fetch({
     endpoint: `partner/bids/${load_id}?all=true`,
   });
 };
 
 /** update default payment method*/
-export const updateDefaultPayment = (config: {paymentMethodDtls: string}) => {
-  const {paymentMethodDtls} = config;
+export const updateDefaultPayment = (config: { paymentMethodDtls: string }) => {
+  const { paymentMethodDtls } = config;
   return post({
     endpoint: `stripe/updateSource`,
     data: {
@@ -460,8 +461,8 @@ export const updateDefaultPayment = (config: {paymentMethodDtls: string}) => {
 };
 
 /** update userPayoutConfiguration*/
-export const userPayoutConfiguration = (config: {payOutConfig: object}) => {
-  const {payOutConfig} = config;
+export const userPayoutConfiguration = (config: { payOutConfig: object }) => {
+  const { payOutConfig } = config;
   return post({
     endpoint: `stripe/updatePayoutConfig`,
     data: payOutConfig,
@@ -469,17 +470,17 @@ export const userPayoutConfiguration = (config: {payOutConfig: object}) => {
 };
 
 /**Get User Payout list */
-export const getUserPayoutList = (config: {offset: number}) => {
-  const {offset} = config;
+export const getUserPayoutList = (config: { offset: number }) => {
+  const { offset } = config;
   return fetch({
     endpoint: `stripe/stripeTransactions?size=10&offset=${offset}`,
   });
 };
 
 /**Get User Payout list */
-export const getUserTransactionList = (config: {offset: number}) => {
-  const {offset} = config;
-  console.log('-offsetoffsetoffset--', offset);
+export const getUserTransactionList = (config: { offset: number }) => {
+  const { offset } = config;
+  console.log("-offsetoffsetoffset--", offset);
   return fetch({
     endpoint: `stripe/getTransferList?size=10&offset=${offset}`,
   });
@@ -500,13 +501,13 @@ export const getUserConnectedAccountBalance = () => {
 };
 
 /** Withdraw amount*/
-export const withdrawUserAmount = (config: {amount: number}) => {
-  const {amount} = config;
+export const withdrawUserAmount = (config: { amount: number }) => {
+  const { amount } = config;
   return post({
     endpoint: `stripe/createPayout`,
     data: {
       amount: amount,
-      description: 'Stripe Payout',
+      description: "Stripe Payout",
     },
   });
 };
@@ -516,7 +517,7 @@ export const createSubscription = (config: {
   priceId: string;
   plan_name: string;
 }) => {
-  const {priceId, plan_name} = config;
+  const { priceId, plan_name } = config;
   return post({
     endpoint: `stripe/createSubscription`,
     data: {
@@ -535,8 +536,8 @@ export const getUserConnectedAccountDetails = () => {
 
 /**Remove device for notification when user logout*/
 export const removeDeviceWhenLogout = async () => {
-  let playerId = await storage.get('deviceId');
-  let userDetail: any = await storage.get('userData');
+  let playerId = await storage.get("deviceId");
+  let userDetail: any = await storage.get("userData");
   return patch({
     endpoint: `partner/device/status`,
     data: {
@@ -563,7 +564,7 @@ export const verifyBankAccount = (config: {
   deposit1: string;
   deposit2: string;
 }) => {
-  const {object_id, deposit1, deposit2} = config;
+  const { object_id, deposit1, deposit2 } = config;
   return post({
     endpoint: `stripe/verifybankaccount`,
     data: {
@@ -585,9 +586,9 @@ export const getUserSubscriptionDetails = () => {
  * @param attempt
  * @returns
  */
-export const partnerRating = (config: {params: object}) => {
-  const {params} = config;
-  console.log('-', params);
+export const partnerRating = (config: { params: object }) => {
+  const { params } = config;
+  console.log("-", params);
   return post({
     endpoint: `partner/send-rating`,
     data: params,
@@ -615,14 +616,14 @@ export const getUserNotificationList = (params: any) => {
 
 function authenticateUser(attempt: SignInAttemptAttributes) {
   return post<Session>({
-    endpoint: 'sessions',
+    endpoint: "sessions",
     data: {
       user: attempt,
     },
   });
 }
 
-function changePassword({id, ...credentials}: ChangePasswordAttributes) {
+function changePassword({ id, ...credentials }: ChangePasswordAttributes) {
   return patch<User>({
     endpoint: `users/${id}`,
     data: {
@@ -634,12 +635,12 @@ function changePassword({id, ...credentials}: ChangePasswordAttributes) {
 export const setPassword = (
   id: string,
   password: string,
-  password_confirmation: string,
+  password_confirmation: string
 ) =>
   put<Registration>({
     endpoint: `setpasswords/${id}`,
-    data: {user: {password, password_confirmation}},
-  }).then(response => response);
+    data: { user: { password, password_confirmation } },
+  }).then((response) => response);
 
 export const updateUserInformation = (
   id: string,
@@ -647,41 +648,41 @@ export const updateUserInformation = (
   last_name: string,
   handle: string,
   full_name: string,
-  company_name: string,
+  company_name: string
 ) =>
   put<User>({
     endpoint: `users/${id}/user_profiles`,
     data: {
-      userprofiles: {first_name, last_name, handle, full_name, company_name},
+      userprofiles: { first_name, last_name, handle, full_name, company_name },
     },
-  }).then(response => response);
+  }).then((response) => response);
 
 export const getOTPForTwoFactorAuthentication = (
   user_id: string,
   tfa_type: string,
   phone_number: string,
-  org_id: string,
+  org_id: string
 ) =>
   post<User>({
     endpoint: `onboarding/${org_id}/two_factor_authentications`,
-    data: {two_factor_authentication: {user_id, tfa_type, phone_number}},
-  }).then(response => response);
+    data: { two_factor_authentication: { user_id, tfa_type, phone_number } },
+  }).then((response) => response);
 
 export const validateOTPAgainstTwoFactorAuthentication = (
   user_id: string,
   otp: string,
-  org_id: string,
+  org_id: string
 ) =>
   patch<User>({
     endpoint: `onboarding/${org_id}/two_factor_authentications/${user_id}`,
-    data: {two_factor_authentication: {otp}},
-  }).then(response => response);
+    data: { two_factor_authentication: { otp } },
+  }).then((response) => response);
 
 export const submitPasswordResetRequest = (email: string) => {
   return post({
-    endpoint: 'passwords',
+    endpoint: "passwords",
     data: {
-      user: {email},
+      user: { email },
     },
   });
 };
@@ -690,7 +691,7 @@ function changeRole(id: string, role: string) {
   return patch<User>({
     endpoint: `users/${id}`,
     data: {
-      user: {role},
+      user: { role },
     },
   });
 }
@@ -724,25 +725,25 @@ function getUserProfile(config: {
   authToken: string;
   email: string;
 }) {
-  const {id, authToken, email} = config;
+  const { id, authToken, email } = config;
   return axios.get(
     `${Config.API_HOST}/v1/users/${id}/profile?include=organizations,addresses,organization_memberships&include_stripe_verification_status=true`,
     {
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'X-User-Token': authToken,
-        'X-User-Email': email,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "X-User-Token": authToken,
+        "X-User-Email": email,
       },
       transformRequest: [requestTransformer],
       transformResponse: [responseTransformer],
-    },
+    }
   );
 }
 
 export const getUsers = () => {
   return fetch<User>({
-    endpoint: 'users/?include=profile',
+    endpoint: "users/?include=profile",
   });
 };
 
@@ -755,7 +756,7 @@ export const getUserAndIncludedInfo = (id: string) => {
 export const registerDevice = (userId: string, deviceId: string) => {
   return post({
     endpoint: `users/${userId}/devices`,
-    data: {device: {playerId: deviceId}},
+    data: { device: { playerId: deviceId } },
   });
 };
 
@@ -768,10 +769,10 @@ export const createPersonalBankAccount = (values: {
   primary: boolean;
   routingNumber: string;
 }) => {
-  const {userId, ...accountValues} = values;
+  const { userId, ...accountValues } = values;
   return post({
     endpoint: `users/${values.userId}/bank_accounts`,
-    data: {bankAccount: accountValues},
+    data: { bankAccount: accountValues },
   });
 };
 
@@ -782,10 +783,10 @@ export const createPersonalCreditCard = (config: {
   stripeToken: string;
   primary: boolean;
 }) => {
-  const {name, last4Digits, stripeToken, userId, primary} = config;
+  const { name, last4Digits, stripeToken, userId, primary } = config;
   return post({
     endpoint: `users/${userId}/credit_cards`,
-    data: {credit_card: {name, last4Digits, stripeToken, primary}},
+    data: { credit_card: { name, last4Digits, stripeToken, primary } },
   });
 };
 
@@ -805,7 +806,10 @@ export const deletePersonalCreditCard = (config: {
 }) => {
   return destroy({
     endpoint: `users/${config.userId}/remove_card`,
-    data: {stripe_customer_id: config.accountId, card_token: config.cardToken},
+    data: {
+      stripe_customer_id: config.accountId,
+      card_token: config.cardToken,
+    },
   });
 };
 
@@ -827,12 +831,12 @@ export const makePersonalCreditCardPrimary = (config: {
   });
 };
 
-export const getPersonalBankAccounts = (config: {userId: string}) => {
-  return fetch({endpoint: `users/${config.userId}/bank_accounts`});
+export const getPersonalBankAccounts = (config: { userId: string }) => {
+  return fetch({ endpoint: `users/${config.userId}/bank_accounts` });
 };
 
-export const getPersonalCreditCards = (config: {userId: string}) => {
-  return fetch({endpoint: `users/${config.userId}/credit_cards`});
+export const getPersonalCreditCards = (config: { userId: string }) => {
+  return fetch({ endpoint: `users/${config.userId}/credit_cards` });
 };
 
 export const addUserAddress = (
@@ -843,9 +847,9 @@ export const addUserAddress = (
     city: string;
     region: string;
     postalCode: string;
-  },
+  }
 ) => {
-  return post({endpoint: `users/${userId}/addresses`, data: {address}});
+  return post({ endpoint: `users/${userId}/addresses`, data: { address } });
 };
 
 export const payUser = (config: {
@@ -854,11 +858,11 @@ export const payUser = (config: {
   description: string;
   userId: string;
 }) => {
-  const {userId, amount, description, sourceId} = config;
+  const { userId, amount, description, sourceId } = config;
   return patch({
     endpoint: `users/${userId}/pay`,
     data: {
-      payment: {amount, description, sourceId},
+      payment: { amount, description, sourceId },
     },
   });
 };
@@ -872,9 +876,9 @@ export const updateUserAddress = (
     city: string;
     region: string;
     postalCode: string;
-  },
+  }
 ) => {
-  const {id: addressId, line1, line2, city, region, postalCode} = address;
+  const { id: addressId, line1, line2, city, region, postalCode } = address;
 
   return patch({
     endpoint: `users/${userId}/addresses/${addressId}`,
@@ -906,7 +910,7 @@ function updateUserEmail(userId: string, emailId: number, email: Email) {
 function updateUserProfile(id: string, profile: UpdateUserType) {
   return patch<User>({
     endpoint: `users/${id}/profile`,
-    data: {profile},
+    data: { profile },
   });
 }
 
@@ -919,7 +923,7 @@ export const searchUsers = (query: string) => {
 export const verifyUser = (userId: string, values: any) => {
   return patch({
     endpoint: `users/${userId}/verify`,
-    data: {user: values},
+    data: { user: values },
   });
 };
 
@@ -927,11 +931,11 @@ export const verifyCreditCard = (
   stripe_customer_id: string,
   amount: number,
   card_token: string,
-  userId: string,
+  userId: string
 ) => {
   return post({
     endpoint: `users/${userId}/verify_credit_card`,
-    data: {stripe_customer_id, amount, card_token},
+    data: { stripe_customer_id, amount, card_token },
   });
 };
 
@@ -940,11 +944,11 @@ export const verifyUserBankAccount = (values: {
   accountId: string;
   deposits: [number, number];
 }) => {
-  const {userId, accountId, deposits} = values;
+  const { userId, accountId, deposits } = values;
   return patch({
     endpoint: `users/${userId}/bank_accounts/${accountId}/verify`,
     data: {
-      bankAccount: {deposits},
+      bankAccount: { deposits },
     },
   });
 };
