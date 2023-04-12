@@ -17,29 +17,19 @@ import {
   TextInput,
   Dimensions,
   Image,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { CheckBox, colors } from "react-native-elements";
-import { Dropdown } from "react-native-material-dropdown";
-import { withNavigation } from "react-navigation";
+// import { Dropdown } from "react-native-material-dropdown-v2";
+import { Dropdown, MultiSelect } from "react-native-element-dropdown";
 import { Formik } from "formik";
 import * as yup from "yup";
-import {
-  Button,
-  CustomButton,
-  Logo,
-  Screen,
-  SimpleInput as Input,
-  Text,
-  View
-} from "../../components";
-import { SessionContext } from "../../context/SessionContextProvider";
-import { NavigationProps } from "../../navigation";
+import { CustomButton, Text, View } from "../../components";
 import {
   registerUser,
   getStateList,
   createProfile,
-  updateProfile
+  updateProfile,
 } from "../../services/registrationService";
 import { fontSizes, STANDARD_PADDING } from "../../styles/globalStyles";
 import { extractError } from "../../utilities/errorUtilities";
@@ -50,10 +40,16 @@ import FastImage from "react-native-fast-image";
 import { request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import ImagePicker from "react-native-image-crop-picker";
 import ActionSheet from "react-native-actionsheet";
-import { deleteAWSImage, getProfileImage, uploadToS3 } from "../../services/uploadS3Service";
+import {
+  deleteAWSImage,
+  getProfileImage,
+  uploadToS3,
+} from "../../services/uploadS3Service";
 const axios = require("axios").default;
-import { useAccounts } from "../../hooks/useAccounts";
-import { SnackbarContext, SnackbarContextType } from "../../context/SnackbarContext";
+import {
+  SnackbarContext,
+  SnackbarContextType,
+} from "../../context/SnackbarContext";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import { MyContext } from "../../../app/context/MyContextProvider";
 import storage from "../../helpers/storage";
@@ -64,7 +60,6 @@ const deviceHeight = Dimensions.get("window").height;
 import ShimmerPlaceholder from "react-native-shimmer-placeholder";
 import LinearGradient from "react-native-linear-gradient";
 
-type Props = NavigationProps;
 type FormProps = {
   firstName: string;
   lastName: string;
@@ -80,8 +75,7 @@ type FormProps = {
   federal_id: string;
 };
 
-function RegistrationPersonalDetail({ navigation }: Props) {
-  const { setUser, setSetup, signOut, setUserProfile, user } = useContext(SessionContext);
+function RegistrationPersonalDetailScreen({ navigation, route }) {
   const [loading, setLoading] = useState(false);
   const [checked, setChecked] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -89,8 +83,8 @@ function RegistrationPersonalDetail({ navigation }: Props) {
   const [selectedImageObject, setSelectedImageObject] = useState({});
   const [stateList, setStateList] = useState([]);
   const [selectedStateCode, setSelectedStateCode] = useState("");
-  const { userDetail, initializeData } = useAccounts();
-  const { setMessage, setVisible } = useContext<SnackbarContextType>(SnackbarContext);
+  const { setMessage, setVisible } =
+    useContext<SnackbarContextType>(SnackbarContext);
   const [hidePass, setHidePass] = useState(true);
   const [checkMaxLength, setCheckMaxLength] = useState(false);
   const [checkNumber, setCheckNumber] = useState(false);
@@ -100,9 +94,10 @@ function RegistrationPersonalDetail({ navigation }: Props) {
   const [isAcceptTerms, setAcceptTerms] = useState(false);
   const [imgLoading, setimgLoading] = useState(false);
 
-  const global = useContext(MyContext);
+  const global: any = useContext(MyContext);
   const userProfileDetails =
-    global.myState.userProfileDetails && global.myState.userProfileDetails.partnerProfile;
+    global.myState.userProfileDetails &&
+    global.myState.userProfileDetails.partnerProfile;
   const [count, setCount] = useState(null);
   const [params, setparams] = useState({
     firstName: "",
@@ -116,32 +111,49 @@ function RegistrationPersonalDetail({ navigation }: Props) {
     mc: "",
     us_dot: "",
     businessEntity: "",
-    federal_id: ""
+    federal_id: "",
   });
   const [referral, setReferral] = useState("");
-  let isFromEdit = navigation.state.params?.isFromEdit;
-  let userPersonalDetail = global.myState.userProfileDetails?.partnerProfile?.partnerProfileDetails;
+  let isFromEdit = route.params?.isFromEdit;
+  let userPersonalDetail =
+    global.myState.userProfileDetails?.partnerProfile?.partnerProfileDetails;
   const [accountTypePersonal, setaccountTypePersonal] = useState(
     isFromEdit ? (userPersonalDetail?.is_business === 1 ? false : true) : true
   );
   const getStateName = (stateList, stateCode) => {
-    let stateObj = stateList.find(e => e.code == stateCode);
+    let stateObj = stateList.find((e) => e.code == stateCode);
     setSelectedStateCode(stateObj?.code);
     return stateObj?.name;
   };
+
   const refActionSheet = useRef(null);
   const showActionSheet = () => {
     if (refActionSheet.current) {
       refActionSheet.current.show();
     }
   };
+
+  let data = [
+    {
+      value: "Banana",
+    },
+    {
+      value: "Mango",
+    },
+    {
+      value: "Pear",
+    },
+  ];
+
   useEffect(() => {
     try {
       async function fetchStateListAPI() {
         const response = await getStateList();
         setStateList(response.data);
         if (isFromEdit) {
-          setaccountTypePersonal(userPersonalDetail?.is_business === 1 ? false : true);
+          setaccountTypePersonal(
+            userPersonalDetail?.is_business === 1 ? false : true
+          );
           setparams({
             firstName: userPersonalDetail.first_name,
             lastName: userPersonalDetail.last_name,
@@ -154,7 +166,7 @@ function RegistrationPersonalDetail({ navigation }: Props) {
             mc: "",
             us_dot: "",
             businessEntity: "",
-            federal_id: ""
+            federal_id: "",
           });
         }
       }
@@ -199,15 +211,15 @@ function RegistrationPersonalDetail({ navigation }: Props) {
         {
           text: "Cancel",
           onPress: () => console.log("Cancel Pressed"),
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "OK",
           onPress: () => {
             setPassword("");
             setaccountTypePersonal(boolvalue);
-          }
-        }
+          },
+        },
       ]);
     } else {
       setPassword("");
@@ -224,7 +236,7 @@ function RegistrationPersonalDetail({ navigation }: Props) {
         userPersonalDetail.actual_profile_image.length > 0
       ) {
         const deleteImage = await deleteAWSImage({
-          imageName: userPersonalDetail.actual_profile_image
+          imageName: userPersonalDetail.actual_profile_image,
         });
       }
       const response = await uploadToS3(selectedImageObject, "image", global);
@@ -248,18 +260,21 @@ function RegistrationPersonalDetail({ navigation }: Props) {
           state: selectedStateCode,
           mobile_number: `+1${values.mobile}`,
           zip: values.zipCode,
-          user_id: userDetail.user_id
+          user_id: userDetail.user_id,
         })
-          .then(async response => {
+          .then(async (response) => {
             setLoading(false);
             if (response.status === 201) {
               setMessage("Profile updated successfully.");
               setVisible(true);
-              global.myDispatch({ type: "GET_USER_PROFILE_DETAILS", payload: response.data });
+              global.myDispatch({
+                type: "GET_USER_PROFILE_DETAILS",
+                payload: response.data,
+              });
               navigation.goBack();
             }
           })
-          .catch(e => {
+          .catch((e) => {
             setLoading(false);
             console.log("update profile error", e.response);
             Alert.alert("Error", e.response.data.message);
@@ -282,32 +297,36 @@ function RegistrationPersonalDetail({ navigation }: Props) {
             us_dot: values.us_dot,
             businessEntity: !accountTypePersonal ? values.businessEntity : null,
             federal_id: !accountTypePersonal ? values.federal_id : null,
-            referral_code: referral
+            referral_code: referral,
           })
-            .then(async response => {
+            .then(async (response) => {
               setLoading(false);
               if (response.status === 201) {
                 await storage.set("tokens", {
                   access: response.data.access,
-                  refresh: response.data.refresh
+                  refresh: response.data.refresh,
                 }); // To update new token when app loads
                 await storage.set("userData", response.data); // To update new token when app loads
                 const userToken = await storage.get("tokens"); // Get previous tokens
-                global.myDispatch({ type: "USER_PERSONAL_INFO", payload: response.data });
-                const userDetail = await storage.get("userData");
-                const updateOnbardingStatusResponse = await updateOnbardingStatus({
-                  user_id: userDetail.user_id,
-                  is_onboard_pending: 2,
-                  completed_step: 0,
-                  is_welcome_screen_viewed: 2
+                global.myDispatch({
+                  type: "USER_PERSONAL_INFO",
+                  payload: response.data,
                 });
+                const userDetail = await storage.get("userData");
+                const updateOnbardingStatusResponse =
+                  await updateOnbardingStatus({
+                    user_id: userDetail.user_id,
+                    is_onboard_pending: 2,
+                    completed_step: 0,
+                    is_welcome_screen_viewed: 2,
+                  });
                 setMessage("Profile created successfully.");
                 setVisible(true);
                 navigation.navigate("RegistrationUnderReviewScreen");
                 // navigation.navigate("TruckList", { isFromOnboarding: true });
               }
             })
-            .catch(e => {
+            .catch((e) => {
               setLoading(false);
               console.log("create profile error", e.response);
               Alert.alert("Error", e.response.data.message);
@@ -315,12 +334,18 @@ function RegistrationPersonalDetail({ navigation }: Props) {
             });
         } else {
           setLoading(false);
-          Alert.alert("", "Please accept the Terms of Service and Privacy Policy.");
+          Alert.alert(
+            "",
+            "Please accept the Terms of Service and Privacy Policy."
+          );
         }
       }
       //Create Personal information api call
     } catch (e) {
-      Alert.alert("Error", "There was a problem registering your email. Please try again soon.");
+      Alert.alert(
+        "Error",
+        "There was a problem registering your email. Please try again soon."
+      );
       setLoading(false);
     }
   };
@@ -345,12 +370,12 @@ function RegistrationPersonalDetail({ navigation }: Props) {
       .email("Please enter a valid email address"),
     businessEntity: yup.string().when("accountTypePersonal", {
       is: false,
-      then: yup.string().required("Please enter a valid business entity")
+      then: yup.string().required("Please enter a valid business entity"),
     }),
     federal_id: yup.string().when("accountTypePersonal", {
       is: false,
-      then: yup.string().required("Please enter a valid federal tax ID entity")
-    })
+      then: yup.string().required("Please enter a valid federal tax ID entity"),
+    }),
   });
 
   const editvalidationSchema = yup.object().shape({
@@ -363,7 +388,7 @@ function RegistrationPersonalDetail({ navigation }: Props) {
       .min(10, "Please enter a valid mobile number")
       .matches(/^[0-9]+$/, "Please enter a valid cell number")
       .required("Please enter a valid mobile number"),
-    zipCode: yup.string().required("Please enter a valid zip code")
+    zipCode: yup.string().required("Please enter a valid zip code"),
   });
 
   const ref_lastName = useRef();
@@ -378,7 +403,7 @@ function RegistrationPersonalDetail({ navigation }: Props) {
   const ref_federalID = useRef();
   const ref_referral = useRef();
 
-  const _verifyPassword = newPwd => {
+  const _verifyPassword = (newPwd) => {
     setPassword(newPwd);
     if (newPwd.match(/[A-Z]/) != null) {
       setCheckCapitalLetter(true);
@@ -422,7 +447,9 @@ function RegistrationPersonalDetail({ navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         {isFromEdit ? (
-          <View style={{ alignItems: "center", marginVertical: deviceHeight / 35 }}>
+          <View
+            style={{ alignItems: "center", marginVertical: deviceHeight / 35 }}
+          >
             <TouchableOpacity
               onPress={() => {
                 if (!loading) {
@@ -453,7 +480,10 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                       selectedImageObject.path
                         ? { uri: selectedImageObject.path }
                         : userProfileDetails.partnerProfileDetails.profile_image
-                        ? { uri: userProfileDetails.partnerProfileDetails.profile_image }
+                        ? {
+                            uri: userProfileDetails.partnerProfileDetails
+                              .profile_image,
+                          }
                         : require("../../../app/assets/images/profile.png")
                     }
                     style={{ height: 100, width: 100, borderRadius: 50 }}
@@ -464,7 +494,7 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                         height: 100,
                         width: 100,
                         borderRadius: 50,
-                        position: "absolute"
+                        position: "absolute",
                       }}
                       LinearGradient={LinearGradient}
                     />
@@ -475,17 +505,28 @@ function RegistrationPersonalDetail({ navigation }: Props) {
               <FastImage
                 resizeMode={"contain"}
                 source={require("../../../app/assets/images/edit.png")}
-                style={{ height: 30, width: 30, position: "absolute", bottom: 0, right: 0 }}
+                style={{
+                  height: 30,
+                  width: 30,
+                  position: "absolute",
+                  bottom: 0,
+                  right: 0,
+                }}
               />
             </TouchableOpacity>
           </View>
         ) : null}
 
         <Formik
-          initialValues={{ ...params, accountTypePersonal: accountTypePersonal }}
+          initialValues={{
+            ...params,
+            accountTypePersonal: accountTypePersonal,
+          }}
           enableReinitialize={true}
           onSubmit={onSubmit}
-          validationSchema={isFromEdit ? editvalidationSchema : validationSchema}
+          validationSchema={
+            isFromEdit ? editvalidationSchema : validationSchema
+          }
           render={({
             handleBlur,
             handleChange,
@@ -493,7 +534,7 @@ function RegistrationPersonalDetail({ navigation }: Props) {
             setFieldValue,
             errors,
             values,
-            touched
+            touched,
           }) => {
             return (
               <>
@@ -501,14 +542,14 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                   <View
                     style={{
                       paddingVertical: deviceHeight / 70,
-                      paddingHorizontal: 15
+                      paddingHorizontal: 15,
                     }}
                   >
                     <Text
                       style={{
                         fontSize: 14,
                         fontWeight: "500",
-                        color: "gray"
+                        color: "gray",
                       }}
                     >
                       Account Type
@@ -520,10 +561,10 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                           containerStyle={{
                             backgroundColor: "transparent",
                             paddingHorizontal: 0,
-                            borderWidth: 0
+                            borderWidth: 0,
                           }}
                           textStyle={{
-                            color: accountTypePersonal ? "black" : "gray"
+                            color: accountTypePersonal ? "black" : "gray",
                           }}
                           title="Personal"
                           checkedIcon="dot-circle-o"
@@ -541,10 +582,10 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                           containerStyle={{
                             backgroundColor: "transparent",
                             paddingHorizontal: 0,
-                            borderWidth: 0
+                            borderWidth: 0,
                           }}
                           textStyle={{
-                            color: !accountTypePersonal ? "black" : "gray"
+                            color: !accountTypePersonal ? "black" : "gray",
                           }}
                           title="Business"
                           checkedIcon="dot-circle-o"
@@ -564,10 +605,12 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                       paddingHorizontal: deviceWidth / 30,
                       flexDirection: "column",
                       justifyContent: "space-between",
-                      marginBottom: deviceHeight / 55
+                      marginBottom: deviceHeight / 55,
                     }}
                   >
-                    <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
+                    <Text
+                      style={{ fontSize: 14, fontWeight: "500", color: "gray" }}
+                    >
                       Personal Info
                     </Text>
                   </View>
@@ -577,10 +620,15 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                       style={{
                         fontSize: 14,
                         fontWeight: "500",
-                        color: touched.firstName && errors.firstName ? colors1.red : "gray"
+                        color:
+                          touched.firstName && errors.firstName
+                            ? colors1.red
+                            : "gray",
                       }}
                     >
-                      {touched.firstName && errors.firstName ? errors.firstName : "First Name"}
+                      {touched.firstName && errors.firstName
+                        ? errors.firstName
+                        : "First Name"}
                     </Text>
                     <View style={{ flexDirection: "row", marginVertical: 5 }}>
                       <TextInput
@@ -590,7 +638,7 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                           padding: 0,
                           fontWeight: "600",
                           fontSize: 16,
-                          flex: 1
+                          flex: 1,
                         }}
                         onChangeText={handleChange("firstName")}
                         onBlur={handleBlur("firstName")}
@@ -604,22 +652,37 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                     </View>
                   </View>
 
-                  <View style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}>
+                  <View
+                    style={[
+                      styles.textInputView,
+                      { marginTop: deviceHeight / 55 },
+                    ]}
+                  >
                     <Text
                       style={{
                         fontSize: 14,
                         fontWeight: "500",
-                        color: touched.lastName && errors.lastName ? colors1.red : "gray"
+                        color:
+                          touched.lastName && errors.lastName
+                            ? colors1.red
+                            : "gray",
                       }}
                     >
-                      {touched.lastName && errors.lastName ? errors.lastName : "Last Name"}
+                      {touched.lastName && errors.lastName
+                        ? errors.lastName
+                        : "Last Name"}
                     </Text>
                     <View style={{ flexDirection: "row", marginVertical: 5 }}>
                       <TextInput
                         ref={ref_lastName}
                         autoCapitalize="sentences"
                         autoCorrect={false}
-                        style={{ padding: 0, fontWeight: "600", fontSize: 16, flex: 1 }}
+                        style={{
+                          padding: 0,
+                          fontWeight: "600",
+                          fontSize: 16,
+                          flex: 1,
+                        }}
                         onChangeText={handleChange("lastName")}
                         onBlur={handleBlur("lastName")}
                         value={values.lastName}
@@ -639,55 +702,86 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                   </View>
                   {!accountTypePersonal && !isFromEdit ? (
                     <>
-                      <View style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}>
+                      <View
+                        style={[
+                          styles.textInputView,
+                          { marginTop: deviceHeight / 55 },
+                        ]}
+                      >
                         <Text
                           style={{
                             fontSize: 14,
                             fontWeight: "500",
                             color:
-                              touched.businessEntity && errors.businessEntity ? colors1.red : "gray"
+                              touched.businessEntity && errors.businessEntity
+                                ? colors1.red
+                                : "gray",
                           }}
                         >
                           {touched.businessEntity && errors.businessEntity
                             ? errors.businessEntity
                             : "Business Entity"}
                         </Text>
-                        <View style={{ flexDirection: "row", marginVertical: 5 }}>
+                        <View
+                          style={{ flexDirection: "row", marginVertical: 5 }}
+                        >
                           <TextInput
                             ref={ref_businessName}
                             autoCapitalize="sentences"
                             autoCorrect={false}
-                            style={{ padding: 0, fontWeight: "600", fontSize: 16, flex: 1 }}
+                            style={{
+                              padding: 0,
+                              fontWeight: "600",
+                              fontSize: 16,
+                              flex: 1,
+                            }}
                             onChangeText={handleChange("businessEntity")}
                             onBlur={handleBlur("businessEntity")}
                             value={values.businessEntity}
                             placeholder=""
                             keyboardType="default"
                             returnKeyType="next"
-                            onSubmitEditing={() => ref_federalID.current.focus()}
+                            onSubmitEditing={() =>
+                              ref_federalID.current.focus()
+                            }
                             blurOnSubmit={false}
                           />
                         </View>
                       </View>
 
-                      <View style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}>
+                      <View
+                        style={[
+                          styles.textInputView,
+                          { marginTop: deviceHeight / 55 },
+                        ]}
+                      >
                         <Text
                           style={{
                             fontSize: 14,
                             fontWeight: "500",
-                            color: touched.federal_id && errors.federal_id ? colors1.red : "gray"
+                            color:
+                              touched.federal_id && errors.federal_id
+                                ? colors1.red
+                                : "gray",
                           }}
                         >
                           {touched.federal_id && errors.federal_id
                             ? errors.federal_id
                             : "Federal Tax ID"}
                         </Text>
-                        <View style={{ flexDirection: "row", marginVertical: 5 }}>
+                        <View
+                          style={{ flexDirection: "row", marginVertical: 5 }}
+                        >
                           <TextInput
                             ref={ref_federalID}
                             autoCapitalize="sentences"
                             autoCorrect={false}
-                            style={{ padding: 0, fontWeight: "600", fontSize: 16, flex: 1 }}
+                            style={{
+                              padding: 0,
+                              fontWeight: "600",
+                              fontSize: 16,
+                              flex: 1,
+                            }}
                             onChangeText={handleChange("federal_id")}
                             onBlur={handleBlur("federal_id")}
                             value={values.federal_id}
@@ -704,23 +798,36 @@ function RegistrationPersonalDetail({ navigation }: Props) {
 
                   {!isFromEdit ? (
                     <>
-                      <View style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}>
+                      <View
+                        style={[
+                          styles.textInputView,
+                          { marginTop: deviceHeight / 55 },
+                        ]}
+                      >
                         <Text
                           style={{
                             fontSize: 14,
                             fontWeight: "500",
-                            color: touched.mc && errors.mc ? colors1.red : "gray"
+                            color:
+                              touched.mc && errors.mc ? colors1.red : "gray",
                           }}
                         >
                           {touched.mc && errors.mc ? errors.mc : "MC#"}
                         </Text>
-                        <View style={{ flexDirection: "row", marginVertical: 5 }}>
+                        <View
+                          style={{ flexDirection: "row", marginVertical: 5 }}
+                        >
                           <TextInput
                             maxLength={8}
                             ref={ref_mc}
                             autoCapitalize="none"
                             autoCorrect={false}
-                            style={{ padding: 0, fontWeight: "600", fontSize: 16, flex: 1 }}
+                            style={{
+                              padding: 0,
+                              fontWeight: "600",
+                              fontSize: 16,
+                              flex: 1,
+                            }}
                             onChangeText={handleChange("mc")}
                             onBlur={handleBlur("mc")}
                             value={values.mc}
@@ -732,23 +839,40 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                           />
                         </View>
                       </View>
-                      <View style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}>
+                      <View
+                        style={[
+                          styles.textInputView,
+                          { marginTop: deviceHeight / 55 },
+                        ]}
+                      >
                         <Text
                           style={{
                             fontSize: 14,
                             fontWeight: "500",
-                            color: touched.us_dot && errors.us_dot ? colors1.red : "gray"
+                            color:
+                              touched.us_dot && errors.us_dot
+                                ? colors1.red
+                                : "gray",
                           }}
                         >
-                          {touched.us_dot && errors.us_dot ? errors.us_dot : "US DOT#"}
+                          {touched.us_dot && errors.us_dot
+                            ? errors.us_dot
+                            : "US DOT#"}
                         </Text>
-                        <View style={{ flexDirection: "row", marginVertical: 5 }}>
+                        <View
+                          style={{ flexDirection: "row", marginVertical: 5 }}
+                        >
                           <TextInput
                             maxLength={8}
                             ref={ref_us_dot}
                             autoCapitalize="none"
                             autoCorrect={false}
-                            style={{ padding: 0, fontWeight: "600", fontSize: 16, flex: 1 }}
+                            style={{
+                              padding: 0,
+                              fontWeight: "600",
+                              fontSize: 16,
+                              flex: 1,
+                            }}
                             onChangeText={handleChange("us_dot")}
                             onBlur={handleBlur("us_dot")}
                             value={values.us_dot}
@@ -763,22 +887,35 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                     </>
                   ) : null}
 
-                  <View style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}>
+                  <View
+                    style={[
+                      styles.textInputView,
+                      { marginTop: deviceHeight / 55 },
+                    ]}
+                  >
                     <Text
                       style={{
                         fontSize: 14,
                         fontWeight: "500",
-                        color: touched.city && errors.city ? colors1.red : "gray"
+                        color:
+                          touched.city && errors.city ? colors1.red : "gray",
                       }}
                     >
-                      {touched.city && errors.city ? errors.city : "City Of Residence"}
+                      {touched.city && errors.city
+                        ? errors.city
+                        : "City Of Residence"}
                     </Text>
                     <View style={{ flexDirection: "row", marginVertical: 5 }}>
                       <TextInput
                         autoCapitalize="sentences"
                         ref={ref_city}
                         autoCorrect={false}
-                        style={{ padding: 0, fontWeight: "600", fontSize: 16, flex: 1 }}
+                        style={{
+                          padding: 0,
+                          fontWeight: "600",
+                          fontSize: 16,
+                          flex: 1,
+                        }}
                         onChangeText={handleChange("city")}
                         onBlur={handleBlur("city")}
                         value={values.city}
@@ -789,64 +926,66 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                     </View>
                   </View>
 
-                  <View style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}>
+                  <View
+                    style={[
+                      styles.textInputView,
+                      { marginTop: deviceHeight / 55 },
+                    ]}
+                  >
                     <Text
                       style={{
                         fontSize: 14,
                         fontWeight: "500",
-                        color: touched.state && errors.state ? colors1.red : "gray"
+                        color:
+                          touched.state && errors.state ? colors1.red : "gray",
                       }}
                     >
                       {touched.state && errors.state ? errors.state : "State"}
                     </Text>
                     <Dropdown
-                      labelHeight={-5}
-                      containerStyle={{
-                        flex: 1,
-                        backgroundColor: "#F5F4F7"
-                      }}
-                      renderAccessory={() => (
-                        <FastImage
-                          resizeMode={"contain"}
-                          source={require("../../../app/assets/images/downArrowNew.png")}
-                          style={{ height: 25, width: 15 }}
-                        />
-                      )}
-                      // label={"naveen"}
                       value={values.state}
-                      inputContainerStyle={{
-                        borderBottomColor: "transparent",
-                        marginTop: 5
-                      }}
-                      style={{ fontWeight: "500" }}
-                      // placeholder="None"
-                      placeholderTextColor={"black"}
                       data={stateList}
-                      valueExtractor={({ name }) => name}
-                      dropdownOffset={{ top: 100, left: 0 }}
-                      rippleInsets={{ top: 10, bottom: 10, right: 0, left: 0 }}
-                      selectedItemColor={colors1.black}
-                      textColor={colors1.black}
-                      baseColor={colors1.black}
-                      // onChangeText={handleChange("state")}
-                      onChangeText={(value, index, data) => {
-                        console.log("---(value, index, data--", value, index, data);
-                        // handleChange("state");
-                        setFieldValue("state", value);
-                        setSelectedStateCode(data[index].code);
+                      labelField="name"
+                      valueField="name"
+                      placeholder={"Select State"}
+                      // search={search}
+                      // searchPlaceholder={`Search ${label?.toLocaleLowerCase()}`}
+                      maxHeight={240}
+                      style={{
+                        borderColor: "red",
+
+                        marginBottom: 2,
+                      }}
+                      itemContainerStyle={{}}
+                      itemTextStyle={{ color: "black" }}
+                      placeholderStyle={{ color: "lightgray" }}
+                      selectedTextStyle={{ color: "black", fontWeight: "500" }}
+                      onChange={(item: any) => {
+                        setFieldValue("state", item.name);
+                        setSelectedStateCode(item.code);
                       }}
                     />
                   </View>
 
-                  <View style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}>
+                  <View
+                    style={[
+                      styles.textInputView,
+                      { marginTop: deviceHeight / 55 },
+                    ]}
+                  >
                     <Text
                       style={{
                         fontSize: 14,
                         fontWeight: "500",
-                        color: touched.zipCode && errors.zipCode ? colors1.red : "gray"
+                        color:
+                          touched.zipCode && errors.zipCode
+                            ? colors1.red
+                            : "gray",
                       }}
                     >
-                      {touched.zipCode && errors.zipCode ? errors.zipCode : "Zip code"}
+                      {touched.zipCode && errors.zipCode
+                        ? errors.zipCode
+                        : "Zip code"}
                     </Text>
                     <View style={{ flexDirection: "row", marginVertical: 5 }}>
                       <TextInput
@@ -854,7 +993,12 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                         ref={ref_zipCode}
                         autoCapitalize="none"
                         autoCorrect={false}
-                        style={{ padding: 0, fontWeight: "600", fontSize: 16, flex: 1 }}
+                        style={{
+                          padding: 0,
+                          fontWeight: "600",
+                          fontSize: 16,
+                          flex: 1,
+                        }}
                         onChangeText={handleChange("zipCode")}
                         onBlur={handleBlur("zipCode")}
                         value={values.zipCode}
@@ -867,18 +1011,39 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                     </View>
                   </View>
 
-                  <View style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}>
+                  <View
+                    style={[
+                      styles.textInputView,
+                      { marginTop: deviceHeight / 55 },
+                    ]}
+                  >
                     <Text
                       style={{
                         fontSize: 14,
                         fontWeight: "500",
-                        color: touched.mobile && errors.mobile ? colors1.red : "gray"
+                        color:
+                          touched.mobile && errors.mobile
+                            ? colors1.red
+                            : "gray",
                       }}
                     >
                       {touched.mobile && errors.mobile ? errors.mobile : "Cell"}
                     </Text>
-                    <View style={{ flexDirection: "row", marginVertical: 5, alignItems: "center" }}>
-                      <Text style={{ padding: 0, fontWeight: "700", fontSize: 16, marginRight: 5 }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        marginVertical: 5,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          padding: 0,
+                          fontWeight: "700",
+                          fontSize: 16,
+                          marginRight: 5,
+                        }}
+                      >
                         +1
                       </Text>
                       <TextInput
@@ -886,7 +1051,12 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                         maxLength={10}
                         autoCapitalize="none"
                         autoCorrect={false}
-                        style={{ padding: 0, fontWeight: "600", fontSize: 16, flex: 1 }}
+                        style={{
+                          padding: 0,
+                          fontWeight: "600",
+                          fontSize: 16,
+                          flex: 1,
+                        }}
                         onChangeText={handleChange("mobile")}
                         onBlur={handleBlur("mobile")}
                         value={values.mobile}
@@ -905,20 +1075,34 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                         paddingHorizontal: deviceWidth / 30,
                         flexDirection: "column",
                         justifyContent: "space-between",
-                        marginTop: deviceHeight / 35
+                        marginTop: deviceHeight / 35,
                       }}
                     >
-                      <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
-                        Account Info
-                      </Text>
-                    </View>
-
-                    <View style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}>
                       <Text
                         style={{
                           fontSize: 14,
                           fontWeight: "500",
-                          color: touched.email && errors.email ? colors1.red : "gray"
+                          color: "gray",
+                        }}
+                      >
+                        Account Info
+                      </Text>
+                    </View>
+
+                    <View
+                      style={[
+                        styles.textInputView,
+                        { marginTop: deviceHeight / 55 },
+                      ]}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          fontWeight: "500",
+                          color:
+                            touched.email && errors.email
+                              ? colors1.red
+                              : "gray",
                         }}
                       >
                         {touched.email && errors.email ? errors.email : "Email"}
@@ -928,7 +1112,12 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                           ref={ref_email}
                           autoCapitalize="none"
                           autoCorrect={false}
-                          style={{ padding: 0, fontWeight: "600", fontSize: 16, flex: 1 }}
+                          style={{
+                            padding: 0,
+                            fontWeight: "600",
+                            fontSize: 16,
+                            flex: 1,
+                          }}
                           onChangeText={handleChange("email")}
                           onBlur={handleBlur("email")}
                           value={values.email}
@@ -941,23 +1130,38 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                       </View>
                     </View>
 
-                    <View style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}>
+                    <View
+                      style={[
+                        styles.textInputView,
+                        { marginTop: deviceHeight / 55 },
+                      ]}
+                    >
                       <Text
                         style={{
                           fontSize: 14,
                           fontWeight: "500",
-                          color: touched.password && errors.password ? colors1.red : "gray"
+                          color:
+                            touched.password && errors.password
+                              ? colors1.red
+                              : "gray",
                         }}
                       >
-                        {touched.password && errors.password ? errors.password : "Set Password"}
+                        {touched.password && errors.password
+                          ? errors.password
+                          : "Set Password"}
                       </Text>
                       <View style={{ flexDirection: "row", marginVertical: 5 }}>
                         <TextInput
                           ref={ref_password}
                           autoCapitalize="none"
                           autoCorrect={false}
-                          style={{ padding: 0, fontWeight: "600", fontSize: 16, flex: 1 }}
-                          onChangeText={e => {
+                          style={{
+                            padding: 0,
+                            fontWeight: "600",
+                            fontSize: 16,
+                            flex: 1,
+                          }}
+                          onChangeText={(e) => {
                             _verifyPassword(e), handleChange("password");
                           }}
                           onBlur={handleBlur("password")}
@@ -982,11 +1186,22 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                     checkNumber &&
                     checkSpecialCharacter &&
                     checkMaxLength ? null : (
-                      <View style={{ marginTop: 20, paddingHorizontal: deviceWidth / 30 }}>
-                        <Text style={{ fontSize: fontSizes.regular }}>Password must:</Text>
+                      <View
+                        style={{
+                          marginTop: 20,
+                          paddingHorizontal: deviceWidth / 30,
+                        }}
+                      >
+                        <Text style={{ fontSize: fontSizes.regular }}>
+                          Password must:
+                        </Text>
                         <View style={{ flexDirection: "row", marginTop: 10 }}>
                           <FastImage
-                            style={{ width: 18, height: 18, alignSelf: "center" }}
+                            style={{
+                              width: 18,
+                              height: 18,
+                              alignSelf: "center",
+                            }}
                             source={
                               checkMaxLength
                                 ? require("../../../app/assets/images/passwordChecked.png")
@@ -994,13 +1209,22 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                             }
                             resizeMode={FastImage.resizeMode.contain}
                           />
-                          <Text style={{ fontSize: fontSizes.small, paddingHorizontal: 10 }}>
+                          <Text
+                            style={{
+                              fontSize: fontSizes.small,
+                              paddingHorizontal: 10,
+                            }}
+                          >
                             Be a minimum of eight character
                           </Text>
                         </View>
                         <View style={{ flexDirection: "row", marginTop: 10 }}>
                           <FastImage
-                            style={{ width: 18, height: 18, alignSelf: "center" }}
+                            style={{
+                              width: 18,
+                              height: 18,
+                              alignSelf: "center",
+                            }}
                             source={
                               checkCapitalLetter
                                 ? require("../../../app/assets/images/passwordChecked.png")
@@ -1008,13 +1232,22 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                             }
                             resizeMode={FastImage.resizeMode.contain}
                           />
-                          <Text style={{ fontSize: fontSizes.small, paddingHorizontal: 10 }}>
+                          <Text
+                            style={{
+                              fontSize: fontSizes.small,
+                              paddingHorizontal: 10,
+                            }}
+                          >
                             Have at least one capital letter
                           </Text>
                         </View>
                         <View style={{ flexDirection: "row", marginTop: 10 }}>
                           <FastImage
-                            style={{ width: 18, height: 18, alignSelf: "center" }}
+                            style={{
+                              width: 18,
+                              height: 18,
+                              alignSelf: "center",
+                            }}
                             source={
                               checkNumber
                                 ? require("../../../app/assets/images/passwordChecked.png")
@@ -1022,13 +1255,22 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                             }
                             resizeMode={FastImage.resizeMode.contain}
                           />
-                          <Text style={{ fontSize: fontSizes.small, paddingHorizontal: 10 }}>
+                          <Text
+                            style={{
+                              fontSize: fontSizes.small,
+                              paddingHorizontal: 10,
+                            }}
+                          >
                             Have at least one number
                           </Text>
                         </View>
                         <View style={{ flexDirection: "row", marginTop: 10 }}>
                           <FastImage
-                            style={{ width: 18, height: 18, alignSelf: "center" }}
+                            style={{
+                              width: 18,
+                              height: 18,
+                              alignSelf: "center",
+                            }}
                             source={
                               checkSpecialCharacter
                                 ? require("../../../app/assets/images/passwordChecked.png")
@@ -1036,7 +1278,12 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                             }
                             resizeMode={FastImage.resizeMode.contain}
                           />
-                          <Text style={{ fontSize: fontSizes.small, paddingHorizontal: 10 }}>
+                          <Text
+                            style={{
+                              fontSize: fontSizes.small,
+                              paddingHorizontal: 10,
+                            }}
+                          >
                             Have at least one special character
                           </Text>
                         </View>
@@ -1051,20 +1298,34 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                         paddingHorizontal: deviceWidth / 30,
                         flexDirection: "column",
                         justifyContent: "space-between",
-                        marginTop: deviceHeight / 35
+                        marginTop: deviceHeight / 35,
                       }}
                     >
-                      <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
-                        Referral (Optional)
-                      </Text>
-                    </View>
-
-                    <View style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}>
                       <Text
                         style={{
                           fontSize: 14,
                           fontWeight: "500",
-                          color: touched.email && errors.email ? colors1.red : "gray"
+                          color: "gray",
+                        }}
+                      >
+                        Referral (Optional)
+                      </Text>
+                    </View>
+
+                    <View
+                      style={[
+                        styles.textInputView,
+                        { marginTop: deviceHeight / 55 },
+                      ]}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          fontWeight: "500",
+                          color:
+                            touched.email && errors.email
+                              ? colors1.red
+                              : "gray",
                         }}
                       >
                         Referral code
@@ -1074,8 +1335,13 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                           ref={ref_referral}
                           autoCapitalize="none"
                           autoCorrect={false}
-                          style={{ padding: 0, fontWeight: "600", fontSize: 16, flex: 1 }}
-                          onChangeText={text => {
+                          style={{
+                            padding: 0,
+                            fontWeight: "600",
+                            fontSize: 16,
+                            flex: 1,
+                          }}
+                          onChangeText={(text) => {
                             setReferral(text);
                           }}
                           // onBlur={handleBlur("email")}
@@ -1091,39 +1357,54 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                   </View>
                 ) : null}
                 {!isFromEdit ? (
-                  <View style={{ flexDirection: "row", marginTop: 20, paddingHorizontal: 5 }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      marginTop: 20,
+                      paddingHorizontal: 5,
+                    }}
+                  >
                     <CheckBox
                       checkedColor={colors1.background}
                       containerStyle={{
                         backgroundColor: "white",
                         borderWidth: 0,
                         padding: 0,
-                        alignItems: "center"
+                        alignItems: "center",
                       }}
                       checked={isAcceptTerms}
                       onPress={() => {
                         setAcceptTerms(!isAcceptTerms);
                       }}
                     />
-                    <Text style={{ color: colors1.black, flex: 1, paddingRight: 20, marginTop: 2 }}>
+                    <Text
+                      style={{
+                        color: colors1.black,
+                        flex: 1,
+                        paddingRight: 20,
+                        marginTop: 2,
+                      }}
+                    >
                       By contiuing, you agree to FreightRunner's{" "}
                       <Text
                         onPress={() => navigation.navigate("termsOfService")}
                         style={{
                           color: colors1.black,
                           textDecorationLine: "underline",
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
                         Terms of Service
                       </Text>{" "}
                       and{" "}
                       <Text
-                        onPress={() => navigation.navigate("PrivacyPolicyScreen")}
+                        onPress={() =>
+                          navigation.navigate("PrivacyPolicyScreen")
+                        }
                         style={{
                           color: colors1.black,
                           textDecorationLine: "underline",
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
                         Privacy Policy
@@ -1133,7 +1414,10 @@ function RegistrationPersonalDetail({ navigation }: Props) {
                 ) : null}
 
                 <View
-                  style={{ marginVertical: deviceHeight / 15, paddingHorizontal: deviceWidth / 15 }}
+                  style={{
+                    marginVertical: deviceHeight / 15,
+                    paddingHorizontal: deviceWidth / 15,
+                  }}
                 >
                   <CustomButton
                     titleColor={colors1.white}
@@ -1183,22 +1467,22 @@ function RegistrationPersonalDetail({ navigation }: Props) {
         title={"Select Profile Picture"}
         options={["Take Photo", "Choose from Library", "Cancel"]}
         cancelButtonIndex={2}
-        onPress={async index => {
+        onPress={async (index) => {
           if (index === 0) {
             ImagePicker.openCamera({
               multiple: false,
               // mediaType: "photo",
               // cropping: false,
               // maxFiles: 5,
-              compressImageQuality: Platform.OS === "ios" ? 0.4 : 0.8
+              compressImageQuality: Platform.OS === "ios" ? 0.4 : 0.8,
             })
-              .then(async item => {
+              .then(async (item) => {
                 setProgress(progress);
                 if (!item.fileName) item.filename = item.path.split("/").pop();
                 setSelectedImageObject(item);
                 setLoading(false);
               })
-              .catch(error => {});
+              .catch((error) => {});
             // openDocumentPicker();
           } else if (index === 1) {
             ImagePicker.openPicker({
@@ -1206,15 +1490,15 @@ function RegistrationPersonalDetail({ navigation }: Props) {
               mediaType: "photo",
               cropping: false,
               maxFiles: 5,
-              compressImageQuality: Platform.OS === "ios" ? 0.4 : 0.8
+              compressImageQuality: Platform.OS === "ios" ? 0.4 : 0.8,
             })
-              .then(async item => {
+              .then(async (item) => {
                 setProgress(progress);
                 if (!item.fileName) item.filename = item.path.split("/").pop();
                 setSelectedImageObject(item);
                 setLoading(false);
               })
-              .catch(error => {});
+              .catch((error) => {});
           }
         }}
       />
@@ -1230,11 +1514,11 @@ type Styles = {
 
 const styles = StyleSheet.create<Styles>({
   name: {
-    fontSize: 12
+    fontSize: 12,
   },
   container: {
     backgroundColor: "white",
-    flex: 1
+    flex: 1,
     // paddingHorizontal: STANDARD_PADDING
   },
   textInputView: {
@@ -1253,8 +1537,8 @@ const styles = StyleSheet.create<Styles>({
     shadowColor: "#171717",
     shadowOpacity: 0.2,
     shadowRadius: 2,
-    elevation: 3
-  }
+    elevation: 3,
+  },
 });
 
-export default withNavigation(RegistrationPersonalDetail);
+export default RegistrationPersonalDetailScreen;

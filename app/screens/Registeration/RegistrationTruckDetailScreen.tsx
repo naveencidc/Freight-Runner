@@ -18,19 +18,21 @@ import {
   ImageStyle,
   TextStyle,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
-import { withNavigation } from "react-navigation";
 import { Formik } from "formik";
-import { CustomButton, Screen, SimpleInput as Input, Text, View } from "../../components";
-import { SessionContext } from "../../context/SessionContextProvider";
-import { NavigationProps } from "../../navigation";
+import {
+  CustomButton,
+  Text,
+  View,
+  SimpleInput as Input,
+} from "../../components";
 import {
   getVehileDetails,
   createUserTruck,
   getTruckBrandName,
   getTruckModelName,
-  getPowerType
+  getPowerType,
 } from "../../services/registrationService";
 import { fontSizes, STANDARD_PADDING } from "../../styles/globalStyles";
 import { extractError } from "../../utilities/errorUtilities";
@@ -39,7 +41,10 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import HeaderWithBack from "../../components/HeaderWithBack";
 import FastImage from "react-native-fast-image";
 import SelectDropdown from "react-native-select-dropdown";
-import { SnackbarContext, SnackbarContextType } from "../../context/SnackbarContext";
+import {
+  SnackbarContext,
+  SnackbarContextType,
+} from "../../context/SnackbarContext";
 import storage from "../../helpers/storage";
 import { getUserTruckList } from "../../services/myProfileServices";
 import { MyContext } from ".././../../app/context/MyContextProvider";
@@ -48,21 +53,21 @@ import StandardModal from "../../components/StandardModal";
 const deviceWidth = Dimensions.get("window").width;
 const deviceHeight = Dimensions.get("window").height;
 
-type Props = NavigationProps;
 type FormProps = {
   vinNumber: string;
 };
 
 const initialValues: FormProps = {
-  vinNumber: ""
+  vinNumber: "",
 };
 
 let pushArray = [];
-function RegistrationTruckDetail({ navigation }: Props) {
+function RegistrationTruckDetailScreen({ navigation, route }) {
   const [loading, setLoading] = useState(false);
   const [vinSuccess, setVINSuccess] = useState(false);
   const [vehileDetails, setVehileDetails] = useState({});
-  const { setMessage, setVisible } = useContext<SnackbarContextType>(SnackbarContext);
+  const { setMessage, setVisible } =
+    useContext<SnackbarContextType>(SnackbarContext);
   const [truckBrandName, setTruckBrandName] = useState([]);
   const [truckModelName, setTruckModelName] = useState([]);
   const [year, setYear] = useState();
@@ -72,7 +77,7 @@ function RegistrationTruckDetail({ navigation }: Props) {
   const [selectedPowerTypeId, setselectedPowerTypeId] = useState();
   const [powerTypeList, setpowerTypeList] = useState([]);
 
-  let isFrom = navigation.state.params?.isFrom;
+  let isFrom = route.params?.isFrom;
   const global = useContext(MyContext);
   const makeDropdownRef = useRef({});
   const modelDropdownRef = useRef({});
@@ -83,10 +88,10 @@ function RegistrationTruckDetail({ navigation }: Props) {
     if (selectedBrandId) {
       async function fetchTruckBrandNameAPI() {
         const truckModelNameResponse = await getTruckModelName(selectedBrandId)
-          .then(async response => {
+          .then(async (response) => {
             setTruckModelName(response?.data);
           })
-          .catch(e => {
+          .catch((e) => {
             setTruckModelName([]);
             // Alert.alert("Error", e.response.data.message);
             Alert.alert("", e.response.data.message, [
@@ -96,8 +101,8 @@ function RegistrationTruckDetail({ navigation }: Props) {
                   makeDropdownRef.current.reset();
                   yearDropdoenRef.current.reset();
                   setSelectedBrandId(undefined);
-                }
-              }
+                },
+              },
             ]);
             // returnResponse = e.response;
           });
@@ -133,7 +138,7 @@ function RegistrationTruckDetail({ navigation }: Props) {
     });
   }, []);
 
-  const handleText = text => {
+  const handleText = (text) => {
     setYear(text);
   };
 
@@ -144,19 +149,30 @@ function RegistrationTruckDetail({ navigation }: Props) {
       const createUserTruckResponse = await createUserTruck({
         user_id: userDetail.user_id,
         model_id:
-          vehileDetails && vehileDetails.model_id ? vehileDetails.model_id : selectedModelId,
+          vehileDetails && vehileDetails.model_id
+            ? vehileDetails.model_id
+            : selectedModelId,
         brand_id:
-          vehileDetails && vehileDetails.brand_id ? vehileDetails.brand_id : selectedBrandId,
+          vehileDetails && vehileDetails.brand_id
+            ? vehileDetails.brand_id
+            : selectedBrandId,
         year: vehileDetails && vehileDetails.year ? vehileDetails.year : year,
         vin: vehileDetails.vin,
-        power_type_id: selectedPowerTypeId
+        power_type_id: selectedPowerTypeId,
       });
       if (createUserTruckResponse) {
         setMessage("Truck created successfully.");
         setVisible(true);
         if (isFrom === "TruckList") {
-          const userTruckList = await getUserTruckList(userDetail.user_id, "0", "10");
-          global.myDispatch({ type: "GET_USER_TRUCK_LIST", payload: userTruckList.data });
+          const userTruckList = await getUserTruckList(
+            userDetail.user_id,
+            "0",
+            "10"
+          );
+          global.myDispatch({
+            type: "GET_USER_TRUCK_LIST",
+            payload: userTruckList.data,
+          });
           navigation.navigate("TruckList", { isFrom: "TruckList" });
         } else {
           setLoading(false);
@@ -168,14 +184,20 @@ function RegistrationTruckDetail({ navigation }: Props) {
       const error = extractError(e);
       Alert.alert(
         "Error",
-        error ? error : "There is an issue in Adding truck now. Please try again later."
+        error
+          ? error
+          : "There is an issue in Adding truck now. Please try again later."
       );
       setLoading(false);
     }
   };
 
   const createUserTruckDetails = async () => {
-    if (selectedBrandId === undefined && selectedModelId === undefined && vinSuccess) {
+    if (
+      selectedBrandId === undefined &&
+      selectedModelId === undefined &&
+      vinSuccess
+    ) {
       _validateTruckDetails();
     } else if (
       selectedBrandId === undefined ||
@@ -213,7 +235,7 @@ function RegistrationTruckDetail({ navigation }: Props) {
                     color: colors1.background,
                     fontSize: fontSizes.large,
                     fontWeight: "600",
-                    paddingVertical: deviceHeight / 40
+                    paddingVertical: deviceHeight / 40,
                   }}
                 >
                   Enter Truck Details
@@ -222,10 +244,14 @@ function RegistrationTruckDetail({ navigation }: Props) {
                 <View
                   style={[
                     styles.textInputView,
-                    { paddingVertical: 5, marginBottom: deviceHeight / 55 }
+                    { paddingVertical: 5, marginBottom: deviceHeight / 55 },
                   ]}
                 >
-                  <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>Power Type</Text>
+                  <Text
+                    style={{ fontSize: 14, fontWeight: "500", color: "gray" }}
+                  >
+                    Power Type
+                  </Text>
 
                   <SelectDropdown
                     ref={powerTypeListRef}
@@ -256,7 +282,9 @@ function RegistrationTruckDetail({ navigation }: Props) {
                     renderCustomizedRowChild={(item, index) => {
                       return (
                         <View style={styles.dropdown3RowChildStyle}>
-                          <Text style={styles.dropdown3RowTxt}>{item.type}</Text>
+                          <Text style={styles.dropdown3RowTxt}>
+                            {item.type}
+                          </Text>
                           <FastImage
                             resizeMode="contain"
                             source={{ uri: item.logo ? item.logo : "" }}
@@ -279,9 +307,9 @@ function RegistrationTruckDetail({ navigation }: Props) {
                       style={{
                         fontSize: fontSizes.regular,
                         // fontWeight: "500",
-                        marginTop: 5
+                        marginTop: 5,
                       }}
-                      onChangeText={async text => {
+                      onChangeText={async (text) => {
                         setFieldValue("vinNumber", text);
                         if (text.length === 17) {
                           const vehileResponse = await getVehileDetails(text);
@@ -292,12 +320,16 @@ function RegistrationTruckDetail({ navigation }: Props) {
                       onBlur={handleBlur("vinNumber")}
                       value={values.vinNumber}
                       placeholder="Enter VIN number"
-                      placeholderTextColor={selectedPowerTypeId ? "#000000" : "lightgray"}
+                      placeholderTextColor={
+                        selectedPowerTypeId ? "#000000" : "lightgray"
+                      }
                       keyboardType="default"
                       returnKeyType="next"
-                      onEndEditing={async text => {
+                      onEndEditing={async (text) => {
                         if (text && text.nativeEvent.text === 17) {
-                          const vehileResponse = await getVehileDetails(text.nativeEvent.text);
+                          const vehileResponse = await getVehileDetails(
+                            text.nativeEvent.text
+                          );
                           setVehileDetails(vehileResponse.data);
                           setVINSuccess(true);
                         }
@@ -309,10 +341,12 @@ function RegistrationTruckDetail({ navigation }: Props) {
                 <View
                   style={[
                     styles.textInputView,
-                    { paddingVertical: 5, marginTop: deviceHeight / 55 }
+                    { paddingVertical: 5, marginTop: deviceHeight / 55 },
                   ]}
                 >
-                  <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
+                  <Text
+                    style={{ fontSize: 14, fontWeight: "500", color: "gray" }}
+                  >
                     Select Make
                   </Text>
 
@@ -332,7 +366,11 @@ function RegistrationTruckDetail({ navigation }: Props) {
                           <Text
                             style={[
                               styles.dropdown3BtnTxt,
-                              { color: selectedPowerTypeId ? "#000000" : "lightgray" }
+                              {
+                                color: selectedPowerTypeId
+                                  ? "#000000"
+                                  : "lightgray",
+                              },
                             ]}
                           >
                             {vehileDetails.brand_name
@@ -346,7 +384,11 @@ function RegistrationTruckDetail({ navigation }: Props) {
                               {selectedItem ? (
                                 <FastImage
                                   resizeMode={"contain"}
-                                  source={{ uri: selectedItem.logo ? selectedItem.logo : "" }}
+                                  source={{
+                                    uri: selectedItem.logo
+                                      ? selectedItem.logo
+                                      : "",
+                                  }}
                                   // style={styles.dropdown3BtnImage}
                                   style={{ width: 55, height: 55 }}
                                 />
@@ -355,7 +397,9 @@ function RegistrationTruckDetail({ navigation }: Props) {
                                 resizeMode={"contain"}
                                 source={require("../../../app/assets/images/downArrow.png")}
                                 style={{ height: 18, width: 15 }}
-                                tintColor={selectedPowerTypeId ? "#000000" : "lightgray"}
+                                tintColor={
+                                  selectedPowerTypeId ? "#000000" : "lightgray"
+                                }
                               />
                             </>
                           ) : null}
@@ -367,7 +411,9 @@ function RegistrationTruckDetail({ navigation }: Props) {
                     renderCustomizedRowChild={(item, index) => {
                       return (
                         <View style={styles.dropdown3RowChildStyle}>
-                          <Text style={styles.dropdown3RowTxt}>{item.brand_name}</Text>
+                          <Text style={styles.dropdown3RowTxt}>
+                            {item.brand_name}
+                          </Text>
                           <FastImage
                             resizeMode="contain"
                             source={{ uri: item.logo ? item.logo : "" }}
@@ -382,10 +428,12 @@ function RegistrationTruckDetail({ navigation }: Props) {
                 <View
                   style={[
                     styles.textInputView,
-                    { paddingVertical: 5, marginTop: deviceHeight / 55 }
+                    { paddingVertical: 5, marginTop: deviceHeight / 55 },
                   ]}
                 >
-                  <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
+                  <Text
+                    style={{ fontSize: 14, fontWeight: "500", color: "gray" }}
+                  >
                     Select Model
                   </Text>
                   <SelectDropdown
@@ -402,7 +450,11 @@ function RegistrationTruckDetail({ navigation }: Props) {
                           <Text
                             style={[
                               styles.dropdown3BtnTxt,
-                              { color: selectedBrandId ? "#000000" : "lightgray" }
+                              {
+                                color: selectedBrandId
+                                  ? "#000000"
+                                  : "lightgray",
+                              },
                             ]}
                           >
                             {vehileDetails.model_name
@@ -415,7 +467,11 @@ function RegistrationTruckDetail({ navigation }: Props) {
                             <>
                               {selectedItem ? (
                                 <FastImage
-                                  source={{ uri: selectedItem.image ? selectedItem.image : "" }}
+                                  source={{
+                                    uri: selectedItem.image
+                                      ? selectedItem.image
+                                      : "",
+                                  }}
                                   resizeMode="contain"
                                   style={{ width: 55, height: 55 }}
                                 />
@@ -425,7 +481,9 @@ function RegistrationTruckDetail({ navigation }: Props) {
                                 resizeMode={"contain"}
                                 source={require("../../../app/assets/images/downArrow.png")}
                                 style={{ height: 18, width: 15 }}
-                                tintColor={selectedBrandId ? "#000000" : "lightgray"}
+                                tintColor={
+                                  selectedBrandId ? "#000000" : "lightgray"
+                                }
                               />
                             </>
                           ) : null}
@@ -437,7 +495,9 @@ function RegistrationTruckDetail({ navigation }: Props) {
                     renderCustomizedRowChild={(item, index) => {
                       return (
                         <View style={styles.dropdown3RowChildStyle}>
-                          <Text style={styles.dropdown3RowTxt}>{item.model_name}</Text>
+                          <Text style={styles.dropdown3RowTxt}>
+                            {item.model_name}
+                          </Text>
                           <FastImage
                             resizeMode={FastImage.resizeMode.contain}
                             source={{ uri: item.image ? item.image : "" }}
@@ -451,10 +511,12 @@ function RegistrationTruckDetail({ navigation }: Props) {
                 <View
                   style={[
                     styles.textInputView,
-                    { paddingVertical: 5, marginTop: deviceHeight / 55 }
+                    { paddingVertical: 5, marginTop: deviceHeight / 55 },
                   ]}
                 >
-                  <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
+                  <Text
+                    style={{ fontSize: 14, fontWeight: "500", color: "gray" }}
+                  >
                     Select Year
                   </Text>
                   <SelectDropdown
@@ -469,15 +531,21 @@ function RegistrationTruckDetail({ navigation }: Props) {
                       return (
                         <View style={styles.dropdown3BtnChildStyle}>
                           <TextInput
-                            editable={selectedBrandId && selectedModelId ? true : false}
+                            editable={
+                              selectedBrandId && selectedModelId ? true : false
+                            }
                             maxLength={4}
                             style={[styles.dropdown3BtnTxt]}
                             placeholder="Enter Year"
                             placeholderTextColor={
-                              selectedBrandId && selectedModelId ? colors1.black : "lightgray"
+                              selectedBrandId && selectedModelId
+                                ? colors1.black
+                                : "lightgray"
                             }
-                            value={vehileDetails ? vehileDetails.year : selectedItem}
-                            onChangeText={text => handleText(text)}
+                            value={
+                              vehileDetails ? vehileDetails.year : selectedItem
+                            }
+                            onChangeText={(text) => handleText(text)}
                             defaultValue={year}
                             keyboardType="number-pad"
                             returnKeyType="done"
@@ -488,7 +556,9 @@ function RegistrationTruckDetail({ navigation }: Props) {
                             source={require("../../../app/assets/images/downArrow.png")}
                             style={{ height: 18, width: 15 }}
                             tintColor={
-                              selectedBrandId && selectedModelId ? colors1.black : "lightgray"
+                              selectedBrandId && selectedModelId
+                                ? colors1.black
+                                : "lightgray"
                             }
                           />
                         </View>
@@ -506,7 +576,10 @@ function RegistrationTruckDetail({ navigation }: Props) {
                   />
                 </View>
                 <View
-                  style={{ marginVertical: deviceHeight / 6, paddingHorizontal: deviceWidth / 15 }}
+                  style={{
+                    marginVertical: deviceHeight / 6,
+                    paddingHorizontal: deviceWidth / 15,
+                  }}
                 >
                   <CustomButton
                     titleColor={colors1.white}
@@ -538,7 +611,13 @@ function RegistrationTruckDetail({ navigation }: Props) {
                 </View>
                 <StandardModal visible={isShowModel}>
                   <View>
-                    <Text style={{ fontSize: fontSizes.large, fontWeight: "700", color: "black" }}>
+                    <Text
+                      style={{
+                        fontSize: fontSizes.large,
+                        fontWeight: "700",
+                        color: "black",
+                      }}
+                    >
                       {"Add Truck"}
                     </Text>
                     <Text
@@ -546,23 +625,28 @@ function RegistrationTruckDetail({ navigation }: Props) {
                         color: "black",
                         fontSize: fontSizes.medium,
                         fontWeight: "400",
-                        marginVertical: deviceHeight / 30
+                        marginVertical: deviceHeight / 30,
                       }}
                     >
                       {"Are you sure want to add another truck?"}
                     </Text>
-                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
                       <View style={{ flex: 1, paddingRight: 10 }}>
                         <TouchableOpacity
                           onPress={async () => {
                             const userDetail = await storage.get("userData");
-                            const updateOnbardingStatusResponse = await updateOnbardingStatus({
-                              user_id: userDetail.user_id,
-                              is_onboard_pending: 2,
-                              completed_step: 1,
-                              is_welcome_screen_viewed: 2
-                            });
-                            navigation.navigate("RegistrationTrailerDetailScreen");
+                            const updateOnbardingStatusResponse =
+                              await updateOnbardingStatus({
+                                user_id: userDetail.user_id,
+                                is_onboard_pending: 2,
+                                completed_step: 1,
+                                is_welcome_screen_viewed: 2,
+                              });
+                            navigation.navigate(
+                              "RegistrationTrailerDetailScreen"
+                            );
                             setisShowModel(false);
                           }}
                           style={{
@@ -570,7 +654,7 @@ function RegistrationTruckDetail({ navigation }: Props) {
                             paddingHorizontal: 20,
                             borderRadius: 30,
                             borderWidth: 1,
-                            borderColor: "#B60F0F"
+                            borderColor: "#B60F0F",
                           }}
                         >
                           <Text
@@ -578,7 +662,7 @@ function RegistrationTruckDetail({ navigation }: Props) {
                               color: "#B60F0F",
                               textAlign: "center",
                               fontSize: fontSizes.medium,
-                              fontWeight: "600"
+                              fontWeight: "600",
                             }}
                           >
                             Next
@@ -603,7 +687,7 @@ function RegistrationTruckDetail({ navigation }: Props) {
                             backgroundColor: colors1.background,
                             paddingVertical: 15,
                             paddingHorizontal: 20,
-                            borderRadius: 30
+                            borderRadius: 30,
                           }}
                         >
                           <Text
@@ -611,7 +695,7 @@ function RegistrationTruckDetail({ navigation }: Props) {
                               textAlign: "center",
                               fontSize: fontSizes.medium,
                               fontWeight: "600",
-                              color: colors1.white
+                              color: colors1.white,
                             }}
                           >
                             {"Add"}
@@ -654,68 +738,68 @@ const styles = StyleSheet.create<Styles>({
   buttons: {
     alignSelf: "center",
     marginTop: 10,
-    width: "95%"
+    width: "95%",
   },
   bottom: {
     flexDirection: "row",
     marginLeft: 25,
     alignSelf: "center",
-    marginTop: 20
+    marginTop: 20,
   },
   termsBotton: {
     flexDirection: "row",
     marginLeft: Platform.OS === "ios" ? 30 : 5,
-    marginTop: -15
+    marginTop: -15,
   },
   termsLink: {
     marginTop: -13,
-    marginLeft: Platform.OS === "ios" ? -25 : 0
+    marginLeft: Platform.OS === "ios" ? -25 : 0,
   },
   signUpButton: {
     marginTop: -15,
-    marginLeft: -25
+    marginLeft: -25,
   },
   name: {
-    fontSize: 12
+    fontSize: 12,
   },
   container: {
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   dropdown3BtnStyle: {
     width: "100%",
-    paddingHorizontal: 0
+    paddingHorizontal: 0,
   },
   dropdown3BtnChildStyle: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#F5F4F7"
+    backgroundColor: "#F5F4F7",
   },
   dropdown3BtnImage: { width: 45, height: 45, resizeMode: "cover" },
   dropdown3BtnTxt: {
     flex: 0.9,
     color: "#000000",
-    fontSize: fontSizes.regular
+    fontSize: fontSizes.regular,
   },
   dropdown3DropdownStyle: { backgroundColor: "#F5F4F7", borderRadius: 5 },
   dropdown3RowStyle: {
     borderBottomColor: "#EFEFEF",
-    height: 50
+    height: 50,
   },
   dropdown3RowChildStyle: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingHorizontal: 18
+    paddingHorizontal: 18,
   },
   dropdownRowImage: { width: 45, height: 45, resizeMode: "contain" },
   dropdown3RowTxt: {
     color: "black",
     fontWeight: "500",
     fontSize: 18,
-    flex: 1
+    flex: 1,
   },
   textInputView: {
     paddingHorizontal: deviceWidth / 20,
@@ -732,8 +816,8 @@ const styles = StyleSheet.create<Styles>({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     marginHorizontal: 15,
-    elevation: 3
-  }
+    elevation: 3,
+  },
 });
 
-export default withNavigation(RegistrationTruckDetail);
+export default RegistrationTruckDetailScreen;

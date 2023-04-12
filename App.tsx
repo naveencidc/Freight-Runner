@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import type { PropsWithChildren } from "react";
 import {
   SafeAreaView,
@@ -31,6 +31,8 @@ import {
 } from "./app/context/SnackbarContext";
 import Snackbar from "./app/components/Snackbar";
 import MainNavigator from "./app/routes/MainNavigator";
+import { request, PERMISSIONS } from "react-native-permissions";
+import { PLATFORM } from "./app/styles/globalStyles";
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === "dark";
@@ -38,7 +40,19 @@ function App(): JSX.Element {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
-
+  useEffect(() => {
+    try {
+      async function fetchStateListAPI() {
+        if (PLATFORM === "ios") {
+          await request(PERMISSIONS.IOS.CAMERA);
+          await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+        } else {
+          await request(PERMISSIONS.ANDROID.CAMERA);
+        }
+      }
+      fetchStateListAPI();
+    } catch (error) {}
+  }, []);
   return (
     <MyContextProvider>
       <SnackbarProvider>

@@ -45,7 +45,7 @@ const TruckList: React.FC<Props> = ({ navigation, route }) => {
   const [truckListsLoading, setTruckListLoading] = useState(false);
   const [refreshing, isRefreshing] = useState(false);
   const [loadMoreLoading, setLoadMoreloading] = useState(false);
-  const global = useContext(MyContext);
+  const global: any = useContext(MyContext);
   let _userTruckList = global.myState.userTruckList;
   let updatedpage;
   let updatedresults = [];
@@ -214,7 +214,9 @@ const TruckList: React.FC<Props> = ({ navigation, route }) => {
             ? navigation.navigate("RegistrationTruckDetailScreen", {
                 isFrom: "TruckList",
               })
-            : navigation.navigate("RegTruckDetail", { isFrom: "TruckList" })
+            : navigation.navigate("RegistrationTruckDetailScreen", {
+                isFrom: "TruckList",
+              })
         }
       ></HeaderWithBack>
       <View style={{ flex: 1, backgroundColor: "#F5F4F7" }}>
@@ -264,7 +266,7 @@ const TruckList: React.FC<Props> = ({ navigation, route }) => {
                           isFrom: "TruckList",
                         });
                       } else {
-                        navigation.navigate("RegTruckDetail", {
+                        navigation.navigate("RegistrationTruckDetailScreen", {
                           isFrom: "TruckList",
                         });
                       }

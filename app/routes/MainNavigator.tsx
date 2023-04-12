@@ -22,6 +22,10 @@ import TrailerList from "../screens/Home/TrailerList";
 import CargoTypes from "../screens/Home/CargoTypes";
 import BusinessInfoAndAddress from "../screens/Home/BusinessInfoAndAddress";
 import RegistrationServiceAreasScreen from "../screens/Registeration/RegistrationServiceAreasScreen";
+import RegistrationPersonalDetailScreen from "../screens/Registeration/RegistrationPersonalDetailScreen";
+import RegistrationUnderReviewScreen from "../screens/Registeration/RegistrationUnderReviewScreen";
+import RegistrationRejectedScreen from "../screens/Registeration/RegistrationRejectedScreen";
+import RegistrationTruckDetailScreen from "../screens/Registeration/RegistrationTruckDetailScreen";
 
 export type RootStackParamList = {
   splash: undefined;
@@ -55,6 +59,24 @@ const MainNavigator = () => {
         <RootStack.Screen name="ContactUs" component={ContactUs} />
 
         {/* Registration Related */}
+
+        <RootStack.Screen
+          name="RegistrationPersonalDetailScreen"
+          component={RegistrationPersonalDetailScreen}
+        />
+        <RootStack.Screen
+          name="RegistrationRejectedScreen"
+          component={RegistrationRejectedScreen}
+        />
+        <RootStack.Screen
+          name="RegistrationUnderReviewScreen"
+          component={RegistrationUnderReviewScreen}
+        />
+
+        <RootStack.Screen
+          name="RegistrationTruckDetailScreen"
+          component={RegistrationTruckDetailScreen}
+        />
         <RootStack.Screen
           name="RegistrationServiceAreasScreen"
           component={RegistrationServiceAreasScreen}
