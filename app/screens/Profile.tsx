@@ -20,6 +20,7 @@ import {
   ActivityIndicator,
   SafeAreaView,
 } from "react-native";
+// import { SafeAreaView } from "react-navigation";
 import { Text, View } from "../components";
 import {
   SnackbarContext,
@@ -140,10 +141,12 @@ const Profile: React.FC<Props> = ({ navigation }) => {
                     <View>
                       <FastImage
                         onLoadStart={() => {
+                          setimgLoadingError(false);
                           setimgLoading(true);
                         }}
                         onLoadEnd={() => {
                           setimgLoading(false);
+                          setimgLoadingError(false);
                         }}
                         onError={() => {
                           setimgLoadingError(true);

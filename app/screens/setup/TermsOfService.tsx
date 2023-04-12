@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, { useContext, useEffect } from "react";
 import {
   Alert,
   Linking,
@@ -7,40 +7,42 @@ import {
   StyleSheet,
   ViewStyle,
   View,
-} from 'react-native';
-import {ScrollView, SafeAreaView} from 'react-native';
-import {STANDARD_PADDING} from '../../styles/globalStyles';
-import {Screen} from '../../components';
-import {PLATFORM} from '../../styles/globalStyles';
-import colors from '../../styles/colors';
-import HeaderWithBack from '../../components/HeaderWithBack';
+} from "react-native";
+import { ScrollView, SafeAreaView } from "react-native";
+import { STANDARD_PADDING } from "../../styles/globalStyles";
+import { Screen } from "../../components";
+import { PLATFORM } from "../../styles/globalStyles";
+import colors from "../../styles/colors";
+import HeaderWithBack from "../../components/HeaderWithBack";
 
-function TermsOfService({navigation}: any, route: any) {
+function TermsOfService({ navigation, route }) {
   let isFrom = route.params?.isFrom;
+  console.log("BGTYHN", isFrom);
 
   const handleCancel = () => {
-    navigation.navigate('Landing');
+    navigation.navigate("Landing");
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
       <HeaderWithBack
         title="TERMS OF SERVICE"
         onPress={() => {
           if (isFrom) {
-            navigation.navigate('Landing');
+            navigation.navigate("Landing");
           } else {
             navigation.goBack();
           }
         }}
         isRightText={false}
         rightText=""
-        isFrom={'PrivacyPolicy'}
-        rightOnPress={() => {}}></HeaderWithBack>
+        isFrom={"PrivacyPolicy"}
+        rightOnPress={() => {}}
+      ></HeaderWithBack>
       <Screen style={styles.container}>
         {/* <Title>Terms of Service</Title> */}
         <ScrollView style={{}}>
-          <Text style={{marginTop: 15}}>
+          <Text style={{ marginTop: 15 }}>
             Terms and Conditions General Site Usage Last Revised: December 16,
             2019 Welcome to https://app.freightrunner.com/. This site is
             provided as a service to our visitors and may be used for
@@ -201,8 +203,8 @@ const styles = StyleSheet.create<Styles>({
     // paddingTop: 30
   },
   buttons: {
-    flexDirection: 'row',
-    alignSelf: 'center',
+    flexDirection: "row",
+    alignSelf: "center",
   },
   button: {
     marginTop: 8,

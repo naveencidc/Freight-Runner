@@ -7,9 +7,9 @@
  * Copyright © 2022 FreightRunner. All rights reserved.
  *************************************************/
 
-'use strict';
+"use strict";
 
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   PermissionsAndroid,
@@ -21,29 +21,28 @@ import {
   Image,
   Dimensions,
   SafeAreaView,
-} from 'react-native';
-
-import {Text, Logo, Screen, View, CustomButton} from '../components';
-import colors from '../styles/colors';
+} from "react-native";
+import { Text, Logo, View, CustomButton } from "../components";
+import colors from "../styles/colors";
 import {
   PLATFORM,
   STANDARD_PADDING,
   DEVICE_WIDTH,
   fontFamily,
-} from '../styles/globalStyles';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import FastImage from 'react-native-fast-image';
-import {Images} from '../assets/images';
-import {MyContext} from './../../app/context/MyContextProvider';
-import deviceInfoModule from 'react-native-device-info';
-import Config from 'react-native-config';
-import {navigateAndSimpleReset} from '../utils/Utility';
+} from "../styles/globalStyles";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import FastImage from "react-native-fast-image";
+import { Images } from "../assets/images";
+import { MyContext } from "./../../app/context/MyContextProvider";
+import deviceInfoModule from "react-native-device-info";
+import Config from "react-native-config";
+import { navigateAndSimpleReset } from "../utils/Utility";
 
-const deviceWidth = Dimensions.get('window').width;
-const deviceHeight = Dimensions.get('window').height;
+const deviceWidth = Dimensions.get("window").width;
+const deviceHeight = Dimensions.get("window").height;
 
-function Landing({navigation}: any) {
-  const global = useContext(MyContext);
+function Landing({ navigation }: any) {
+  const global: any = useContext(MyContext);
   console.log(global.myState);
 
   useEffect(() => {
@@ -51,11 +50,11 @@ function Landing({navigation}: any) {
   });
 
   const getLocationPermissions = async () => {
-    if (PLATFORM === 'ios') return;
+    if (PLATFORM === "ios") return;
 
     try {
       const permissionsGranted = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
       );
 
       if (permissionsGranted === true) return;
@@ -63,12 +62,12 @@ function Landing({navigation}: any) {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
-          title: 'Please allow location access.',
+          title: "Please allow location access.",
           message:
-            'This app needs to access your location to function properly. Please allow location access.',
-          buttonPositive: 'Allow',
-          buttonNegative: 'Deny',
-        },
+            "This app needs to access your location to function properly. Please allow location access.",
+          buttonPositive: "Allow",
+          buttonNegative: "Deny",
+        }
       );
     } catch (err) {
       //
@@ -79,35 +78,39 @@ function Landing({navigation}: any) {
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
         keyboardShouldPersistTaps="handled"
-        indicatorStyle="white">
-        <View style={{paddingTop: deviceHeight / 9}}>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        indicatorStyle="white"
+      >
+        <View style={{ paddingTop: deviceHeight / 9 }}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
             <FastImage
               source={Images.blackTruck}
               style={{
                 height: deviceHeight / 7.5,
                 width: deviceWidth / 2.05,
-                alignSelf: 'flex-end',
+                alignSelf: "flex-end",
               }}
             />
             <FastImage
               source={Images.redTruck}
-              style={{height: deviceHeight / 7, width: deviceWidth / 2.05}}
+              style={{ height: deviceHeight / 7, width: deviceWidth / 2.05 }}
             />
           </View>
           <View
             style={{
-              flexDirection: 'row',
+              flexDirection: "row",
               marginTop: deviceHeight / 90,
-              justifyContent: 'space-between',
-            }}>
+              justifyContent: "space-between",
+            }}
+          >
             <FastImage
               source={Images.longTruck}
-              style={{height: deviceHeight / 5.5, width: deviceWidth / 1.65}}
+              style={{ height: deviceHeight / 5.5, width: deviceWidth / 1.65 }}
             />
             <FastImage
               source={Images.brownTruck}
-              style={{height: deviceHeight / 8, width: deviceWidth / 2.7}}
+              style={{ height: deviceHeight / 8, width: deviceWidth / 2.7 }}
             />
           </View>
         </View>
@@ -116,69 +119,80 @@ function Landing({navigation}: any) {
           style={{
             paddingHorizontal: deviceWidth / 20,
             marginTop: deviceHeight / 40,
-          }}>
+          }}
+        >
           <CustomButton
             titleColor={colors.white}
             borderColor={colors.white}
-            onPress={() => navigateAndSimpleReset('auth')}
+            onPress={() => navigateAndSimpleReset("auth")}
             title="Login"
-            backgroundColor={colors.background}></CustomButton>
-          <View style={{marginTop: deviceHeight / 35}}>
+            backgroundColor={colors.background}
+          ></CustomButton>
+          <View style={{ marginTop: deviceHeight / 35 }}>
             <CustomButton
               titleColor={colors.white}
               borderColor={colors.white}
               onPress={() =>
-                navigation.navigate('RegistrationPersonalDetailScreen')
+                navigation.navigate("RegistrationPersonalDetailScreen")
               }
               title="Become a Partner"
-              backgroundColor={colors.background}></CustomButton>
+              backgroundColor={colors.background}
+            ></CustomButton>
           </View>
         </View>
-        <View style={{paddingHorizontal: 40, marginTop: deviceHeight / 60}}>
-          <Text style={{color: colors.white, textAlign: 'center'}}>
-            By contiuing, you agree to FreightRunner's{' '}
+        <View style={{ paddingHorizontal: 40, marginTop: deviceHeight / 60 }}>
+          <Text style={{ color: colors.white, textAlign: "center" }}>
+            By contiuing, you agree to FreightRunner's{" "}
             <Text
               onPress={() =>
-                navigation.navigate('termsOfService', {isFrom: 'Landing'})
+                navigation.navigate("termsOfService", { isFrom: "Landing" })
               }
-              style={styles.underlineBoldText}>
+              style={styles.underlineBoldText}
+            >
               Terms of Service
-            </Text>{' '}
-            and{' '}
+            </Text>{" "}
+            and{" "}
             <Text
               onPress={() =>
-                navigation.navigate('PrivacyPolicyScreen', {isFrom: 'Landing'})
+                navigation.navigate("PrivacyPolicyScreen", {
+                  isFrom: "Landing",
+                })
               }
-              style={styles.underlineBoldText}>
+              style={styles.underlineBoldText}
+            >
               Privacy Policy
             </Text>
           </Text>
         </View>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate('ContactUs', {isFrom: 'landing'})}
+          onPress={() =>
+            navigation.navigate("ContactUs", { isFrom: "landing" })
+          }
           style={{
             marginTop: deviceHeight / 30,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <Text
             style={{
               color: colors.white,
-              textAlign: 'center',
-              textDecorationLine: 'underline',
-            }}>
+              textAlign: "center",
+              textDecorationLine: "underline",
+            }}
+          >
             Contact Us
           </Text>
         </TouchableOpacity>
-        <View style={{paddingRight: 10}}>
-          <Text style={{textAlign: 'right', color: colors.white}}>
-            {Config.API_HOST.includes('dev')
-              ? 'Dev'
-              : Config.API_HOST.includes('stage')
-              ? 'Stage'
-              : ''}{' '}
+        <View style={{ paddingRight: 10 }}>
+          <Text style={{ textAlign: "right", color: colors.white }}>
+            {Config.API_HOST.includes("dev")
+              ? "Dev"
+              : Config.API_HOST.includes("stage")
+              ? "Stage"
+              : ""}{" "}
             V {deviceInfoModule.getVersion()}
           </Text>
         </View>
@@ -196,20 +210,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttons: {
-    alignSelf: 'center',
+    alignSelf: "center",
     marginTop: 10,
-    width: '95%',
+    width: "95%",
   },
   bottom: {
-    flexDirection: 'column',
-    alignItems: 'center',
+    flexDirection: "column",
+    alignItems: "center",
     marginTop: 20,
   },
   signUpButton: {
-    marginTop: Platform.OS === 'ios' ? -33 : -35,
+    marginTop: Platform.OS === "ios" ? -33 : -35,
     fontSize: 18,
-    textDecorationLine: 'underline',
-    fontFamily: 'NunitoSans-Regular',
+    textDecorationLine: "underline",
+    fontFamily: "NunitoSans-Regular",
   },
   forgotPasswordContainer: {
     paddingLeft: 2,
@@ -219,28 +233,28 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: colors.primary,
     fontSize: 13,
-    textDecorationLine: 'underline',
-    fontFamily: 'NunitoSans-Regular',
+    textDecorationLine: "underline",
+    fontFamily: "NunitoSans-Regular",
   },
   name: {
     fontSize: 14,
-    fontFamily: 'NunitoSans-Regular',
+    fontFamily: "NunitoSans-Regular",
   },
   passwordViewContainer: {
-    flexDirection: 'column',
+    flexDirection: "column",
   },
   icon: {
     marginTop: -40,
     left: DEVICE_WIDTH - 65,
   },
   loadingContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   underlineBoldText: {
     color: colors.white,
-    textDecorationLine: 'underline',
-    fontWeight: 'bold',
+    textDecorationLine: "underline",
+    fontWeight: "bold",
   },
 });

@@ -14,6 +14,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import ContactUs from "../screens/ContactUsScreen";
 import Home from "../screens/Home/Home";
+import LoadDetailScreen from "../screens/Home/LoadDetailScreen";
 
 export type HomeStackParamList = {
   dashboard: undefined;

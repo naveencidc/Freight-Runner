@@ -13,13 +13,26 @@ import PrivacyPolicyScreen from "../screens/setup/PrivacyPolicyScreen";
 import ContactUs from "../screens/ContactUsScreen";
 import AuthNavigator from "./AuthNavigator";
 import BottomTabNavigator from "./BottomTabNavigator";
-// import BottomTabNavigator from "./BottomTabNavigator";
+import LoadDetailScreen from "../screens/Home/LoadDetailScreen";
+import NotificationListScreen from "../screens/Home/NotificationListScreen";
+import SosScreen from "../screens/Sos";
+import TruckList from "../screens/Home/TruckList";
+import TruckAndTrailerDetail from "../screens/Home/TruckAndTrailerDetail";
+import TrailerList from "../screens/Home/TrailerList";
+import CargoTypes from "../screens/Home/CargoTypes";
+import BusinessInfoAndAddress from "../screens/Home/BusinessInfoAndAddress";
+import RegistrationServiceAreasScreen from "../screens/Registeration/RegistrationServiceAreasScreen";
 
 export type RootStackParamList = {
   splash: undefined;
   welcome: undefined;
   auth: undefined;
   main: undefined;
+  UpdateScreen: undefined;
+  Landing: undefined;
+  termsOfService: undefined;
+  PrivacyPolicyScreen: undefined;
+  ContactUs: undefined;
 };
 
 const RootStack = createStackNavigator<RootStackParamList>();
@@ -41,6 +54,11 @@ const MainNavigator = () => {
         />
         <RootStack.Screen name="ContactUs" component={ContactUs} />
 
+        {/* Registration Related */}
+        <RootStack.Screen
+          name="RegistrationServiceAreasScreen"
+          component={RegistrationServiceAreasScreen}
+        />
         <RootStack.Screen
           name="auth"
           component={AuthNavigator}
@@ -50,6 +68,26 @@ const MainNavigator = () => {
           name="main"
           component={BottomTabNavigator}
           options={{ animationEnabled: false }}
+        />
+        <RootStack.Screen
+          name="LoadDetailScreen"
+          component={LoadDetailScreen}
+        />
+        <RootStack.Screen
+          name="NotificationListScreen"
+          component={NotificationListScreen}
+        />
+        <RootStack.Screen name="SosScreen" component={SosScreen} />
+        <RootStack.Screen name="TruckList" component={TruckList} />
+        <RootStack.Screen
+          name="TruckAndTrailerDetail"
+          component={TruckAndTrailerDetail}
+        />
+        <RootStack.Screen name="TrailerList" component={TrailerList} />
+        <RootStack.Screen name="CargoTypes" component={CargoTypes} />
+        <RootStack.Screen
+          name="BusinessInfoAndAddress"
+          component={BusinessInfoAndAddress}
         />
       </RootStack.Navigator>
     </NavigationContainer>

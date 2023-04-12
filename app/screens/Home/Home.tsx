@@ -731,6 +731,7 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
     return (
       <TouchableOpacity
         onPress={() => {
+          // navigation.navigate("termsOfService", { isFrom: "Landing" });
           navigation.navigate("LoadDetailScreen", { loadDetail: item });
         }}
         style={styles.renderListMainView}
