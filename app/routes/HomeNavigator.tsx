@@ -13,9 +13,11 @@ import { createStackNavigator } from "@react-navigation/stack";
 // components & utilities
 
 import ContactUs from "../screens/ContactUsScreen";
+import Home from "../screens/Home/Home";
 
 export type HomeStackParamList = {
   dashboard: undefined;
+  Home: undefined;
 };
 
 const HomeStack = createStackNavigator<HomeStackParamList>();
@@ -23,7 +25,7 @@ const HomeStack = createStackNavigator<HomeStackParamList>();
 const HomeNavigator = () => {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-      <HomeStack.Screen name="Home" component={ContactUs} />
+      <HomeStack.Screen name="Home" component={Home} />
     </HomeStack.Navigator>
   );
 };
