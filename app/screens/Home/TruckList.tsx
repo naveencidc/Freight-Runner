@@ -32,6 +32,7 @@ import { fontSizes } from "../../styles/globalStyles";
 import { CustomButton } from "../../components";
 import { updateOnbardingStatus } from "../../services/userService";
 import FastImage from "react-native-fast-image";
+import { navigateAndSimpleReset } from "../../utils/Utility";
 type Props = { navigation: any };
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
@@ -198,9 +199,19 @@ const TruckList: React.FC<Props> = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <HeaderWithBack
-        showOnlyHeader={isFromOnboarding ? true : false}
+        showOnlyHeader={false}
         title="MY TRUCK"
-        onPress={() => navigation.goBack()}
+        onPress={async () => {
+          if (isFromOnboarding) {
+            await storage.remove("tokens");
+            navigateAndSimpleReset("auth");
+            global.myDispatch({
+              type: "LOGOUT",
+            });
+          } else {
+            navigation.goBack();
+          }
+        }}
         isRightText={
           global.myState.userTruckList.results &&
           global.myState.userTruckList.results.length

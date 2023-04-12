@@ -694,7 +694,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
                             ? isFromEdit
                               ? ref_city.current.focus()
                               : ref_mc.current.focus()
-                            : ref_businessName.current.focus()
+                            : ref_city.current.focus()
                         }
                         blurOnSubmit={false}
                       />

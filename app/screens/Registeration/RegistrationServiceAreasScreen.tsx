@@ -48,6 +48,7 @@ import {
   updateOnbardingStatus,
 } from "../../services/userService";
 import { MyContext } from "../../context/MyContextProvider";
+import { navigateAndSimpleReset } from "../../utils/Utility";
 
 const deviceWidth = Dimensions.get("window").width;
 const deviceHeight = Dimensions.get("window").height;
@@ -290,9 +291,19 @@ function RegistrationServiceAreasScreen({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container}>
       <HeaderWithBack
-        showOnlyHeader={isFromOnboarding ? true : false}
+        showOnlyHeader={false}
         title="SERVICE AREAS"
-        onPress={() => navigation.goBack()}
+        onPress={async () => {
+          if (isFromOnboarding) {
+            await storage.remove("tokens");
+            navigateAndSimpleReset("auth");
+            global.myDispatch({
+              type: "LOGOUT",
+            });
+          } else {
+            navigation.goBack();
+          }
+        }}
         isRightText={false}
         rightText=""
         rightOnPress={() => {}}

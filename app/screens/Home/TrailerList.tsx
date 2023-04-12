@@ -32,6 +32,7 @@ import { MyContext } from "../../../app/context/MyContextProvider";
 import { CustomButton } from "../../components";
 import { updateOnbardingStatus } from "../../services/userService";
 import FastImage from "react-native-fast-image";
+import { navigateAndSimpleReset } from "../../utils/Utility";
 type Props = { navigation: any };
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
@@ -199,9 +200,19 @@ const TrailerList: React.FC<Props> = ({ navigation, route }) => {
     <SafeAreaView style={styles.mainContainer}>
       {/* <StatusBar barStyle="dark-content" /> */}
       <HeaderWithBack
-        showOnlyHeader={isFromOnboarding ? true : false}
+        showOnlyHeader={false}
         title="MY TRAILER"
-        onPress={() => navigation.goBack()}
+        onPress={async () => {
+          if (isFromOnboarding) {
+            await storage.remove("tokens");
+            navigateAndSimpleReset("auth");
+            global.myDispatch({
+              type: "LOGOUT",
+            });
+          } else {
+            navigation.goBack();
+          }
+        }}
         isRightText={
           global.myState.userTrailerList.results &&
           global.myState.userTrailerList.results.length

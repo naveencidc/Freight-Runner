@@ -66,8 +66,9 @@ import BoardIcon from "react-native-vector-icons/AntDesign";
 // import Analytics from "appcenter-analytics";
 import { checkLocationPermission } from "../../utilities/locationCheck";
 import Geolocation from "react-native-geolocation-service";
+import { openSettings } from "react-native-permissions";
+import StandardModal from "../../components/StandardModal";
 import TimeAgo from "../../components/TimeAgo";
-import ReactNativeCalendarEvents from "react-native-calendar-events";
 
 // MapboxGL.setAccessToken(Config.MAPBOX_API_KEY);
 // const { MapView, Camera, UserLocation, PointAnnotation } = MapboxGL;
@@ -85,6 +86,8 @@ let unReadmessageCount: number;
 let timerId;
 let searchTextGlob = "";
 let inProgressLoads: any = [];
+let isOpenAlert = false;
+
 const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
   let loadDetail = route.params?.loadDetail;
   let currentPosition: GeoPosition;
@@ -99,7 +102,7 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
   const [coordinates, setCoordinates] = useState<Array>({});
   const global: any = useContext(MyContext);
   const [currentLocation, setCurrentLocation] = useState(
-    route.params?.userCurrentLocation
+    navigation.state.params?.userCurrentLocation
   );
   const [selectedSortType, setselectedSortType] = useState("Latest");
   const [refreshing, isRefreshing] = useState(false);
@@ -107,6 +110,7 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
   const [loadMoreLoading, setLoadMoreloading] = useState(false);
   const [searchText, setsearchText] = useState("");
   const [backPressedCount, setBackPressedCount] = useState(0);
+  const [isShowModal, setisShowModal] = useState(false);
 
   let interval: any;
   // const [backCount, setBackCount] = useState(0);
@@ -143,7 +147,29 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
       const userDetail: any = await storage.get("userData");
       interval = setInterval(async () => {
         let isEnabled = await checkLocationPermission();
-        console.log("@@@@@@@@@@@@", isEnabled);
+        if (isEnabled) {
+          setisShowModal(false);
+          isOpenAlert = false;
+        }
+        if (!isEnabled && !isOpenAlert) {
+          isOpenAlert = true;
+          setisShowModal(true);
+          // Alert.alert(
+          //   "",
+          //   "Location permission is required to track the live location, Please turn on the location in settings.",
+          //   [
+          //     {
+          //       text: "Go to Settings",
+          //       onPress: () => {
+          //         isOpenAlert = false;
+          //         openSettings().catch(() => console.warn("cannot open settings"));
+          //       }
+          //     }
+          //   ],
+          //   { cancelable: true }
+          // );
+        }
+
         const loadID: any = (await inProgressLoads.length)
           ? inProgressLoads[0].load_id
           : undefined;
@@ -241,7 +267,6 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
   useEffect(() => {
     getCurrentLocation(async (position) => {
       currentPosition = position;
-      console.log("%%%%%%%%%%%%%%", position);
       if (currentPosition) {
         if (!currentLocation) {
           getHomeCondoLocation();
@@ -669,6 +694,7 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
         })
         .catch((e) => {
           setloadListsLoading(false);
+          isRefreshing(false);
           setLoadMoreloading(false);
           Alert.alert("Error", e.response.data.message);
         });
@@ -680,21 +706,6 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
   };
   // getting the current location
   const getHomeCondoLocation = async () => {
-    console.log("--$$$$$$$$$$$$-", currentPosition);
-    // fetch(
-    //   "https://maps.googleapis.com/maps/api/geocode/json?address=" +
-    //     currentPosition.coords.latitude +
-    //     "," +
-    //     currentPosition.coords.longitude +
-    //     "&key=" +
-    //     "AIzaSyDAmOaaNP3Yx-MBnK2wGTqWMBnAaPPEY_0"
-    // )
-    //   .then((response) => response.json())
-    //   .then((responseJson) => {
-    //     console.log(
-    //       "ADDRESS GEOCODE is BACK!! => " + JSON.stringify(responseJson)
-    //     );
-    //   });
     try {
       const placeInfo = await reverseLookup(currentPosition);
       if (placeInfo.data.features.length > 0) {
@@ -731,7 +742,6 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
     return (
       <TouchableOpacity
         onPress={() => {
-          // navigation.navigate("termsOfService", { isFrom: "Landing" });
           navigation.navigate("LoadDetailScreen", { loadDetail: item });
         }}
         style={styles.renderListMainView}
@@ -1280,6 +1290,92 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
           </View>
         </View>
       </View>
+      <StandardModal
+        visible={isShowModal}
+        // handleBackClose={() => {
+        //   setisShowModal(false);
+        // }}
+      >
+        <View>
+          <Text
+            style={{
+              fontSize: fontSizes.large,
+              fontWeight: "700",
+              color: "black",
+            }}
+          >
+            Location permission
+          </Text>
+          <Text
+            style={{
+              color: "black",
+              fontSize: fontSizes.medium,
+              fontWeight: "400",
+              marginVertical: deviceHeight / 30,
+            }}
+          >
+            Location permission is required to track the live location, Please
+            turn on the location in settings.
+          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {/* <View style={{ flex: 1, paddingRight: 10 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setisShowModal(false);
+                }}
+                style={{
+                  paddingVertical: 15,
+                  paddingHorizontal: 20,
+                  borderRadius: 30,
+                  borderWidth: 1,
+                  borderColor: "#B60F0F"
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#B60F0F",
+                    textAlign: "center",
+                    fontSize: fontSizes.medium,
+                    fontWeight: "600"
+                  }}
+                >
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+            </View> */}
+
+            <View style={{ flex: 1, paddingLeft: 10 }}>
+              <TouchableOpacity
+                onPress={async () => {
+                  setisShowModal(false);
+                  isOpenAlert = false;
+                  openSettings().catch(() =>
+                    console.warn("cannot open settings")
+                  );
+                  // _acceptLoad();
+                }}
+                style={{
+                  backgroundColor: colors.background,
+                  paddingVertical: 15,
+                  paddingHorizontal: 20,
+                  borderRadius: 30,
+                }}
+              >
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontSize: fontSizes.medium,
+                    fontWeight: "600",
+                    color: colors.white,
+                  }}
+                >
+                  Go to Settings
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </StandardModal>
     </SafeAreaView>
   );
 };
