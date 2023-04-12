@@ -222,11 +222,9 @@ const TrailerList: React.FC<Props> = ({ navigation, route }) => {
         rightText="ADD"
         isFrom={isFrom}
         rightOnPress={() =>
-          isFromOnboarding
-            ? navigation.navigate("RegistrationTrailerDetailScreen", {
-                isFrom: "TrailerList",
-              })
-            : navigation.navigate("RegTrailerDetail", { isFrom: "TrailerList" })
+          navigation.navigate("RegistrationTrailerDetailScreen", {
+            isFrom: "TrailerList",
+          })
         }
       />
       <View style={{ flex: 1, backgroundColor: "#F5F4F7" }}>
@@ -271,15 +269,9 @@ const TrailerList: React.FC<Props> = ({ navigation, route }) => {
                 >
                   <TouchableOpacity
                     onPress={() => {
-                      if (isFromOnboarding) {
-                        navigation.navigate("RegistrationTrailerDetailScreen", {
-                          isFrom: "TrailerList",
-                        });
-                      } else {
-                        navigation.navigate("RegTrailerDetail", {
-                          isFrom: "TrailerList",
-                        });
-                      }
+                      navigation.navigate("RegistrationTrailerDetailScreen", {
+                        isFrom: "TrailerList",
+                      });
                     }}
                     style={{
                       alignItems: "center",

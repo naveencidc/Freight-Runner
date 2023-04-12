@@ -18,71 +18,59 @@ import {
   Dimensions,
   ImageStyle,
   TextStyle,
-  SafeAreaView
+  SafeAreaView,
+  FlatList,
 } from "react-native";
 import { CheckBox } from "react-native-elements";
-import { Dropdown } from "react-native-material-dropdown";
-import { FlatList, withNavigation } from "react-navigation";
-import { Formik } from "formik";
-import * as yup from "yup";
-import {
-  Button,
-  CustomButton,
-  LinkButton,
-  Logo,
-  Screen,
-  SimpleInput as Input,
-  Text,
-  View
-} from "../../components";
-import { SessionContext } from "../../context/SessionContextProvider";
-import { NavigationProps } from "../../navigation";
+import { CustomButton, Text, View } from "../../components";
 import {
   getTrailerTypeList,
   getTrailerTypeConfig,
   createUserTrailer,
-  getTrailerHookup
+  getTrailerHookup,
 } from "../../services/registrationService";
 import { fontSizes, STANDARD_PADDING } from "../../styles/globalStyles";
-import { extractError } from "../../utilities/errorUtilities";
 import colors1 from "../../styles/colors";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import HeaderWithBack from "../../components/HeaderWithBack";
 import FastImage from "react-native-fast-image";
-import { request, PERMISSIONS, RESULTS } from "react-native-permissions";
-import ImagePicker from "react-native-image-picker";
 import SelectDropdown from "react-native-select-dropdown";
 import { MyContext } from ".././../../app/context/MyContextProvider";
 import storage from "../../helpers/storage";
-import { SnackbarContext, SnackbarContextType } from "../../context/SnackbarContext";
+import {
+  SnackbarContext,
+  SnackbarContextType,
+} from "../../context/SnackbarContext";
 import { getUserTrailerList } from "../../services/myProfileServices";
 import { updateOnbardingStatus } from "../../services/userService";
 import StandardModal from "../../components/StandardModal";
 
 const deviceWidth = Dimensions.get("window").width;
 const deviceHeight = Dimensions.get("window").height;
-type Props = NavigationProps;
 
-function RegistrationTrailerDetail({ navigation }: Props) {
-  const { setUser, setSetup, signOut } = useContext(SessionContext);
+function RegistrationTrailerDetailScreen({ navigation, route }) {
   const global = useContext(MyContext);
   const [count, setCount] = useState(null);
   const [loading, setLoading] = useState(false);
   const [trailerTypeList, setTrailerTypeList] = useState([]);
   const [trailerTypeConfig, settrailerTypeConfig] = useState({});
-  const [selectedOffloadEquipments, setselectedOffloadEquipments] = useState([]);
+  const [selectedOffloadEquipments, setselectedOffloadEquipments] = useState(
+    []
+  );
   const [selectedTrailerTypeID, setselectedTrailerTypeID] = useState();
-  const [selectedTrailerConnectionID, setselectedTrailerConnectionID] = useState();
+  const [selectedTrailerConnectionID, setselectedTrailerConnectionID] =
+    useState();
   const [selectedTrailerPlatformID, setselectedTrailerPlatformID] = useState();
   const [selectedTrailerAxleID, setselectedTrailerAxleID] = useState();
   const [selectedTrailerLength, setselectedTrailerLength] = useState("");
   const [selectedTrailerCapacity, setselectedTrailerCapacity] = useState("");
-  const { setMessage, setVisible } = useContext<SnackbarContextType>(SnackbarContext);
+  const { setMessage, setVisible } =
+    useContext<SnackbarContextType>(SnackbarContext);
   const [isShowModel, setisShowModel] = useState(false);
   const [trailerHookup, settrailerHookup] = useState([]);
   const [selectedHookupID, setselectedHookupID] = useState();
 
-  let isFrom = navigation.state.params?.isFrom;
+  let isFrom = route.params?.isFrom;
   const typeDropdownRef = useRef({});
   const connectionDropdownRef = useRef({});
   const PlatformDropdownRef = useRef({});
@@ -91,7 +79,9 @@ function RegistrationTrailerDetail({ navigation }: Props) {
   useEffect(() => {
     if (selectedHookupID) {
       async function fetchTruckBrandNameAPI() {
-        const response = await getTrailerTypeList({ trailer_hookup_id: selectedHookupID });
+        const response = await getTrailerTypeList({
+          trailer_hookup_id: selectedHookupID,
+        });
         setTrailerTypeList(response.data);
       }
       fetchTruckBrandNameAPI();
@@ -147,9 +137,9 @@ function RegistrationTrailerDetail({ navigation }: Props) {
           offload_equipments: selectedOffloadEquipments,
           length: parseInt(selectedTrailerLength),
           capacity: parseInt(selectedTrailerCapacity),
-          trailer_hookup_id: selectedHookupID
+          trailer_hookup_id: selectedHookupID,
         })
-          .then(async response => {
+          .then(async (response) => {
             setLoading(false);
             console.log(" Login response", response);
             if (response.status === 201) {
@@ -158,21 +148,32 @@ function RegistrationTrailerDetail({ navigation }: Props) {
               setMessage("Trailer created successfully.");
               setVisible(true);
               if (isFrom === "TrailerList") {
-                const userTrailerList = await getUserTrailerList(userDetail.user_id, "0", "10");
-                global.myDispatch({ type: "GET_USER_TRAILER_LIST", payload: userTrailerList.data });
-                navigation.navigate("TrailerList", { isFrom: "TrailerList" });
+                const userTrailerList = await getUserTrailerList(
+                  userDetail.user_id,
+                  "0",
+                  "10"
+                );
+                global.myDispatch({
+                  type: "GET_USER_TRAILER_LIST",
+                  payload: userTrailerList.data,
+                });
+                navigation.goBack();
+                // navigation.navigate("TrailerList", { isFrom: "TrailerList" });
               } else {
                 setisShowModel(true);
               }
             }
           })
-          .catch(e => {
+          .catch((e) => {
             setLoading(false);
             console.log("login error", e.response);
             Alert.alert("Error", e.response.data.message);
           });
       } catch (e) {
-        Alert.alert("Error", "There was a problem registering your email. Please try again soon.");
+        Alert.alert(
+          "Error",
+          "There was a problem registering your email. Please try again soon."
+        );
         setLoading(false);
       }
     }
@@ -180,7 +181,10 @@ function RegistrationTrailerDetail({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderWithBack title="TRAILER INFO" onPress={() => navigation.goBack()}></HeaderWithBack>
+      <HeaderWithBack
+        title="TRAILER INFO"
+        onPress={() => navigation.goBack()}
+      ></HeaderWithBack>
       <KeyboardAwareScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -192,13 +196,15 @@ function RegistrationTrailerDetail({ navigation }: Props) {
               color: colors1.background,
               fontSize: fontSizes.large,
               fontWeight: "600",
-              paddingVertical: deviceHeight / 40
+              paddingVertical: deviceHeight / 40,
             }}
           >
             Enter Trailer Details
           </Text>
           <View style={styles.textInputView}>
-            <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>Trailer Hookup</Text>
+            <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
+              Trailer Hookup
+            </Text>
             <SelectDropdown
               // ref={typeDropdownRef}
               data={trailerHookup}
@@ -221,7 +227,11 @@ function RegistrationTrailerDetail({ navigation }: Props) {
                     </Text>
                     {selectedItem && selectedItem.thumbnail ? (
                       <FastImage
-                        source={{ uri: selectedItem.thumbnail ? selectedItem.thumbnail : "" }}
+                        source={{
+                          uri: selectedItem.thumbnail
+                            ? selectedItem.thumbnail
+                            : "",
+                        }}
                         resizeMode="contain"
                         style={{ width: 60, height: 60 }}
                       />
@@ -251,8 +261,12 @@ function RegistrationTrailerDetail({ navigation }: Props) {
               }}
             />
           </View>
-          <View style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}>
-            <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>Trailer Type</Text>
+          <View
+            style={[styles.textInputView, { marginTop: deviceHeight / 55 }]}
+          >
+            <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
+              Trailer Type
+            </Text>
             <SelectDropdown
               disabled={selectedHookupID ? false : true}
               ref={typeDropdownRef}
@@ -272,14 +286,20 @@ function RegistrationTrailerDetail({ navigation }: Props) {
                     <Text
                       style={[
                         styles.dropdown3BtnTxt,
-                        { color: selectedHookupID ? "#000000" : "lightgray" }
+                        { color: selectedHookupID ? "#000000" : "lightgray" },
                       ]}
                     >
-                      {selectedItem ? selectedItem.trailer_type_name : "Select Type"}
+                      {selectedItem
+                        ? selectedItem.trailer_type_name
+                        : "Select Type"}
                     </Text>
                     {selectedItem && selectedItem.thumbnail ? (
                       <FastImage
-                        source={{ uri: selectedItem.thumbnail ? selectedItem.thumbnail : "" }}
+                        source={{
+                          uri: selectedItem.thumbnail
+                            ? selectedItem.thumbnail
+                            : "",
+                        }}
                         resizeMode="contain"
                         style={{ width: 60, height: 60 }}
                       />
@@ -299,7 +319,9 @@ function RegistrationTrailerDetail({ navigation }: Props) {
               renderCustomizedRowChild={(item, index) => {
                 return (
                   <View style={styles.dropdown3RowChildStyle}>
-                    <Text style={styles.dropdown3RowTxt}>{item.trailer_type_name}</Text>
+                    <Text style={styles.dropdown3RowTxt}>
+                      {item.trailer_type_name}
+                    </Text>
                     <FastImage
                       resizeMode={FastImage.resizeMode.contain}
                       source={{ uri: item.thumbnail ? item.thumbnail : "" }}
@@ -483,7 +505,10 @@ function RegistrationTrailerDetail({ navigation }: Props) {
           </View> */}
 
           <View
-            style={[styles.textInputView, { marginTop: deviceHeight / 55, paddingVertical: 10 }]}
+            style={[
+              styles.textInputView,
+              { marginTop: deviceHeight / 55, paddingVertical: 10 },
+            ]}
           >
             <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
               Trailer Length (feet)
@@ -491,7 +516,7 @@ function RegistrationTrailerDetail({ navigation }: Props) {
             <View
               style={{
                 flexDirection: "row",
-                marginVertical: 5
+                marginVertical: 5,
                 // paddingHorizontal: 2
               }}
             >
@@ -502,9 +527,9 @@ function RegistrationTrailerDetail({ navigation }: Props) {
                   padding: 0,
                   fontWeight: "500",
                   fontSize: 16,
-                  flex: 1
+                  flex: 1,
                 }}
-                onChangeText={newText => setselectedTrailerLength(newText)}
+                onChangeText={(newText) => setselectedTrailerLength(newText)}
                 value={selectedTrailerLength}
                 placeholder="0"
                 keyboardType="number-pad"
@@ -513,9 +538,14 @@ function RegistrationTrailerDetail({ navigation }: Props) {
             </View>
           </View>
           <View
-            style={[styles.textInputView, { marginTop: deviceHeight / 55, paddingVertical: 10 }]}
+            style={[
+              styles.textInputView,
+              { marginTop: deviceHeight / 55, paddingVertical: 10 },
+            ]}
           >
-            <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>Capacity in LBS</Text>
+            <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
+              Capacity in LBS
+            </Text>
             <View style={{ flexDirection: "row", marginVertical: 5, flex: 1 }}>
               <TextInput
                 editable={!selectedHookupID ? false : true}
@@ -524,9 +554,9 @@ function RegistrationTrailerDetail({ navigation }: Props) {
                   padding: 0,
                   fontWeight: "500",
                   fontSize: 16,
-                  flex: 1
+                  flex: 1,
                 }}
-                onChangeText={newText => setselectedTrailerCapacity(newText)}
+                onChangeText={(newText) => setselectedTrailerCapacity(newText)}
                 value={selectedTrailerCapacity}
                 placeholder="0"
                 keyboardType="number-pad"
@@ -535,7 +565,12 @@ function RegistrationTrailerDetail({ navigation }: Props) {
             </View>
           </View>
 
-          <View style={{ paddingHorizontal: deviceWidth / 20, marginTop: deviceHeight / 55 }}>
+          <View
+            style={{
+              paddingHorizontal: deviceWidth / 20,
+              marginTop: deviceHeight / 55,
+            }}
+          >
             <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
               Offload Equipments
             </Text>
@@ -552,7 +587,7 @@ function RegistrationTrailerDetail({ navigation }: Props) {
                     containerStyle={{
                       backgroundColor: "white",
                       borderWidth: 0,
-                      paddingVertical: 5
+                      paddingVertical: 5,
                     }}
                     title={item.equipment_name}
                     checked={item.isSelected}
@@ -560,7 +595,9 @@ function RegistrationTrailerDetail({ navigation }: Props) {
                       if (item.isSelected) {
                         console.log("-inremove");
                         let selectedArray = [...selectedOffloadEquipments];
-                        const index = selectedArray.indexOf(item.offload_equipment_id);
+                        const index = selectedArray.indexOf(
+                          item.offload_equipment_id
+                        );
                         if (index > -1) {
                           selectedArray.splice(index, 1); //remove one item only
                         }
@@ -571,12 +608,12 @@ function RegistrationTrailerDetail({ navigation }: Props) {
                         //add value to array
                         setselectedOffloadEquipments([
                           ...selectedOffloadEquipments,
-                          item.offload_equipment_id
+                          item.offload_equipment_id,
                         ]);
                       }
                       let value = trailerTypeConfig;
-                      value.offloadEquipments[index].isSelected = !value.offloadEquipments[index]
-                        .isSelected;
+                      value.offloadEquipments[index].isSelected =
+                        !value.offloadEquipments[index].isSelected;
                       settrailerTypeConfig({ ...value });
                     }}
                   />
@@ -598,24 +635,39 @@ function RegistrationTrailerDetail({ navigation }: Props) {
             </Text>
           </View> */}
         </View>
-        <View style={{ marginVertical: deviceHeight / 20, paddingHorizontal: deviceWidth / 15 }}>
+        <View
+          style={{
+            marginVertical: deviceHeight / 20,
+            paddingHorizontal: deviceWidth / 15,
+          }}
+        >
           <CustomButton
             titleColor={colors1.white}
             borderColor={colors1.background}
             backgroundColor={
-              selectedHookupID && selectedTrailerTypeID ? colors1.btnColor : "#454545"
+              selectedHookupID && selectedTrailerTypeID
+                ? colors1.btnColor
+                : "#454545"
             }
             onPress={() => createUserTrailerinfo()}
             // onPress={() => navigation.navigate("RegistrationTypesCargoDetailScreen")}
             title="Submit"
-            disableButton={selectedHookupID && selectedTrailerTypeID ? false : true}
+            disableButton={
+              selectedHookupID && selectedTrailerTypeID ? false : true
+            }
             btnLoading={loading}
           ></CustomButton>
         </View>
       </KeyboardAwareScrollView>
       <StandardModal visible={isShowModel}>
         <View>
-          <Text style={{ fontSize: fontSizes.large, fontWeight: "700", color: "black" }}>
+          <Text
+            style={{
+              fontSize: fontSizes.large,
+              fontWeight: "700",
+              color: "black",
+            }}
+          >
             {"Add Trailer"}
           </Text>
           <Text
@@ -623,7 +675,7 @@ function RegistrationTrailerDetail({ navigation }: Props) {
               color: "black",
               fontSize: fontSizes.medium,
               fontWeight: "400",
-              marginVertical: deviceHeight / 30
+              marginVertical: deviceHeight / 30,
             }}
           >
             {"Are you sure want to add another Trailer?"}
@@ -633,12 +685,13 @@ function RegistrationTrailerDetail({ navigation }: Props) {
               <TouchableOpacity
                 onPress={async () => {
                   const userDetail = await storage.get("userData");
-                  const updateOnbardingStatusResponse = await updateOnbardingStatus({
-                    user_id: userDetail.user_id,
-                    is_onboard_pending: 2,
-                    completed_step: 2,
-                    is_welcome_screen_viewed: 2
-                  });
+                  const updateOnbardingStatusResponse =
+                    await updateOnbardingStatus({
+                      user_id: userDetail.user_id,
+                      is_onboard_pending: 2,
+                      completed_step: 2,
+                      is_welcome_screen_viewed: 2,
+                    });
                   navigation.navigate("RegistrationTypesCargoDetailScreen");
                   setisShowModel(false);
                 }}
@@ -647,7 +700,7 @@ function RegistrationTrailerDetail({ navigation }: Props) {
                   paddingHorizontal: 20,
                   borderRadius: 30,
                   borderWidth: 1,
-                  borderColor: "#B60F0F"
+                  borderColor: "#B60F0F",
                 }}
               >
                 <Text
@@ -655,7 +708,7 @@ function RegistrationTrailerDetail({ navigation }: Props) {
                     color: "#B60F0F",
                     textAlign: "center",
                     fontSize: fontSizes.medium,
-                    fontWeight: "600"
+                    fontWeight: "600",
                   }}
                 >
                   Next
@@ -667,9 +720,9 @@ function RegistrationTrailerDetail({ navigation }: Props) {
               <TouchableOpacity
                 onPress={async () => {
                   let value = trailerTypeConfig;
-                  const newUsers = value.offloadEquipments.map(user => ({
+                  const newUsers = value.offloadEquipments.map((user) => ({
                     ...user,
-                    isSelected: false // just for example
+                    isSelected: false, // just for example
                   }));
                   value.offloadEquipments = newUsers;
                   settrailerTypeConfig({ ...value });
@@ -687,7 +740,7 @@ function RegistrationTrailerDetail({ navigation }: Props) {
                   backgroundColor: colors1.background,
                   paddingVertical: 15,
                   paddingHorizontal: 20,
-                  borderRadius: 30
+                  borderRadius: 30,
                 }}
               >
                 <Text
@@ -695,7 +748,7 @@ function RegistrationTrailerDetail({ navigation }: Props) {
                     textAlign: "center",
                     fontSize: fontSizes.medium,
                     fontWeight: "600",
-                    color: colors1.white
+                    color: colors1.white,
                   }}
                 >
                   {"Add"}
@@ -726,23 +779,23 @@ type Styles = {
 
 const styles = StyleSheet.create<Styles>({
   name: {
-    fontSize: 12
+    fontSize: 12,
   },
   container: {
     backgroundColor: "white",
-    flex: 1
+    flex: 1,
     // paddingHorizontal: STANDARD_PADDING
   },
   dropdown3BtnStyle: {
     width: "100%",
-    paddingHorizontal: 0
+    paddingHorizontal: 0,
   },
   dropdown3BtnChildStyle: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#F5F4F7"
+    backgroundColor: "#F5F4F7",
   },
   dropdown3BtnImage: { width: 45, height: 45, resizeMode: "cover" },
   dropdown3BtnTxt: {
@@ -750,20 +803,20 @@ const styles = StyleSheet.create<Styles>({
     color: "#000000",
     // textAlign: 'center',
     fontWeight: "600",
-    fontSize: fontSizes.regular
+    fontSize: fontSizes.regular,
   },
   dropdown3DropdownStyle: { backgroundColor: "#EFEFEF", borderRadius: 5 },
   dropdown3RowStyle: {
     // backgroundColor: 'slategray',
     borderBottomColor: "#EFEFEF",
-    height: 50
+    height: 50,
   },
   dropdown3RowChildStyle: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingHorizontal: 15
+    paddingHorizontal: 15,
   },
   dropdownRowImage: { width: 45, height: 45, resizeMode: "contain" },
   dropdown3RowTxt: {
@@ -771,7 +824,7 @@ const styles = StyleSheet.create<Styles>({
     fontWeight: "500",
     fontSize: 18,
     // marginHorizontal: 12,
-    flex: 1
+    flex: 1,
   },
   textInputView: {
     paddingHorizontal: deviceWidth / 20,
@@ -787,8 +840,8 @@ const styles = StyleSheet.create<Styles>({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     marginHorizontal: 15,
-    elevation: 3
-  }
+    elevation: 3,
+  },
 });
 
-export default withNavigation(RegistrationTrailerDetail);
+export default RegistrationTrailerDetailScreen;

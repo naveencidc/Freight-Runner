@@ -102,7 +102,7 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
   const [coordinates, setCoordinates] = useState<Array>({});
   const global: any = useContext(MyContext);
   const [currentLocation, setCurrentLocation] = useState(
-    navigation.state.params?.userCurrentLocation
+    route.params?.userCurrentLocation
   );
   const [selectedSortType, setselectedSortType] = useState("Latest");
   const [refreshing, isRefreshing] = useState(false);

@@ -26,6 +26,7 @@ import RegistrationPersonalDetailScreen from "../screens/Registeration/Registrat
 import RegistrationUnderReviewScreen from "../screens/Registeration/RegistrationUnderReviewScreen";
 import RegistrationRejectedScreen from "../screens/Registeration/RegistrationRejectedScreen";
 import RegistrationTruckDetailScreen from "../screens/Registeration/RegistrationTruckDetailScreen";
+import RegistrationTrailerDetailScreen from "../screens/Registeration/RegistrationTrailerDetailScreen";
 
 export type RootStackParamList = {
   splash: undefined;
@@ -76,6 +77,11 @@ const MainNavigator = () => {
         <RootStack.Screen
           name="RegistrationTruckDetailScreen"
           component={RegistrationTruckDetailScreen}
+        />
+
+        <RootStack.Screen
+          name="RegistrationTrailerDetailScreen"
+          component={RegistrationTrailerDetailScreen}
         />
         <RootStack.Screen
           name="RegistrationServiceAreasScreen"
