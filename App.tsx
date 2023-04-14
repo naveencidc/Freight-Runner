@@ -33,6 +33,9 @@ import Snackbar from "./app/components/Snackbar";
 import MainNavigator from "./app/routes/MainNavigator";
 import { request, PERMISSIONS } from "react-native-permissions";
 import { PLATFORM } from "./app/styles/globalStyles";
+import UploadDialog from "./app/components/UploadDialog";
+import { showMessage } from "react-native-flash-message";
+import FlashMessage from "react-native-flash-message";
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === "dark";
@@ -69,6 +72,8 @@ function App(): JSX.Element {
           )}
         </SnackbarContext.Consumer>
       </SnackbarProvider>
+      <UploadDialog />
+      <FlashMessage position="top" />
     </MyContextProvider>
   );
 }

@@ -465,6 +465,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
                   showsText={true}
                   color={"green"}
                   direction="clockwise"
+                  fill="white"
                 />
               ) : (
                 <View>

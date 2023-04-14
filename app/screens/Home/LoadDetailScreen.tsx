@@ -2783,17 +2783,19 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
             {loadDetail.status === 3 &&
             !loadDetail?.LoadButtonFlagsforPartner?.enablePickup ? (
               <View>
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 10,
-                    fontSize: 12,
-                    color: "gray",
-                  }}
-                >
-                  Above trigger point would be enabled only on or before 3 hours
-                  of Pickup time scheduled
-                </Text>
+                <View>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      marginTop: 10,
+                      fontSize: 12,
+                      color: "gray",
+                    }}
+                  >
+                    Above trigger point would be enabled only on or before{" "}
+                    {loadDetail.pickupWaitingTime} h:mm of Pickup time scheduled
+                  </Text>
+                </View>
               </View>
             ) : null}
 

@@ -20,6 +20,8 @@ import BoardIcon from "react-native-vector-icons/AntDesign";
 import colors from "../styles/colors";
 import CommunityNavigator from "./CommunityNavigator";
 import { fontSizes } from "../styles/globalStyles";
+import JobList from "../screens/Jobs/JobList";
+import LoadBoardScreen from "../screens/Home/LoadBoardScreen";
 
 export type BottomTabParamList = {
   login: undefined;
@@ -103,20 +105,20 @@ const BottomTabNavigator = () => {
           tabBarLabelPosition: "below-icon",
         }}
       />
-      {/* <Tab.Screen
-          name="My Jobs"
-          component={RecipientsNavigator}
-          options={{
-            tabBarLabelPosition: "below-icon",
-          }}
-        /> */}
-      {/* <Tab.Screen
-          name="Load Board"
-          component={ContentNavigator}
-          options={{
-            tabBarLabelPosition: "below-icon",
-          }}
-        /> */}
+      <Tab.Screen
+        name="My Jobs"
+        component={JobList}
+        options={{
+          tabBarLabelPosition: "below-icon",
+        }}
+      />
+      <Tab.Screen
+        name="Load Board"
+        component={LoadBoardScreen}
+        options={{
+          tabBarLabelPosition: "below-icon",
+        }}
+      />
       <Tab.Screen
         name="Community"
         component={CommunityNavigator}

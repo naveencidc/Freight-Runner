@@ -777,6 +777,27 @@ export const getBankAccountToken = async (config: {
     }
   );
 };
+export const getCardToken = async (config: {
+  name: string;
+  number: string;
+  expMonth: Number;
+  expYear: Number;
+  cvc: string;
+}) => {
+  const { name, number, expMonth, expYear, cvc } = config;
+  return await axios.post(
+    "https://api.stripe.com/v1/tokens",
+    `card[number]=${number}&card[exp_month]=${expMonth}&card[exp_year]=${expYear}&card[cvc]=${cvc}&card[name]=${name}`,
+    {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        Authorization: `Bearer ${Config.STRIPE_SECRET_KEY}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        offset: new Date().getTimezoneOffset(),
+      },
+    }
+  );
+};
 
 export const createPersonalBankAccount = (values: {
   userId: string;

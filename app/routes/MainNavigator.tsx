@@ -27,6 +27,22 @@ import RegistrationUnderReviewScreen from "../screens/Registeration/Registration
 import RegistrationRejectedScreen from "../screens/Registeration/RegistrationRejectedScreen";
 import RegistrationTruckDetailScreen from "../screens/Registeration/RegistrationTruckDetailScreen";
 import RegistrationTrailerDetailScreen from "../screens/Registeration/RegistrationTrailerDetailScreen";
+import SettingsList from "../screens/Home/settings/SettingsList";
+import ChangePassword from "../screens/Home/settings/ChangePassword";
+import TransactionList from "../screens/TransactionList";
+import TransactionDetail from "../screens/Home/TransactionDetail";
+import WithdrawFunds from "../screens/Home/settings/WithdrawFunds";
+import Payouts from "../screens/Home/Payouts";
+import Premium from "../screens/Home/settings/Premium";
+import PremiumPricing from "../screens/Home/settings/PremiumPricing";
+import SelectPaymentMethod from "../screens/Home/settings/SelectPaymentMethod";
+import PaymentMethodsList from "../screens/Home/PaymentMethodsList";
+import PayoutAccounts from "../screens/Home/PayoutAccounts";
+import Accounts from "../screens/Home/Accounts";
+import BankAccountDetails from "../screens/Home/BankAccountDetails";
+import AccountDetail from "../screens/Home/AccountDetail";
+import AddAccounts from "../screens/Home/AddAccounts";
+import AddCardDetail from "../screens/Home/AddCardDetail";
 
 export type RootStackParamList = {
   splash: undefined;
@@ -117,6 +133,35 @@ const MainNavigator = () => {
           name="BusinessInfoAndAddress"
           component={BusinessInfoAndAddress}
         />
+
+        <RootStack.Screen name="SettingsList" component={SettingsList} />
+        <RootStack.Screen name="ChangePassword" component={ChangePassword} />
+        <RootStack.Screen name="TransactionList" component={TransactionList} />
+        <RootStack.Screen
+          name="TransactionDetail"
+          component={TransactionDetail}
+        />
+        <RootStack.Screen name="WithdrawFunds" component={WithdrawFunds} />
+        <RootStack.Screen name="Payouts" component={Payouts} />
+        <RootStack.Screen name="Premium" component={Premium} />
+        <RootStack.Screen name="PremiumPricing" component={PremiumPricing} />
+        <RootStack.Screen
+          name="SelectPaymentMethod"
+          component={SelectPaymentMethod}
+        />
+        <RootStack.Screen
+          name="PaymentMethodsList"
+          component={PaymentMethodsList}
+        />
+        <RootStack.Screen name="PayoutAccounts" component={PayoutAccounts} />
+        <RootStack.Screen name="Accounts" component={Accounts} />
+        <RootStack.Screen
+          name="BankAccountDetails"
+          component={BankAccountDetails}
+        />
+        <RootStack.Screen name="AccountDetail" component={AccountDetail} />
+        <RootStack.Screen name="AddAccounts" component={AddAccounts} />
+        <RootStack.Screen name="AddCardDetail" component={AddCardDetail} />
       </RootStack.Navigator>
     </NavigationContainer>
   );
