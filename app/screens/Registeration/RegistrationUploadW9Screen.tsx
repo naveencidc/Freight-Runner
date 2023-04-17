@@ -22,40 +22,37 @@ import {
   Image,
   PermissionsAndroid,
   ScrollView,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
-import { CheckBox, colors } from "react-native-elements";
-import { Dropdown } from "react-native-material-dropdown";
-import { withNavigation } from "react-navigation";
 import { Formik } from "formik";
 import * as yup from "yup";
 import {
-  Button,
   CustomButton,
-  LinkButton,
   Logo,
   Screen,
   SimpleInput as Input,
   Text,
-  View
+  View,
 } from "../../components";
-import { SessionContext } from "../../context/SessionContextProvider";
-import { NavigationProps } from "../../navigation";
-import { getTrailerTypeList, getW9Form, getPresignedUrl } from "../../services/registrationService";
-import { fontSizes, STANDARD_PADDING } from "../../styles/globalStyles";
-import { extractError } from "../../utilities/errorUtilities";
+import {
+  getTrailerTypeList,
+  getW9Form,
+  getPresignedUrl,
+} from "../../services/registrationService";
 import colors1 from "../../styles/colors";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import FastImage from "react-native-fast-image";
 import ActionSheet from "react-native-actionsheet";
 import ImagePicker from "react-native-image-crop-picker";
 import DocumentPicker from "react-native-document-picker";
 import Pdf from "react-native-pdf";
-import RNFetchBlob from "rn-fetch-blob";
+import RNFetchBlob from "react-native-blob-util";
 import fs from "react-native-fs";
 import { decode } from "base64-arraybuffer";
 import { uploadDocument, uploadToS3 } from "../../services/uploadS3Service";
-import { SnackbarContext, SnackbarContextType } from "../../context/SnackbarContext";
+import {
+  SnackbarContext,
+  SnackbarContextType,
+} from "../../context/SnackbarContext";
 import storage from "../../helpers/storage";
 var axios = require("axios");
 import { MyContext } from ".././../../app/context/MyContextProvider";
@@ -63,13 +60,11 @@ import { MyContext } from ".././../../app/context/MyContextProvider";
 const deviceWidth = Dimensions.get("window").width;
 const deviceHeight = Dimensions.get("window").height;
 
-type Props = NavigationProps;
-
-function RegistrationUploadW9({ navigation }: Props) {
-  const { setUser, setSetup, signOut } = useContext(SessionContext);
+function RegistrationUploadW9Screen({ navigation, route }) {
   const [w_9Details, setw_9Details] = useState({});
   const [loading, setLoading] = useState(false);
-  const { setMessage, setVisible } = useContext<SnackbarContextType>(SnackbarContext);
+  const { setMessage, setVisible } =
+    useContext<SnackbarContextType>(SnackbarContext);
   const global: any = useContext(MyContext);
   useEffect(() => {
     try {
@@ -91,7 +86,9 @@ function RegistrationUploadW9({ navigation }: Props) {
     const { config, fs } = RNFetchBlob;
     let option = {};
     let dirs =
-      Platform.OS === "ios" ? RNFetchBlob.fs.dirs.DocumentDir : RNFetchBlob.fs.dirs.DownloadDir;
+      Platform.OS === "ios"
+        ? RNFetchBlob.fs.dirs.DocumentDir
+        : RNFetchBlob.fs.dirs.DownloadDir;
     let title = "w_9_form";
     let date = new Date();
     if (Platform.OS === "android") {
@@ -103,14 +100,14 @@ function RegistrationUploadW9({ navigation }: Props) {
           useDownloadManager: true,
           notification: true,
           title: `${title}.pdf`,
-          path: `${dirs}/${title}`
-        }
+          path: `${dirs}/${title}`,
+        },
       };
     } else {
       option = {
         fileCache: true,
         appendExt: "pdf",
-        title: `${title}.pdf`
+        title: `${title}.pdf`,
       };
     }
     console.log("------gggggggg---,", option);
@@ -126,7 +123,7 @@ function RegistrationUploadW9({ navigation }: Props) {
     // };
     let downloadTask = RNFetchBlob.config(option).fetch(
       "GET",
-      "https://dev-freight-runner.s3.us-east-2.amazonaws.com/1654860712922",
+      "https://www.africau.edu/images/default/sample.pdf",
       {}
     );
     downloadTask
@@ -135,7 +132,7 @@ function RegistrationUploadW9({ navigation }: Props) {
         percentComplete = percentComplete.toFixed(0);
         console.log("-=-=-=-downloader-=-=", percentComplete);
       })
-      .then(cache => {
+      .then((cache) => {
         if (Platform.OS === "ios") {
           RNFetchBlob.ios.openDocument(cache.data);
         } else {
@@ -143,7 +140,7 @@ function RegistrationUploadW9({ navigation }: Props) {
         }
         downloadTask = undefined;
       })
-      .catch(e => {
+      .catch((e) => {
         console.log("Error Download ", e);
         downloadTask = undefined;
       });
@@ -165,10 +162,14 @@ function RegistrationUploadW9({ navigation }: Props) {
       downloadHistory();
     } else {
       try {
-        PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, {
-          title: "Storage Permission Required",
-          message: "This app needs access to your storage to download file"
-        }).then(granted => {
+        PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: "Storage Permission Required",
+            message: "This app needs access to your storage to download file",
+          }
+        ).then((granted) => {
+          console.log("---ASASASAS", granted);
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
             //Once user grant the permission start downloading
             console.log("Storage Permission Granted.");
@@ -197,7 +198,7 @@ function RegistrationUploadW9({ navigation }: Props) {
     const finalUploadresponse = await uploadDocument({
       user_id: userDetail.user_id,
       document_type: "w9-form",
-      file_path: item.filename
+      file_path: item.filename,
     });
     console.log("fghjk", finalUploadresponse);
     if (finalUploadresponse.status === 201) {
@@ -218,7 +219,7 @@ function RegistrationUploadW9({ navigation }: Props) {
     try {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.pdf],
-        allowMultiSelection: false
+        allowMultiSelection: false,
       });
       console.log("------document picker---", res);
       if (res) {
@@ -231,7 +232,7 @@ function RegistrationUploadW9({ navigation }: Props) {
           const finalUploadresponse = await uploadDocument({
             user_id: userDetail.user_id,
             document_type: "w9-form",
-            file_path: res.name
+            file_path: res.name,
           });
           console.log("fghjk", finalUploadresponse);
           if (finalUploadresponse.status === 201) {
@@ -261,14 +262,20 @@ function RegistrationUploadW9({ navigation }: Props) {
     <SafeAreaView style={styles.container}>
       {/* <KeyboardAwareScrollView keyboardShouldPersistTaps="handled"> */}
       <View style={{ flex: 1 }}>
-        <View style={{ backgroundColor: "black", paddingTop: deviceHeight / 15, paddingLeft: 20 }}>
+        <View
+          style={{
+            backgroundColor: "black",
+            paddingTop: deviceHeight / 15,
+            paddingLeft: 20,
+          }}
+        >
           <FastImage
             resizeMode={"contain"}
             source={require("../../../app/assets/images/fr_new_logo.png")}
             style={{
               // alignSelf: "center",
               width: 220,
-              height: 100
+              height: 100,
             }}
           />
         </View>
@@ -279,7 +286,7 @@ function RegistrationUploadW9({ navigation }: Props) {
               marginHorizontal: 60,
               borderColor: "black",
               borderWidth: 1,
-              marginVertical: 20
+              marginVertical: 20,
             }}
           >
             <TouchableOpacity
@@ -293,7 +300,7 @@ function RegistrationUploadW9({ navigation }: Props) {
                 right: 10,
                 top: 10,
                 padding: 10,
-                borderRadius: 5
+                borderRadius: 5,
               }}
             >
               <FastImage
@@ -302,11 +309,12 @@ function RegistrationUploadW9({ navigation }: Props) {
                 style={{
                   // alignSelf: "center",
                   width: 30,
-                  height: 35
+                  height: 35,
                 }}
               />
             </TouchableOpacity>
             <Pdf
+              trustAllCerts={false}
               source={{ uri: `${w_9Details.file_path}`, cache: true }}
               onLoadComplete={(numberOfPages, filePath) => {
                 console.log(`Number of pages: ${numberOfPages}`);
@@ -314,10 +322,10 @@ function RegistrationUploadW9({ navigation }: Props) {
               onPageChanged={(page, numberOfPages) => {
                 console.log(`Current page: ${page}`);
               }}
-              onError={error => {
+              onError={(error) => {
                 console.log(error);
               }}
-              onPressLink={uri => {
+              onPressLink={(uri) => {
                 console.log(`Link pressed: ${uri}`);
               }}
               style={{ backgroundColor: "white", height: deviceHeight / 2.6 }}
@@ -332,7 +340,7 @@ function RegistrationUploadW9({ navigation }: Props) {
               borderColor: "#9895F2",
               borderWidth: 1.5,
               borderStyle: "dashed",
-              borderRadius: 5
+              borderRadius: 5,
               // paddingVertical:10
             }}
           >
@@ -344,17 +352,27 @@ function RegistrationUploadW9({ navigation }: Props) {
                   // alignSelf: "center",
                   width: 60,
                   height: 60,
-                  paddingVertical: deviceHeight / 40
+                  paddingVertical: deviceHeight / 40,
                 }}
               />
-              <Text style={{ textAlign: "center", color: "#858C97", paddingTop: 10, fontSize: 14 }}>
-                Hey, download the W-9 by clicking the above button.Fill in manually, affix your
-                signature and upload it back here in!.
+              <Text
+                style={{
+                  textAlign: "center",
+                  color: "#858C97",
+                  paddingTop: 10,
+                  fontSize: 14,
+                }}
+              >
+                Hey, download the W-9 by clicking the above button.Fill in
+                manually, affix your signature and upload it back here in!.
               </Text>
             </View>
 
             <View
-              style={{ paddingHorizontal: deviceWidth / 10, paddingVertical: deviceHeight / 45 }}
+              style={{
+                paddingHorizontal: deviceWidth / 10,
+                paddingVertical: deviceHeight / 45,
+              }}
             >
               <CustomButton
                 titleColor={colors1.white}
@@ -368,9 +386,22 @@ function RegistrationUploadW9({ navigation }: Props) {
               ></CustomButton>
             </View>
           </View>
-          <View style={{ alignItems: "center", justifyContent: "center", marginVertical: 10 }}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 10 }}>
-              <Text style={{ fontWeight: "700", textDecorationLine: "underline" }}>{"Back"}</Text>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              marginVertical: 10,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={{ padding: 10 }}
+            >
+              <Text
+                style={{ fontWeight: "700", textDecorationLine: "underline" }}
+              >
+                {"Back"}
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -382,7 +413,7 @@ function RegistrationUploadW9({ navigation }: Props) {
         title={"Select"}
         options={["Camera", "Gallery", "Document", "Cancel"]}
         cancelButtonIndex={3}
-        onPress={async index => {
+        onPress={async (index) => {
           if (index === 0) {
             ImagePicker.openCamera({
               // width: 300,
@@ -397,8 +428,11 @@ function RegistrationUploadW9({ navigation }: Props) {
                   uploadCompleted(item);
                 }
               })
-              .catch(err => {
-                global.myDispatch({ type: "HIDE_UPLOAD_DAILOG", payload: true });
+              .catch((err) => {
+                global.myDispatch({
+                  type: "HIDE_UPLOAD_DAILOG",
+                  payload: true,
+                });
                 setLoading(false);
                 if (err.message !== "User cancelled image selection") {
                   Alert.alert("Error", "There was an error. Please try again.");
@@ -410,7 +444,7 @@ function RegistrationUploadW9({ navigation }: Props) {
               mediaType: "photo",
               cropping: false,
               maxFiles: 5,
-              compressImageQuality: Platform.OS === "ios" ? 0.4 : 0.8
+              compressImageQuality: Platform.OS === "ios" ? 0.4 : 0.8,
             })
               .then(async (item: any) => {
                 if (!item.fileName) item.filename = item.path.split("/").pop();
@@ -421,8 +455,11 @@ function RegistrationUploadW9({ navigation }: Props) {
                 }
               })
 
-              .catch(err => {
-                global.myDispatch({ type: "HIDE_UPLOAD_DAILOG", payload: true });
+              .catch((err) => {
+                global.myDispatch({
+                  type: "HIDE_UPLOAD_DAILOG",
+                  payload: true,
+                });
                 setLoading(false);
                 if (err.message !== "User cancelled image selection") {
                   Alert.alert("Error", "There was an error. Please try again.");
@@ -444,9 +481,9 @@ type Styles = {
 const styles = StyleSheet.create<Styles>({
   container: {
     backgroundColor: "white",
-    flex: 1
+    flex: 1,
     // paddingHorizontal: STANDARD_PADDING
-  }
+  },
 });
 
-export default withNavigation(RegistrationUploadW9);
+export default RegistrationUploadW9Screen;

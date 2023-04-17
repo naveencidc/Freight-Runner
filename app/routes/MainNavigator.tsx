@@ -43,6 +43,8 @@ import BankAccountDetails from "../screens/Home/BankAccountDetails";
 import AccountDetail from "../screens/Home/AccountDetail";
 import AddAccounts from "../screens/Home/AddAccounts";
 import AddCardDetail from "../screens/Home/AddCardDetail";
+import RegistrationApprovedScreen from "../screens/Registeration/RegistrationApprovedScreen";
+import RegistrationUploadW9Screen from "../screens/Registeration/RegistrationUploadW9Screen";
 
 export type RootStackParamList = {
   splash: undefined;
@@ -103,6 +105,15 @@ const MainNavigator = () => {
           name="RegistrationServiceAreasScreen"
           component={RegistrationServiceAreasScreen}
         />
+        <RootStack.Screen
+          name="RegistrationApprovedScreen"
+          component={RegistrationApprovedScreen}
+        />
+        <RootStack.Screen
+          name="RegistrationUploadW9Screen"
+          component={RegistrationUploadW9Screen}
+        />
+
         <RootStack.Screen
           name="auth"
           component={AuthNavigator}

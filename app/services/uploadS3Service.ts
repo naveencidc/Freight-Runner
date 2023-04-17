@@ -42,17 +42,14 @@ export const getProfileImage = (fileName: string) => {
 export const uploadToS3 = async (
   selectedObject: object,
   type: string,
-  global: any
+  global
 ) => {
-  console.log("-----FGFGFG", selectedObject);
   let fileName =
     type === "image" ? selectedObject.filename : selectedObject.name;
   let file = type === "image" ? selectedObject.path : selectedObject.uri;
   const signedUrl = await getPresignedUrl(fileName);
-  console.log("-------HHHH", signedUrl.data.url);
   global.myDispatch({ type: "UPLOADING_STARTED", payload: true });
   const base64 = await fs.readFile(file, "base64");
-  console.log("-------base64", base64);
   const uploadFile = await axios({
     method: "PUT",
     url: signedUrl.data.url,
@@ -160,7 +157,7 @@ export const uploadDocument = (config: {
     endpoint: `partner/${user_id}/upload-document`,
     data: {
       document_type: document_type,
-      file_path: file_path,
+      file_path: [file_path],
     },
   });
 };
