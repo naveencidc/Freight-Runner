@@ -1,4 +1,4 @@
-package com.freightrunner;
+package com.app.freightrunner;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

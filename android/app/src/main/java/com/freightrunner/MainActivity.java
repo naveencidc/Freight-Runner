@@ -1,4 +1,4 @@
-package com.freightrunner;
+package com.app.freightrunner;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

@@ -94,9 +94,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.freightrunner"
+    namespace "com.app.freightrunner"
     defaultConfig {
-        applicationId "com.freightrunner"
+        applicationId "com.app.freightrunner"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
