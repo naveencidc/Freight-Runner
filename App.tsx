@@ -36,6 +36,7 @@ import { PLATFORM } from "./app/styles/globalStyles";
 import UploadDialog from "./app/components/UploadDialog";
 import { showMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
+import SplashScreen from "react-native-splash-screen";
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === "dark";
@@ -44,6 +45,10 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
   useEffect(() => {
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 2000);
+
     try {
       async function fetchStateListAPI() {
         if (PLATFORM === "ios") {
