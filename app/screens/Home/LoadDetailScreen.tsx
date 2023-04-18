@@ -2783,19 +2783,37 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
             {loadDetail.status === 3 &&
             !loadDetail?.LoadButtonFlagsforPartner?.enablePickup ? (
               <View>
-                <View>
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      marginTop: 10,
-                      fontSize: 12,
-                      color: "gray",
-                    }}
-                  >
-                    Above trigger point would be enabled only on or before{" "}
-                    {loadDetail.pickupWaitingTime} h:mm of Pickup time scheduled
-                  </Text>
-                </View>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 10,
+                    fontSize: 12,
+                    color: "gray",
+                  }}
+                >
+                  Above trigger point would be enabled only on or before{" "}
+                  {loadDetail.pickupWaitingTime?.split(".")[0] > 0 ? (
+                    <Text>
+                      {loadDetail.pickupWaitingTime?.split(".")[0] > 1
+                        ? `${loadDetail.pickupWaitingTime?.split(".")[0]} hours`
+                        : `${
+                            loadDetail.pickupWaitingTime?.split(".")[0]
+                          } hour`}{" "}
+                    </Text>
+                  ) : null}
+                  {loadDetail.pickupWaitingTime?.split(".")[1] > 0 ? (
+                    <Text>
+                      {loadDetail.pickupWaitingTime?.split(".")[1] > 1
+                        ? `${
+                            loadDetail.pickupWaitingTime?.split(".")[1]
+                          } minutes`
+                        : `${
+                            loadDetail.pickupWaitingTime?.split(".")[0]
+                          } minute`}
+                    </Text>
+                  ) : null}{" "}
+                  of Pickup time scheduled
+                </Text>
               </View>
             ) : null}
 
