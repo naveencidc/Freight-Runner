@@ -111,7 +111,6 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
   const [searchText, setsearchText] = useState("");
   const [backPressedCount, setBackPressedCount] = useState(0);
   const [isShowModal, setisShowModal] = useState(false);
-
   let interval: any;
   // const [backCount, setBackCount] = useState(0);
   let backCount = 0;
@@ -210,11 +209,16 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
   }, []);
 
   useEffect(() => {
-    if (loadDetail?.isFromNotification) {
-      navigation.navigate("LoadDetailScreen", {
-        loadDetail: { load_id: loadDetail.load_id },
-      });
+    async function fetch() {
+      const notificationPayload: any = await storage.get("notificationPayload");
+      if (notificationPayload?.isFromNotification) {
+        navigation.navigate("LoadDetailScreen", {
+          loadDetail: { load_id: notificationPayload.load_id },
+        });
+        await storage.remove("notificationPayload");
+      }
     }
+    fetch();
   }, []);
 
   useEffect(() => {

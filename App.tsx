@@ -37,9 +37,16 @@ import UploadDialog from "./app/components/UploadDialog";
 import { showMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
 import SplashScreen from "react-native-splash-screen";
+import OneSignal from "react-native-onesignal";
+import Config from "react-native-config";
+import { navigate } from "./app/utils/Utility";
+import storage from "./app/helpers/storage";
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === "dark";
+
+  // OneSignal Initialization
+  OneSignal.setAppId(Config.ONESIGNAL_APP_ID);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -51,6 +58,57 @@ function App(): JSX.Element {
 
     try {
       async function fetchStateListAPI() {
+        // promptForPushNotificationsWithUserResponse will show the native iOS or Android notification permission prompt.
+        // We recommend removing the following code and instead using an In-App Message to prompt for notification permission (See step 8)
+        OneSignal.promptForPushNotificationsWithUserResponse();
+        const device: any = await OneSignal.getDeviceState();
+        await storage.set("deviceId", device.userId);
+
+        //Method for handling notifications received while app in foreground
+        OneSignal.setNotificationWillShowInForegroundHandler(
+          (notificationReceivedEvent) => {
+            console.log(
+              "OneSignal: notification will show in foreground:",
+              notificationReceivedEvent
+            );
+            let notification: any = notificationReceivedEvent.getNotification();
+            const data = notification.additionalData;
+            const loadId = notification?.additionalData?.load_id;
+
+            showMessage({
+              message: notification.title,
+              description: notification.body,
+              type: "default",
+              hideOnPress: true,
+              autoHide: true,
+              duration: 5000,
+              onPress: () => {
+                if (loadId) {
+                  navigate("LoadDetailScreen", {
+                    loadDetail: { load_id: loadId },
+                  });
+                }
+              },
+            });
+            // Complete with null means don't show a notification.
+            notificationReceivedEvent.complete(notification);
+          }
+        );
+
+        //Method for handling notifications opened
+        let notificationData: any;
+        OneSignal.setNotificationOpenedHandler(async (notification) => {
+          let notificationMessgae: any = notification.notification;
+          const loadId = notificationMessgae?.additionalData?.load_id;
+          if (loadId) {
+            await storage.set("notificationPayload", {
+              load_id: loadId,
+              isFromNotification: true,
+            });
+            navigate("splash", {});
+          }
+        });
+
         if (PLATFORM === "ios") {
           await request(PERMISSIONS.IOS.CAMERA);
           await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
