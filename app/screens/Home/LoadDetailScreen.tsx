@@ -30,7 +30,6 @@ import {
   Linking,
   SafeAreaView,
 } from "react-native";
-// import { SafeAreaView } from "react-navigation";
 import HeaderWithBack from "../../components/HeaderWithBack";
 import {
   createBid,
@@ -41,10 +40,6 @@ import Spinner from "react-native-spinkit";
 import colors from "../../styles/colors";
 import { fontSizes } from "../../styles/globalStyles";
 import { MyContext } from "../../../app/context/MyContextProvider";
-import { GeoPosition } from "react-native-geolocation-service";
-import { getCurrentLocation } from "../../utilities/gpsUtilities";
-// import MapboxGL from "@react-native-mapbox-gl/maps";
-import Icon from "react-native-vector-icons/FontAwesome5Pro";
 import FastImage from "react-native-fast-image";
 import StandardModal from "../../components/StandardModal";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -61,7 +56,6 @@ import {
   updateStartWaitingTime,
 } from "../../services/jobService";
 var moment = require("moment-timezone");
-const axios = require("axios");
 import ActionSheet from "react-native-actionsheet";
 import ImagePicker from "react-native-image-crop-picker";
 import {
@@ -82,15 +76,14 @@ import {
   getUserProfileDetails,
   partnerRating,
 } from "../../services/userService";
-// import TimeAgo from "react-native-timeago";
 import ImageModal from "../../components/ImageModal";
 import RNCalendarEvents from "react-native-calendar-events";
 import StarRating from "react-native-star-rating";
 import { showMessage } from "react-native-flash-message";
 import ShimmerPlaceHolder from "react-native-shimmer-placeholder";
 import LinearGradient from "react-native-linear-gradient";
-import Config from "react-native-config";
 import TimeAgo from "../../components/TimeAgo";
+import MapWithDirection from "../../components/MapWithDirection";
 
 // const { MapView, Camera, UserLocation, PointAnnotation } = MapboxGL;
 const ratingText = ["", "Poor", "Average", "Good", "Excellent", "Outstanding"];
@@ -98,22 +91,13 @@ type Props = { navigation: any };
 
 const deviceWidth = Dimensions.get("window").width;
 const deviceHeight = Dimensions.get("window").height;
-
-let currentPosition: GeoPosition;
-let features: any = {};
-let currentLocation: Object = {};
 let user: object = {};
 
 const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   let isFrom = route.params?.isFrom;
   let loadID = route.params?.loadDetail.load_id;
   let isFromShipment = route.params?.isFromShipment;
-  console.log("-ASASASASASSAS----", route.params?.loadDetail);
   const global: any = useContext(MyContext);
-  const [startcoordinates, setstartcoordinates] = useState([-100.0, 31.0]);
-  const [midcoordinates, setmidcoordinates] = useState([]);
-  const [endtcoordinates, setendtcoordinates] = useState([-100.0, 31.0]);
-  const [coordinates, setCoordinates] = useState<any>({});
   const [bidModalVisible, setbidModalVisible] = useState(false);
   const [isLoadDetailLoading, setisLoadDetailLoading] = useState(false);
   const [isAcceptLoading, setisAcceptLoading] = useState(false);
@@ -135,28 +119,6 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const [showToolTip, setshowToolTip] = useState(false);
   const [imageModelOpen, setImageModelOpen] = useState(false);
   const [selectedImageUrl, setselectedImageUrl] = useState("");
-  const [selectedCordinates, setSelectedCordinates] = useState<any>({
-    coords: {
-      latitude: "",
-      longitude: "",
-    },
-  });
-  const [routes, setRoute] = useState({
-    type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        properties: {},
-        geometry: {
-          type: "LineString",
-          coordinates: [
-            [-100.0, 31.0],
-            [-83.441162, 33.247875],
-          ],
-        },
-      },
-    ],
-  });
   const [ratings, setRating] = useState(0);
   const [frRatings, setfrRatings] = useState(0);
   const [openRatingModal, setOpenRatingModal] = useState(false);
@@ -177,6 +139,7 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const [imageLoading, setimageLoading] = useState(false);
   const [isShowAcceptModal, setisShowAcceptModal] = useState(false);
   const [textLineCount, settextLineCount] = useState(1);
+  const mapRef = useRef(null);
   /**
    * To get Updated profile Detail to allow driver to proced to load pickup
    */
@@ -187,7 +150,7 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       }
       fetchAPI();
     } catch (error) {
-      console.log("EROR_TRUCKS");
+      console.log("PROFILE_TRUCKS");
     }
   }, []);
 
@@ -572,47 +535,6 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       socket.off(`chat/${chatRoomid}`);
     };
   }, [chatRoomid]);
-  useEffect(() => {
-    // if (loadDetail?.origin_lng) {
-    //   axios
-    //     .get(
-    //       `https://api.mapbox.com/directions/v5/mapbox/driving/${loadDetail.origin_lng}%2C${loadDetail.origin_lat}%3B${loadDetail.destination_lng}%2C${loadDetail.destination_lat}?alternatives=true&geometries=geojson&language=en&overview=simplified&steps=true&access_token=${Config.MAPBOX_API_KEY}`
-    //     )
-    //     .then((resp) => {
-    //       let coordArray = resp.data.routes[0].geometry.coordinates;
-    //       setstartcoordinates(coordArray[0]);
-    //       setmidcoordinates(
-    //         coordArray[Math.round((coordArray.length - 1) / 2)]
-    //       );
-    //       setendtcoordinates(coordArray[coordArray.length - 1]);
-    //       let tempObject = {
-    //         type: "FeatureCollection",
-    //         features: [
-    //           {
-    //             type: "Feature",
-    //             properties: {},
-    //             geometry: {
-    //               type: "LineString",
-    //               coordinates: resp.data.routes[0].geometry.coordinates,
-    //             },
-    //           },
-    //         ],
-    //       };
-    //       setRoute(tempObject);
-    //     });
-    // }
-
-    getCurrentLocation((position) => {
-      currentPosition = position;
-      setSelectedCordinates({
-        coords: {
-          latitude: currentPosition.coords.latitude,
-          longitude: currentPosition.coords.longitude,
-        },
-      });
-      setCoordinates(currentPosition);
-    });
-  }, [loadDetail.origin_lng]);
 
   const _acceptLoad = async () => {
     setisAcceptLoading(true);
@@ -1169,12 +1091,11 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       isFrom === "PickUpDetail"
         ? loadDetail.origin_city
         : loadDetail.destination_city;
-    const url = Platform.select({
+    const url: any = Platform.select({
       ios: `${scheme}${label}@${latLng}`,
       android: `${scheme}${latLng}(${label})`,
     });
-
-    Linking.openURL(url);
+    Linking.openURL(url.replace(/ /g, ""));
   };
 
   const _reSetMessageCount = () => {
@@ -1250,7 +1171,7 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
           });
           navigation.goBack();
         }}
-        isRightText={true}
+        isRightText={loadDetail.status === 3 ? true : false}
         rightText={loadDetail.status === 3 ? "Remainder" : "Support"}
         isFrom={"LoadDetail"}
         showCalender={loadDetail.status === 3 ? true : false}
@@ -1305,59 +1226,15 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       ) : (
         <View style={{ flex: 1 }}>
           <View style={{ flex: 1 }}>
-            {midcoordinates.length ? (
+            {loadDetail.origin_lat ? (
               <ImageBackground
                 style={{ flex: 0.8 }}
                 source={require("../../../app/assets/images/mapView.png")}
               >
-                {/* <MapboxGL.MapView
-                  // attributionEnabled={false}
-                  logoEnabled={false}
-                  // attributionEnabled={false}
-                  style={{
-                    flex: loadDetail?.status === 9 || loadDetail?.status === 10 ? 0.6 : 0.4
-                  }}
-                >
-                  <MapboxGL.Camera zoomLevel={4} centerCoordinate={startcoordinates} />
-                  <MapboxGL.PointAnnotation
-                    key="pointAnnotation"
-                    id="pointAnnotation"
-                    coordinate={startcoordinates}
-                  >
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        backgroundColor: "#000000",
-                        borderRadius: 50,
-                        borderColor: "#000000",
-                        borderWidth: 3
-                      }}
-                    />
-                  </MapboxGL.PointAnnotation>
-                  <MapboxGL.PointAnnotation
-                    key="endpointAnnotation"
-                    id="endpointAnnotation"
-                    coordinate={endtcoordinates}
-                  >
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        backgroundColor: "#6064de",
-                        borderRadius: 3,
-                        borderColor: "#6064de",
-                        borderWidth: 3
-                      }}
-                    />
-                  </MapboxGL.PointAnnotation>
-                  <MapboxGL.ShapeSource id="line1" shape={routes}>
-                    <MapboxGL.LineLayer
-                      id="linelayer1"
-                      style={{ lineColor: "#000000", lineWidth: 3 }}
-                    />
-                  </MapboxGL.ShapeSource>
-                </MapboxGL.MapView> */}
+                <MapWithDirection
+                  loadDetail={loadDetail}
+                  isFromLoaddetails={true}
+                ></MapWithDirection>
               </ImageBackground>
             ) : null}
 
@@ -1524,10 +1401,6 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                                   navigation.navigate("PickUpDetailScreen", {
                                     loadDetail: {
                                       ...loadDetail,
-                                      startcoordinates,
-                                      endtcoordinates,
-                                      midcoordinates,
-                                      routes,
                                     },
                                     isFrom: "PickUpDetail",
                                   });
@@ -1632,10 +1505,6 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                               navigation.navigate("PickUpDetailScreen", {
                                 loadDetail: {
                                   ...loadDetail,
-                                  startcoordinates,
-                                  endtcoordinates,
-                                  midcoordinates,
-                                  routes,
                                 },
                               });
                             }}

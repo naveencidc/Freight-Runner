@@ -41,6 +41,9 @@ import OneSignal from "react-native-onesignal";
 import Config from "react-native-config";
 import { navigate } from "./app/utils/Utility";
 import storage from "./app/helpers/storage";
+import { enableLatestRenderer } from "react-native-maps";
+
+enableLatestRenderer();
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === "dark";
@@ -58,6 +61,12 @@ function App(): JSX.Element {
 
     try {
       async function fetchStateListAPI() {
+        if (PLATFORM === "ios") {
+          await request(PERMISSIONS.IOS.CAMERA);
+          await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+        } else {
+          await request(PERMISSIONS.ANDROID.CAMERA);
+        }
         // promptForPushNotificationsWithUserResponse will show the native iOS or Android notification permission prompt.
         // We recommend removing the following code and instead using an In-App Message to prompt for notification permission (See step 8)
         OneSignal.promptForPushNotificationsWithUserResponse();
@@ -108,13 +117,6 @@ function App(): JSX.Element {
             navigate("splash", {});
           }
         });
-
-        if (PLATFORM === "ios") {
-          await request(PERMISSIONS.IOS.CAMERA);
-          await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-        } else {
-          await request(PERMISSIONS.ANDROID.CAMERA);
-        }
       }
       fetchStateListAPI();
     } catch (error) {}

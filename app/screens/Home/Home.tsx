@@ -131,6 +131,19 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
     }
   };
 
+  useEffect(() => {
+    async function fetch() {
+      const notificationPayload: any = await storage.get("notificationPayload");
+      if (notificationPayload?.isFromNotification) {
+        navigation.navigate("LoadDetailScreen", {
+          loadDetail: { load_id: notificationPayload.load_id },
+        });
+        await storage.remove("notificationPayload");
+      }
+    }
+    fetch();
+  }, []);
+
   /**
    * To update inprogress load if user have already
    */
@@ -206,19 +219,6 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
       console.log("Reached cleanup function");
       clearInterval(interval);
     };
-  }, []);
-
-  useEffect(() => {
-    async function fetch() {
-      const notificationPayload: any = await storage.get("notificationPayload");
-      if (notificationPayload?.isFromNotification) {
-        navigation.navigate("LoadDetailScreen", {
-          loadDetail: { load_id: notificationPayload.load_id },
-        });
-        await storage.remove("notificationPayload");
-      }
-    }
-    fetch();
   }, []);
 
   useEffect(() => {
