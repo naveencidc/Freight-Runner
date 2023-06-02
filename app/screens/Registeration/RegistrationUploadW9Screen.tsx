@@ -123,7 +123,7 @@ function RegistrationUploadW9Screen({ navigation, route }) {
     // };
     let downloadTask = RNFetchBlob.config(option).fetch(
       "GET",
-      "https://www.africau.edu/images/default/sample.pdf",
+      w_9Details.file_path,
       {}
     );
     downloadTask
@@ -225,29 +225,45 @@ function RegistrationUploadW9Screen({ navigation, route }) {
       if (res) {
         setLoading(true);
         global.myDispatch({ type: "UPLOADING_INIT", payload: true });
-        const response = await uploadToS3(res, "document", global);
+        const response = await uploadToS3(res[0], "document", global);
         console.log("----response s3--", response);
         if (response) {
           const userDetail = await storage.get("userData");
-          const finalUploadresponse = await uploadDocument({
+          await uploadDocument({
             user_id: userDetail.user_id,
             document_type: "w9-form",
-            file_path: res.name,
-          });
-          console.log("fghjk", finalUploadresponse);
-          if (finalUploadresponse.status === 201) {
-            global.myDispatch({ type: "UPLOADING_COMPLETED", payload: true });
-            global.myDispatch({ type: "HIDE_UPLOAD_DAILOG", payload: true });
-            global.myDispatch({ type: "W_9_UPLOAD_STATUS_SUCESS" });
-            setLoading(false);
-            setMessage("W-9 uploaded successfully.");
-            setVisible(true);
-            navigation.goBack();
-          } else {
-            global.myDispatch({ type: "HIDE_UPLOAD_DAILOG", payload: true });
-            setLoading(false);
-            Alert.alert("Error", "There was an error. Please try again.");
-          }
+            file_path: res[0].name,
+          })
+            .then((finalUploadresponse) => {
+              console.log("fghjk", finalUploadresponse);
+              if (finalUploadresponse.status === 201) {
+                global.myDispatch({
+                  type: "UPLOADING_COMPLETED",
+                  payload: true,
+                });
+                global.myDispatch({
+                  type: "HIDE_UPLOAD_DAILOG",
+                  payload: true,
+                });
+                global.myDispatch({ type: "W_9_UPLOAD_STATUS_SUCESS" });
+                setLoading(false);
+                setMessage("W-9 uploaded successfully.");
+                setVisible(true);
+                navigation.goBack();
+              } else {
+                global.myDispatch({
+                  type: "HIDE_UPLOAD_DAILOG",
+                  payload: true,
+                });
+                setLoading(false);
+                Alert.alert("Error", "There was an error. Please try again.");
+              }
+            })
+            .catch(() => {
+              global.myDispatch({ type: "HIDE_UPLOAD_DAILOG", payload: true });
+              setLoading(false);
+              Alert.alert("Error", "There was an error. Please try again.");
+            });
         }
       }
     } catch (err) {

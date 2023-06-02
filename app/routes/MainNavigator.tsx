@@ -46,6 +46,8 @@ import AddCardDetail from "../screens/Home/AddCardDetail";
 import RegistrationApprovedScreen from "../screens/Registeration/RegistrationApprovedScreen";
 import RegistrationUploadW9Screen from "../screens/Registeration/RegistrationUploadW9Screen";
 import PickUpDetailScreen from "../screens/Home/PickUpDetailScreen";
+import WelcomeScreen from "../screens/Registeration/WelcomeScreen";
+import BolScreen from "../screens/Home/BolScreen";
 
 export type RootStackParamList = {
   splash: undefined;
@@ -114,6 +116,7 @@ const MainNavigator = () => {
           name="RegistrationUploadW9Screen"
           component={RegistrationUploadW9Screen}
         />
+        <RootStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
 
         <RootStack.Screen
           name="auth"
@@ -178,6 +181,7 @@ const MainNavigator = () => {
           name="PickUpDetailScreen"
           component={PickUpDetailScreen}
         />
+        <RootStack.Screen name="BolScreen" component={BolScreen} />
       </RootStack.Navigator>
     </NavigationContainer>
   );

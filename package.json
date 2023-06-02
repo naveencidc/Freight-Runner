@@ -56,6 +56,7 @@
     "react-native-screens": "^3.20.0",
     "react-native-select-dropdown": "^3.3.2",
     "react-native-shimmer-placeholder": "^2.0.9",
+    "react-native-signature-canvas": "^4.5.0",
     "react-native-snackbar": "^2.4.0",
     "react-native-spinkit": "^1.5.1",
     "react-native-splash-screen": "^3.3.0",

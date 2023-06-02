@@ -491,7 +491,6 @@ function RegistrationApprovedScreen({ navigation, route }) {
                 // setLoading(true);
                 global.myDispatch({ type: "UPLOADING_INIT", payload: true });
                 const response = await uploadToS3(item, "image", global);
-                console.log("------ASDFGHJJJJJ", response);
                 if (response) {
                   const userDetail: any = await storage.get("userData");
                   const finalUploadresponse = await uploadDocument({
@@ -502,7 +501,6 @@ function RegistrationApprovedScreen({ navigation, route }) {
                         : "certificate",
                     file_path: item.filename,
                   });
-                  console.log("fghjk", finalUploadresponse);
                   let message =
                     selectedTab === "license"
                       ? "License uploaded successfully."

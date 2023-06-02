@@ -44,9 +44,11 @@ export const uploadToS3 = async (
   type: string,
   global
 ) => {
+  console.log("___%%%5555", selectedObject, type);
   let fileName =
     type === "image" ? selectedObject.filename : selectedObject.name;
   let file = type === "image" ? selectedObject.path : selectedObject.uri;
+  console.log("8888", fileName);
   const signedUrl = await getPresignedUrl(fileName);
   global.myDispatch({ type: "UPLOADING_STARTED", payload: true });
   const base64 = await fs.readFile(file, "base64");
