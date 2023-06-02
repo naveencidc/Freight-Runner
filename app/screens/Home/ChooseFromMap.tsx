@@ -132,8 +132,8 @@ const ChooseFromMap: React.FC<Props> = ({ navigation, route }) => {
             }}
             provider={PROVIDER_GOOGLE}
             region={{
-              latitude: 37.78825,
-              longitude: -122.4324,
+              latitude: selectedCordinates?.coords?.latitude,
+              longitude: selectedCordinates?.coords?.longitude,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
