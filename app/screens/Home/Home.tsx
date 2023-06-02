@@ -49,7 +49,10 @@ import { getUserLoadRequestList } from "../../services/jobService";
 import { MyContext } from "../../context/MyContextProvider";
 const deviceWidth = Dimensions.get("window").width;
 const deviceHeight = Dimensions.get("window").height;
-import { reverseLookup } from "../../services/mapboxService";
+import {
+  googlereverseLookup,
+  reverseLookup,
+} from "../../services/mapboxService";
 import { getCurrentLocation } from "../../utilities/gpsUtilities";
 import { GeoPosition } from "react-native-geolocation-service";
 import SelectDropdown from "react-native-select-dropdown";
@@ -68,7 +71,9 @@ import { checkLocationPermission } from "../../utilities/locationCheck";
 import Geolocation from "react-native-geolocation-service";
 import { openSettings } from "react-native-permissions";
 import StandardModal from "../../components/StandardModal";
+import Axios from "axios";
 import TimeAgo from "../../components/TimeAgo";
+import { useRoute } from "@react-navigation/native";
 
 // MapboxGL.setAccessToken(Config.MAPBOX_API_KEY);
 // const { MapView, Camera, UserLocation, PointAnnotation } = MapboxGL;
@@ -88,8 +93,11 @@ let searchTextGlob = "";
 let inProgressLoads: any = [];
 let isOpenAlert = false;
 
-const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
-  let loadDetail = route.params?.loadDetail;
+const Home: React.FC<Props> = ({ navigation }: any) => {
+  const route = useRoute();
+  // let loadDetail = route.params?.loadDetail;
+  let selectLocation = route;
+  console.log("*******123", selectLocation);
   let currentPosition: GeoPosition;
   let features: any = {};
   let addressObj: Object = {};
@@ -111,6 +119,7 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
   const [searchText, setsearchText] = useState("");
   const [backPressedCount, setBackPressedCount] = useState(0);
   const [isShowModal, setisShowModal] = useState(false);
+  console.log("$$$$ is", currentLocation);
   let interval: any;
   // const [backCount, setBackCount] = useState(0);
   let backCount = 0;
@@ -439,7 +448,10 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
       }
     }
   };
-
+  /**
+   * It will remove load from load offer list and add to My job list
+   * @param loadDetailObject
+   */
   const _updateBidStatusChage = (loadDetailObject: any) => {
     if (loadDetailObject.status === 3) {
       let loadOfferList = [...list?.results];
@@ -468,19 +480,19 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
           payload: updatedLIstObject,
         });
 
-        let acceptedLoadList: any = [];
-        if (acceptedList?.results?.length > 0) {
-          acceptedLoadList = [...acceptedList?.results];
-        }
+        // let acceptedLoadList: any = [];
+        // if (acceptedList?.results?.length > 0) {
+        //   acceptedLoadList = [...acceptedList?.results];
+        // }
 
-        let updatedAcceptedLIstObject = {
-          page: global.myState.myJobList.page,
-          results: [loadDetailObject, ...acceptedLoadList],
-        };
-        global.myDispatch({
-          type: "USER_MY_JOB_LIST_SUCESS",
-          payload: updatedAcceptedLIstObject,
-        });
+        // let updatedAcceptedLIstObject = {
+        //   page: global.myState.myJobList.page,
+        //   results: [loadDetailObject, ...acceptedLoadList]
+        // };
+        // global.myDispatch({
+        //   type: "USER_MY_JOB_LIST_SUCESS",
+        //   payload: updatedAcceptedLIstObject
+        // });
       }
 
       if (bidAcceptedLoadIndex !== undefined && bidAcceptedLoadIndex !== -1) {
@@ -495,20 +507,34 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
           payload: updatedLIstObject,
         });
 
-        let acceptedLoadList: any = [];
-        if (acceptedList?.results?.length > 0) {
-          acceptedLoadList = [...acceptedList?.results];
-        }
+        // let acceptedLoadList: any = [];
+        // if (acceptedList?.results?.length > 0) {
+        //   acceptedLoadList = [...acceptedList?.results];
+        // }
 
-        let updatedAcceptedLIstObject = {
-          page: global.myState.myJobList.page,
-          results: [loadDetailObject, ...acceptedLoadList],
-        };
-        global.myDispatch({
-          type: "USER_MY_JOB_LIST_SUCESS",
-          payload: updatedAcceptedLIstObject,
-        });
+        // let updatedAcceptedLIstObject = {
+        //   page: global.myState.myJobList.page,
+        //   results: [loadDetailObject, ...acceptedLoadList]
+        // };
+        // global.myDispatch({
+        //   type: "USER_MY_JOB_LIST_SUCESS",
+        //   payload: updatedAcceptedLIstObject
+        // });
       }
+      //To update MYJOB list
+      let acceptedLoadList: any = [];
+      if (acceptedList?.results?.length > 0) {
+        acceptedLoadList = [...acceptedList?.results];
+      }
+
+      let updatedAcceptedLIstObject = {
+        page: global.myState.myJobList.page,
+        results: [loadDetailObject, ...acceptedLoadList],
+      };
+      global.myDispatch({
+        type: "USER_MY_JOB_LIST_SUCESS",
+        payload: updatedAcceptedLIstObject,
+      });
     }
   };
   //To Update newLoad to load offer
@@ -582,9 +608,21 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
         socket.on(`global/bid-status/${userDetail.user_id}`, (data) => {
           _updateBidStatusChage(data.loadDetails);
         });
+
+        //Global socket to update rate approval acceptance
+        socket.on(`global/rate-status/${userDetail.user_id}`, (data) => {
+          _updateBidStatusChage(data.loadDetails);
+        });
+
+        //Global socket to update Bid acceptance
+        socket.on(`global/rate-refused/${userDetail.user_id}`, (data) => {
+          _removeAcceptedLoads(data.loadDetails);
+        });
+
         //Global socket to remove accepted loads from load offer and loadboard
         socket.on(`global/load-accept/${userDetail.user_id}`, (data) => {
-          if (data.load_accepted || data.bid_accepted) {
+          console.log("--******--", data);
+          if (data.load_accepted || data.bid_accepted || data.rate_accepted) {
             _removeAcceptedLoads(data);
           } else {
             _removeAcceptedLoads(data.loadDetails);
@@ -608,6 +646,8 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
         socket.off(`global/bid-status/${userDetail.user_id}`);
         socket.off(`global/load-accept/${userDetail.user_id}`);
         socket.off(`global/new-load/${userDetail.user_id}`);
+        socket.off(`global/rate-refused/${userDetail.user_id}`);
+        socket.off(`global/rate-status/${userDetail.user_id}`);
       }
       remove();
     };
@@ -711,24 +751,41 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
   // getting the current location
   const getHomeCondoLocation = async () => {
     try {
-      const placeInfo = await reverseLookup(currentPosition);
-      if (placeInfo.data.features.length > 0) {
-        features = placeInfo.data.features[0];
-        const arrPlaceNames: Array<any> = features.placeName.split(",");
-        if (arrPlaceNames) {
-          address1 = arrPlaceNames[0];
-          address2 = arrPlaceNames[1];
-          city = arrPlaceNames[arrPlaceNames.length - 3];
-
+      await googlereverseLookup(currentPosition)
+        .then((response) => {
+          let cityName = response.data.results[0]?.address_components.find(
+            (city) => city.types.includes("locality")
+          );
           addressObj = {
-            address_line1: address1,
-            address_line2: address2,
-            city: city,
+            address_line1: "",
+            address_line2: "",
+            city: cityName.long_name,
             coords: currentPosition.coords,
           };
-        }
-        setCurrentLocation(addressObj);
-      }
+          setCurrentLocation(addressObj);
+        })
+        .catch((err) => {
+          console.log("gps error", err);
+        });
+      // const placeInfo = await reverseLookup(currentPosition);
+      // if (placeInfo.data.features.length > 0) {
+      //   features = placeInfo.data.features[0];
+      //   const arrPlaceNames: Array<any> = features.placeName.split(",");
+      //   if (arrPlaceNames) {
+      //     address1 = arrPlaceNames[0];
+      //     address2 = arrPlaceNames[1];
+      //     city = arrPlaceNames[arrPlaceNames.length - 3];
+
+      //     addressObj = {
+      //       address_line1: address1,
+      //       address_line2: address2,
+      //       city: address1,
+      //       coords: currentPosition.coords
+      //     };
+      //   }
+      //   console.log("INSIDE__addressObj___", addressObj);
+      //   setCurrentLocation(addressObj);
+      // }
     } catch (error) {
       console.log("gps error", error);
     }
@@ -802,7 +859,13 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
             </View>
           </View>
         </View>
-        <View style={{ flexDirection: "row", flex: 1, padding: 15 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            flex: 1,
+            padding: 15,
+          }}
+        >
           <View style={{ flexDirection: "column", marginHorizontal: 10 }}>
             <View style={{ flexDirection: "row" }}>
               <FastImage
@@ -913,8 +976,16 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
               </Text>
             </View>
           </View>
-          {item.messageCount ? (
-            <View style={{ position: "absolute", bottom: 5, right: 0 }}>
+
+          <View
+            style={{
+              position: "absolute",
+              bottom: 5,
+              right: 0,
+              flexDirection: "row",
+            }}
+          >
+            {item.messageCount ? (
               <View style={{}}>
                 <FastImage
                   tintColor={"#635FDA"}
@@ -937,8 +1008,21 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
                   value={item.messageCount}
                 ></Badge>
               </View>
-            </View>
-          ) : null}
+            ) : null}
+            {item.rateApprovalDtls ? (
+              <View style={{}}>
+                <FastImage
+                  tintColor={"#f76d02"}
+                  style={{
+                    height: 25,
+                    width: 25,
+                    marginRight: item.messageCount > 99 ? 20 : 15,
+                  }}
+                  source={require("../../assets/images/waitingForApproval.png")}
+                ></FastImage>
+              </View>
+            ) : null}
+          </View>
         </View>
         {/* <View style={{}}></View> */}
       </TouchableOpacity>
@@ -1034,21 +1118,45 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
               />
             </View>
 
-            <TouchableOpacity onPress={() => navigation.navigate("MyLocation")}>
-              <View style={[styles.mapDropDownView, {}]}>
-                <View style={{ flexDirection: "row" }}>
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                marginHorizontal: 10,
+                flexDirection: "row",
+              }}
+              onPress={() => navigation.navigate("MyLocation")}
+            >
+              <View
+                style={[
+                  styles.mapDropDownView,
+                  {
+                    flex: 1,
+                    flexDirection: "row",
+                    padding: 6,
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  },
+                ]}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+
+                    alignItems: "center",
+                  }}
+                >
                   <FastImage
                     tintColor={colors.white}
                     style={styles.mapIcon}
                     source={require("../../assets/images/map.png")}
                   ></FastImage>
                   <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
                     style={{
                       fontSize: fontSizes.regular,
-                      marginLeft: 10,
+                      marginLeft: 5,
                       color: "#FFFFFF",
-                      alignItems: "center",
-                      justifyContent: "center",
                       alignSelf: "center",
                     }}
                   >
@@ -1060,10 +1168,9 @@ const Home: React.FC<Props> = ({ navigation }: any, route: any) => {
                   style={{
                     width: 15,
                     height: 15,
-                    marginHorizontal: 10,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    alignSelf: "center",
+
+                    // marginHorizontal: 10,
+                    // alignSelf: "center"
                   }}
                   source={require("../../assets/images/down.png")}
                 ></FastImage>
@@ -1419,10 +1526,10 @@ const styles = StyleSheet.create<Styles>({
   },
   mapDropDownView: {
     borderWidth: 1,
-    height: deviceHeight / 20,
+    // height: deviceHeight / 20,
     borderRadius: 30,
     backgroundColor: colors.black,
-    alignSelf: "center",
+    // alignSelf: "center",
     flexDirection: "row",
   },
   searchTextInputView: {
@@ -1487,10 +1594,10 @@ const styles = StyleSheet.create<Styles>({
   mapIcon: {
     width: 15,
     height: 15,
-    marginLeft: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "center",
+    // marginLeft: 10,
+    // alignItems: "center",
+    // justifyContent: "center",
+    // alignSelf: "center"
   },
   dropdown3BtnStyle: {
     width: "60%",

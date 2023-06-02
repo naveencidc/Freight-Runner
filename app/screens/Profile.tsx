@@ -148,9 +148,10 @@ const Profile: React.FC<Props> = ({ navigation }) => {
                           setimgLoading(false);
                           setimgLoadingError(false);
                         }}
-                        onError={() => {
-                          setimgLoadingError(true);
-                        }}
+                        // onError={() => {
+                        //   setimgLoadingError(true);
+                        //   console.log("********DFDGDGFHG");
+                        // }}
                         resizeMode={"cover"}
                         style={{ width: 70, height: 70, borderRadius: 70 / 2 }}
                         source={
@@ -948,7 +949,7 @@ const Profile: React.FC<Props> = ({ navigation }) => {
                           });
                         await storage.remove("tokens");
                         setlogoutModalVisible(false);
-                        navigateAndSimpleReset("auth");
+                        navigation.navigate("Login");
                         global.myDispatch({
                           type: "LOGOUT",
                         });

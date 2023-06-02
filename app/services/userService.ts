@@ -959,7 +959,10 @@ export const searchUsers = (query: string) => {
   });
 };
 
-export const verifyUser = (userId: string, values: any) => {
+export const verifyUser = (
+  userId: string,
+  values: StripeVerificationValues
+) => {
   return patch({
     endpoint: `users/${userId}/verify`,
     data: { user: values },

@@ -211,7 +211,7 @@ const TruckAndTrailerDetail: React.FC<Props> = ({ navigation, route }) => {
                   : deviceHeight / 2.1,
             }}
           >
-            {/* {isFrom !== "TruckList" ? ( */}
+            {/* {isFrom === "TruckList" ? ( */}
             <>
               <Text
                 style={{
@@ -312,7 +312,7 @@ const TruckAndTrailerDetail: React.FC<Props> = ({ navigation, route }) => {
                 marginTop: 15,
               }}
             >
-              {isFrom === "TruckList" ? "Model Year" : "Capacity in LBS"}
+              {isFrom === "TruckList" ? "Model Year" : "Max Load Capacity"}
             </Text>
             <Text
               style={{
@@ -321,7 +321,7 @@ const TruckAndTrailerDetail: React.FC<Props> = ({ navigation, route }) => {
                 marginTop: 5,
               }}
             >
-              {isFrom === "TruckList" ? item.year : `${item.capacity}`}
+              {isFrom === "TruckList" ? item.year : `${item.capacity} lbs`}
             </Text>
             {isFrom !== "TruckList" ? (
               <View style={{ marginTop: 15, marginBottom: 30 }}>

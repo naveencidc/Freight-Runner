@@ -503,6 +503,8 @@ const JobList: React.FC<Props> = ({ navigation, route }) => {
                         ? "#007bff"
                         : item.status === 13
                         ? "#ff1a1a"
+                        : item.status === 10
+                        ? "#50B582"
                         : "",
                   },
                 ]}
@@ -537,6 +539,8 @@ const JobList: React.FC<Props> = ({ navigation, route }) => {
                     ? "Payment Approved"
                     : item.status === 13
                     ? "Closed"
+                    : item.status === 10
+                    ? "Completed"
                     : ""}
                 </Text>
               </View>

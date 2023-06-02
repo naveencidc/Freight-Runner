@@ -513,36 +513,47 @@ const LoadBoardScreen: React.FC<Props> = ({ navigation }) => {
                   {moment(item?.delivery_date).format("ddd MMM DD, yy")}
                 </Text>
               </View>
-              <TouchableOpacity
-                onPress={() => {
-                  setselectedIndex(index); // To manage particular item loading state
-                  setselectedLoad(item);
-                  setisShowAcceptModal(true);
-                }}
-                style={{
-                  backgroundColor: "black",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  marginTop: 10,
-                  borderRadius: 8,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {isAcceptLoading && index === selectedIndex ? (
-                  <Spinner
-                    style={{ alignSelf: "center" }}
-                    isVisible={true}
-                    size={21}
-                    type={"Wave"}
-                    color={"white"}
-                  />
-                ) : (
-                  <Text style={{ color: "white", fontWeight: "bold" }}>
-                    Accept
-                  </Text>
-                )}
-              </TouchableOpacity>
+              {!item.rateApprovalDtls ? (
+                <TouchableOpacity
+                  onPress={() => {
+                    setselectedIndex(index); // To manage particular item loading state
+                    setselectedLoad(item);
+                    setisShowAcceptModal(true);
+                  }}
+                  style={{
+                    backgroundColor: "black",
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    marginTop: 10,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {isAcceptLoading && index === selectedIndex ? (
+                    <Spinner
+                      style={{ alignSelf: "center" }}
+                      isVisible={true}
+                      size={21}
+                      type={"Wave"}
+                      color={"white"}
+                    />
+                  ) : (
+                    <Text style={{ color: "white", fontWeight: "bold" }}>
+                      Accept
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              ) : null}
+              {item.rateApprovalDtls ? (
+                <View style={{ alignItems: "flex-end" }}>
+                  <FastImage
+                    tintColor={"#f76d02"}
+                    style={{ height: 25, width: 25 }}
+                    source={require("../../assets/images/waitingForApproval.png")}
+                  ></FastImage>
+                </View>
+              ) : null}
             </View>
           </View>
         </TouchableOpacity>

@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Dimensions, StyleSheet, Text, TextStyle, TouchableOpacity } from "react-native";
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+} from "react-native";
 import FastImage from "react-native-fast-image";
 import { View } from ".";
 import colors from "../styles/colors";
@@ -33,20 +39,22 @@ const MyTruckListAndTrailerList: React.FC<Props> = ({
   trailerLength,
   isFrom,
   item,
-  onPress
+  onPress,
 }) => {
   const [loading, setLoading] = useState(false);
   return (
     <View
       style={{
-        backgroundColor: colors.white
+        backgroundColor: colors.white,
       }}
     >
       <TouchableOpacity onPress={onPress}>
-        <View style={{ marginHorizontal: 15, marginVertical: deviceHeight / 40 }}>
+        <View
+          style={{ marginHorizontal: 15, marginVertical: deviceHeight / 40 }}
+        >
           <View
             style={{
-              flexDirection: "row"
+              flexDirection: "row",
             }}
           >
             <View>
@@ -60,7 +68,7 @@ const MyTruckListAndTrailerList: React.FC<Props> = ({
                 style={{
                   width: 100,
                   height: 100,
-                  borderRadius: 10
+                  borderRadius: 10,
                 }}
                 source={
                   isFrom === "TruckList"
@@ -75,7 +83,12 @@ const MyTruckListAndTrailerList: React.FC<Props> = ({
               ></FastImage>
               {loading ? (
                 <ShimmerPlaceHolder
-                  style={{ width: 100, height: 100, borderRadius: 10, position: "absolute" }}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: 10,
+                    position: "absolute",
+                  }}
                   LinearGradient={LinearGradient}
                 />
               ) : null}
@@ -85,7 +98,7 @@ const MyTruckListAndTrailerList: React.FC<Props> = ({
               style={{
                 flexDirection: "column",
                 paddingHorizontal: 15,
-                marginTop: isFrom === "TruckList" ? 0 : 5
+                marginTop: isFrom === "TruckList" ? 0 : 5,
               }}
             >
               <View style={{}}>
@@ -100,13 +113,13 @@ const MyTruckListAndTrailerList: React.FC<Props> = ({
                         backgroundColor: "lightgray",
                         paddingHorizontal: 10,
                         borderRadius: 10,
-                        paddingVertical: 1.5
+                        paddingVertical: 1.5,
                       }}
                     >
                       <Text
                         style={{
                           fontSize: fontSizes.xSmall,
-                          color: "#000000"
+                          color: "#000000",
                         }}
                       >
                         {isFrom === "TruckList"
@@ -122,7 +135,7 @@ const MyTruckListAndTrailerList: React.FC<Props> = ({
                   style={{
                     fontSize: fontSizes.small,
                     marginTop: isFrom === "TruckList" ? 5 : 0,
-                    color: colors.lightGrey
+                    color: colors.lightGrey,
                   }}
                 >
                   {isFrom === "TruckList" ? "VIN: " : null}
@@ -136,13 +149,13 @@ const MyTruckListAndTrailerList: React.FC<Props> = ({
                       backgroundColor: "lightgray",
                       paddingHorizontal: 10,
                       borderRadius: 10,
-                      paddingVertical: 1.5
+                      paddingVertical: 1.5,
                     }}
                   >
                     <Text
                       style={{
                         fontSize: fontSizes.xSmall,
-                        color: "#000000"
+                        color: "#000000",
                       }}
                     >
                       {item.hookupDetails?.hookup}
@@ -157,7 +170,7 @@ const MyTruckListAndTrailerList: React.FC<Props> = ({
                     style={{
                       fontSize: fontSizes.xSmall,
                       color: "#858C97",
-                      marginTop: 10
+                      marginTop: 10,
                     }}
                   >
                     {isFrom === "TruckList" ? "Model Year" : "Trailer Length"}
@@ -171,16 +184,16 @@ const MyTruckListAndTrailerList: React.FC<Props> = ({
                     style={{
                       fontSize: fontSizes.xSmall,
                       color: "#858C97",
-                      marginTop: 10
+                      marginTop: 10,
                     }}
                   >
-                    {isFrom === "TruckList" ? "Brand" : "Capacity in LBS"}
+                    {isFrom === "TruckList" ? "Brand" : "Max Load Capacity"}
                   </Text>
                   <View
                     style={{
                       flexDirection: "row",
                       marginTop: 5,
-                      alignItems: "center"
+                      alignItems: "center",
                     }}
                   >
                     {isFrom === "TruckList" ? (
@@ -190,7 +203,7 @@ const MyTruckListAndTrailerList: React.FC<Props> = ({
                             width: 25,
                             height: 25,
                             alignSelf: "center",
-                            marginRight: 10
+                            marginRight: 10,
                           }}
                           source={
                             item.brandDetails?.logo
@@ -205,7 +218,7 @@ const MyTruckListAndTrailerList: React.FC<Props> = ({
                     <Text
                       style={{
                         fontSize: 13,
-                        marginLeft: isFrom === "TruckList" ? 0 : 0
+                        marginLeft: isFrom === "TruckList" ? 0 : 0,
                       }}
                     >
                       {isFrom === "TruckList" ? brandName : tons}

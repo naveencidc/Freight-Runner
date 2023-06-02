@@ -23,9 +23,9 @@ import {
 import { Formik } from "formik";
 import {
   CustomButton,
+  SimpleInput as Input,
   Text,
   View,
-  SimpleInput as Input,
 } from "../../components";
 import {
   getVehileDetails,
@@ -76,6 +76,7 @@ function RegistrationTruckDetailScreen({ navigation, route }) {
   const [isShowModel, setisShowModel] = useState(false);
   const [selectedPowerTypeId, setselectedPowerTypeId] = useState();
   const [powerTypeList, setpowerTypeList] = useState([]);
+  const [selectedTrailerCapacity, setselectedTrailerCapacity] = useState("");
 
   let isFrom = route.params?.isFrom;
   const global = useContext(MyContext);
@@ -575,6 +576,35 @@ function RegistrationTruckDetailScreen({ navigation, route }) {
                     }}
                   />
                 </View>
+
+                {/* <View
+                  style={[
+                    styles.textInputView,
+                    { marginTop: deviceHeight / 55, paddingVertical: 10 }
+                  ]}
+                >
+                  <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
+                    Max Load Capacity(Lbs)
+                  </Text>
+                  <View style={{ flexDirection: "row", marginVertical: 5, flex: 1 }}>
+                    <TextInput
+                      // editable={!selectedHookupID ? false : true}
+                      maxLength={6}
+                      style={{
+                        padding: 0,
+                        fontWeight: "500",
+                        fontSize: 16,
+                        flex: 1
+                      }}
+                      onChangeText={newText => setselectedTrailerCapacity(newText)}
+                      value={selectedTrailerCapacity}
+                      placeholder="0"
+                      keyboardType="number-pad"
+                    />
+                    <Text style={{ marginLeft: 10, fontWeight: "500", fontSize: 16 }}>lbs.</Text>
+                  </View>
+                </View> */}
+
                 <View
                   style={{
                     marginVertical: deviceHeight / 6,

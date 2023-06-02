@@ -3,7 +3,7 @@ import Config from "react-native-config";
 import { GeoPosition } from "react-native-geolocation-service";
 import {
   camelCaseResponseTransformer as responseTransformer,
-  snakeCaseRequestTransformer as requestTransformer
+  snakeCaseRequestTransformer as requestTransformer,
 } from "./transformers";
 
 type MapboxFeature = {
@@ -21,10 +21,10 @@ const MapboxApiInstance = axios.create({
   baseURL: Config.MAPBOX_BASE_API,
   headers: {
     Accept: "application/json",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
   },
   transformRequest: [requestTransformer],
-  transformResponse: [responseTransformer]
+  transformResponse: [responseTransformer],
 });
 
 export const reverseLookup = (
@@ -35,5 +35,13 @@ export const reverseLookup = (
     `/geocoding/v5/mapbox.places/${longitude.toString()},${latitude.toString()}.json?access_token=${
       Config.MAPBOX_API_KEY
     }`
-  ).then(res => res);
+  ).then((res) => res);
+};
+
+export const googlereverseLookup = async (position: GeoPosition) => {
+  const { latitude, longitude } = position.coords;
+  const res = await axios.get(
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${Config.GOOGLE_API_KEY}`
+  );
+  return res;
 };

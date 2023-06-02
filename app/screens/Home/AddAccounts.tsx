@@ -33,6 +33,7 @@ import SelectDropdown from "react-native-select-dropdown";
 type Props = { navigation: any };
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
+let updateDate: any = {};
 
 import {
   addbankaccount,

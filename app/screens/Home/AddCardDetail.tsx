@@ -43,15 +43,25 @@ import {
   SnackbarContextType,
 } from "../../context/SnackbarContext";
 import { MyContext } from "../../context/MyContextProvider";
+// import { CardField, useStripe } from "@stripe/stripe-react-native";
 
-const AddCardDetail: React.FC<Props> = ({ navigation, route }) => {
+const AddCardDetail: React.FC<Props> = ({ navigation }) => {
   let isFrom = route.params?.isFrom;
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const [accountNumber, setaccountNumber] = useState("");
+  const [routingNumber, setroutingNumber] = useState("");
+  const [accountHolderName, setaccountHolderName] = useState("");
+  const [accountNIckName, setaccountNIckName] = useState("");
   const [loading, setloading] = useState(false);
   const { setMessage, setVisible } =
     useContext<SnackbarContextType>(SnackbarContext);
   const global = useContext(MyContext);
+  const ref_routingNumber = useRef();
+  const ref_accountHolderName = useRef();
+  const ref_accountNickName = useRef();
+  const [isCardValid, setisCardValid] = useState(false);
+  const [cardDetail, setcardDetail] = useState({});
   const [cardHolderName, setcardHolderName] = useState("");
   const [cardNumber, setcardNumber] = useState("");
   const [cardExpMonth, setcardExpMonth] = useState("");
@@ -62,6 +72,15 @@ const AddCardDetail: React.FC<Props> = ({ navigation, route }) => {
   const ref_card_exp_month = useRef();
   const ref_card_exp_year = useRef();
   const ref_card_cvv = useRef();
+
+  // useEffect(() => {
+  //   if (cardNumber.length === 4) setcardNumber(cardNumber + " ");
+  //   else if (cardNumber.length === 9) {
+  //     setcardNumber(cardNumber + " ");
+  //   } else if (cardNumber.length === 14) {
+  //     setcardNumber(cardNumber + " ");
+  //   }
+  // }, [cardNumber]);
 
   const _handleSubmit = async () => {
     const last2 = new Date().getFullYear().toString().slice(-2);
@@ -136,8 +155,78 @@ const AddCardDetail: React.FC<Props> = ({ navigation, route }) => {
           console.log("got error:::::::::", err);
           return;
         });
+      // await createStripeBankAccountToken({
+      //   accountHolderName: accountHolderName,
+      //   accountHolderType: "company",
+      //   accountNumber: accountNumber,
+      //   routingNumber: routingNumber
+      // })
+      //   .then(async tokenRes => {
+      //     if (tokenRes) {
+      //       await addbankaccount({
+      //         name: tokenRes.bankAccount.accountHolderName,
+      //         last_4_digits: tokenRes.bankAccount.last4,
+      //         routing_number: routingNumber,
+      //         primary: isEnabled ? 1 : 2,
+      //         stripe_token: tokenRes.tokenId
+      //       })
+      //         .then(async response => {
+      //           setloading(false);
+      //           console.log("createStripeConnectedAccount", response);
+      //           if (response.status === 201) {
+      //             setMessage("Bank account added successfully.");
+      //             setVisible(true);
+      //             await getAllPaymentMethods()
+      //               .then(async paymentMethodResponse => {
+      //                 console.log("getAllPaymentMethods", paymentMethodResponse);
+      //                 // setallPaymentMethods(response.data);
+      //                 global.myDispatch({
+      //                   type: "UPDATE_ALL_PAYMENT_METHODS_SUCESS",
+      //                   payload: paymentMethodResponse.data
+      //                 });
+      //               })
+      //               .catch(e => {
+      //                 console.log("getAllPaymentMethods error", e.response);
+      //                 Alert.alert("Error", e.response.data.message);
+      //               });
+      //             navigation.goBack();
+      //           }
+      //         })
+      //         .catch(e => {
+      //           setloading(false);
+      //           console.log("addbankaccount", e.response);
+      //           Alert.alert("Error", e.response.data.message);
+      //           // returnResponse = e.response;
+      //         });
+      //     }
+      //   })
+      //   .catch(e => {
+      //     setloading(false);
+      //     console.log("-error", e.message);
+      //     Alert.alert("Error", e.message);
+      //   });
     }
   };
+
+  // const handleFieldParamsChange = data => {
+  //   console.log("---------######11", data);
+  //   setisCardValid(data.valid);
+  //   setcardDetail({
+  //     number: data.values.number.trim(),
+  //     expMonth: data.values.expiry.split("/")[0],
+  //     expYear: data.values.expiry.split("/")[1],
+  //     cvc: data.values.cvc,
+  //     type: data.values.type
+  //   });
+  //   // console.log("-params-", params.expMonth);
+  //   // console.log(`
+  //   //   Valid: ${valid}
+  //   //   Number: ${params.number || "-"}
+  //   //   Month: ${params.expMonth || "-"}
+  //   //   Year: ${params.expYear || "-"}
+  //   //   CVC: ${params.cvc || "-"}
+  //   // `);
+  // };
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -288,6 +377,28 @@ const AddCardDetail: React.FC<Props> = ({ navigation, route }) => {
             </View>
           </View>
 
+          {/* <View
+            style={{
+              backgroundColor: colors.white,
+              paddingVertical: deviceHeight / 50,
+              paddingHorizontal: 15,
+              marginTop: 20
+            }}
+          >
+            <Text style={{ fontSize: fontSizes.small, color: colors.lightGrey }}>Card Details</Text>
+            <PaymentCardTextField
+              // ref={ref => {
+              //   this.paymentCardInput = ref;
+              // }}
+              style={{
+                color: colors.background,
+                margin: 0
+              }}
+              numberPlaceholder={"Card number"}
+              disabled={false}
+              onParamsChange={handleFieldParamsChange}
+            />
+          </View> */}
           <View style={{ paddingHorizontal: 15 }}>
             <View
               style={{

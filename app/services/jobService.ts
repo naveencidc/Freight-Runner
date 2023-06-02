@@ -69,6 +69,13 @@ export const acceptLoad = (config: { load_id: number }) => {
   });
 };
 
+export const sendRateApproval = (config: { load_id: number }) => {
+  const { load_id } = config;
+  return post({
+    endpoint: `loads/makerate/${load_id}`,
+  });
+};
+
 export const sendFeedBack = (config: { message: string; load_id: number }) => {
   const { message, load_id } = config;
   return post({
@@ -112,7 +119,7 @@ export const getMyCompletedJobsList = (config: { offset: number }) => {
   const { offset } = config;
   console.log("getMyCompletedJobsList", offset);
   return fetch({
-    endpoint: `partner/my-jobs?status=10&offset=${offset}&size=10&sortBy=updated_at:desc`,
+    endpoint: `partner/my-jobs?status=13&offset=${offset}&size=10&sortBy=updated_at:desc`,
   });
 };
 

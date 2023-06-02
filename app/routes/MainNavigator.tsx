@@ -48,6 +48,8 @@ import RegistrationUploadW9Screen from "../screens/Registeration/RegistrationUpl
 import PickUpDetailScreen from "../screens/Home/PickUpDetailScreen";
 import WelcomeScreen from "../screens/Registeration/WelcomeScreen";
 import BolScreen from "../screens/Home/BolScreen";
+import PdfViewer from "../screens/Home/PdfViewer";
+import MyLocation from "../screens/Home/MyLocation";
 
 export type RootStackParamList = {
   splash: undefined;
@@ -182,6 +184,8 @@ const MainNavigator = () => {
           component={PickUpDetailScreen}
         />
         <RootStack.Screen name="BolScreen" component={BolScreen} />
+        <RootStack.Screen name="PdfViewer" component={PdfViewer} />
+        <RootStack.Screen name="MyLocation" component={MyLocation} />
       </RootStack.Navigator>
     </NavigationContainer>
   );

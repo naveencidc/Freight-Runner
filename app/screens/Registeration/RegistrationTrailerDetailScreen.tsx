@@ -544,7 +544,7 @@ function RegistrationTrailerDetailScreen({ navigation, route }) {
             ]}
           >
             <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
-              Capacity in LBS
+              Max Load Capacity(Lbs)
             </Text>
             <View style={{ flexDirection: "row", marginVertical: 5, flex: 1 }}>
               <TextInput

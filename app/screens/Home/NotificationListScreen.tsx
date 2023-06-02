@@ -314,7 +314,7 @@ const NotificationListScreen: React.FC<Props> = ({ navigation }) => {
           isFrom={""}
           onPress={() => {
             if (
-              (item.item.bid_status && item.item.bid_status === 2) ||
+              (item.bid_status && item.bid_status === 2) ||
               (item.rate_status && item.rate_status === 2)
             ) {
               //Do nothing

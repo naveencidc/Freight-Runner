@@ -20,7 +20,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import { CheckBox, colors } from "react-native-elements";
-// import { Dropdown } from "react-native-material-dropdown-v2";
+// import { Dropdown } from "react-native-material-dropdown";
 import { Dropdown, MultiSelect } from "react-native-element-dropdown";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -73,6 +73,7 @@ type FormProps = {
   us_dot: string;
   businessEntity: string;
   federal_id: string;
+  max_load_capacity: string;
 };
 
 function RegistrationPersonalDetailScreen({ navigation, route }) {
@@ -112,6 +113,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
     us_dot: "",
     businessEntity: "",
     federal_id: "",
+    max_load_capacity: "",
   });
   const [referral, setReferral] = useState("");
   let isFromEdit = route.params?.isFromEdit;
@@ -125,26 +127,12 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
     setSelectedStateCode(stateObj?.code);
     return stateObj?.name;
   };
-
   const refActionSheet = useRef(null);
   const showActionSheet = () => {
     if (refActionSheet.current) {
       refActionSheet.current.show();
     }
   };
-
-  let data = [
-    {
-      value: "Banana",
-    },
-    {
-      value: "Mango",
-    },
-    {
-      value: "Pear",
-    },
-  ];
-
   useEffect(() => {
     try {
       async function fetchStateListAPI() {
@@ -167,6 +155,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
             us_dot: "",
             businessEntity: "",
             federal_id: "",
+            max_load_capacity: userPersonalDetail.max_load_capacity.toString(),
           });
         }
       }
@@ -261,6 +250,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
           mobile_number: `+1${values.mobile}`,
           zip: values.zipCode,
           user_id: userDetail.user_id,
+          max_load_capacity: parseInt(values.max_load_capacity),
         })
           .then(async (response) => {
             setLoading(false);
@@ -295,6 +285,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
             zip: values.zipCode,
             mc: values.mc,
             us_dot: values.us_dot,
+            max_load_capacity: parseInt(values.max_load_capacity),
             businessEntity: !accountTypePersonal ? values.businessEntity : null,
             federal_id: !accountTypePersonal ? values.federal_id : null,
             referral_code: referral,
@@ -356,6 +347,9 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
     lastName: yup.string().required("Please enter a valid last name"),
     mc: yup.string().required("Please enter a valid MC#"),
     us_dot: yup.string().required("Please enter a valid US DOT#"),
+    max_load_capacity: yup
+      .string()
+      .required("Please enter a valid Max Load Capacity"),
     city: yup.string().required("Please enter a valid city"),
     state: yup.string().required("Please enter a valid state"),
     mobile: yup
@@ -389,6 +383,9 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
       .matches(/^[0-9]+$/, "Please enter a valid cell number")
       .required("Please enter a valid mobile number"),
     zipCode: yup.string().required("Please enter a valid zip code"),
+    max_load_capacity: yup
+      .string()
+      .required("Please enter a valid Max Load Capacity"),
   });
 
   const ref_lastName = useRef();
@@ -402,6 +399,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
   const ref_businessName = useRef();
   const ref_federalID = useRef();
   const ref_referral = useRef();
+  const ref_max_load_capacity = useRef();
 
   const _verifyPassword = (newPwd) => {
     setPassword(newPwd);
@@ -898,6 +896,47 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
                       style={{
                         fontSize: 14,
                         fontWeight: "500",
+                        color: touched.mc && errors.mc ? colors1.red : "gray",
+                      }}
+                    >
+                      {touched.mc && errors.mc
+                        ? errors.mc
+                        : "Max Load Capacity(lbs)"}
+                    </Text>
+                    <View style={{ flexDirection: "row", marginVertical: 5 }}>
+                      <TextInput
+                        maxLength={8}
+                        // ref={ref_mc}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        style={{
+                          padding: 0,
+                          fontWeight: "600",
+                          fontSize: 16,
+                          flex: 1,
+                        }}
+                        onChangeText={handleChange("max_load_capacity")}
+                        onBlur={handleBlur("max_load_capacity")}
+                        value={values.max_load_capacity}
+                        placeholder=""
+                        keyboardType="number-pad"
+                        returnKeyType="done"
+                        // onSubmitEditing={() => ref_us_dot.current.focus()}
+                        blurOnSubmit={false}
+                      />
+                    </View>
+                  </View>
+
+                  <View
+                    style={[
+                      styles.textInputView,
+                      { marginTop: deviceHeight / 55 },
+                    ]}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: "500",
                         color:
                           touched.city && errors.city ? colors1.red : "gray",
                       }}
@@ -1062,7 +1101,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
                         onBlur={handleBlur("mobile")}
                         value={values.mobile}
                         placeholder=""
-                        keyboardType="phone-pad"
+                        keyboardType="number-pad"
                         returnKeyType="next"
                         blurOnSubmit={false}
                       />

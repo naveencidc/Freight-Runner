@@ -40,6 +40,8 @@ import Spinner from "react-native-spinkit";
 import colors from "../../styles/colors";
 import { fontSizes } from "../../styles/globalStyles";
 import { MyContext } from "../../../app/context/MyContextProvider";
+import { GeoPosition } from "react-native-geolocation-service";
+import { getCurrentLocation } from "../../utilities/gpsUtilities";
 import FastImage from "react-native-fast-image";
 import StandardModal from "../../components/StandardModal";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -54,8 +56,10 @@ import {
   getMyJobsList,
   updateLoadStatus,
   updateStartWaitingTime,
+  sendRateApproval,
 } from "../../services/jobService";
 var moment = require("moment-timezone");
+const axios = require("axios");
 import ActionSheet from "react-native-actionsheet";
 import ImagePicker from "react-native-image-crop-picker";
 import {
@@ -82,6 +86,7 @@ import StarRating from "react-native-star-rating";
 import { showMessage } from "react-native-flash-message";
 import ShimmerPlaceHolder from "react-native-shimmer-placeholder";
 import LinearGradient from "react-native-linear-gradient";
+import Config from "react-native-config";
 import TimeAgo from "../../components/TimeAgo";
 import MapWithDirection from "../../components/MapWithDirection";
 
@@ -91,6 +96,10 @@ type Props = { navigation: any };
 
 const deviceWidth = Dimensions.get("window").width;
 const deviceHeight = Dimensions.get("window").height;
+
+let currentPosition: GeoPosition;
+let features: any = {};
+let currentLocation: Object = {};
 let user: object = {};
 
 const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
@@ -98,6 +107,10 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   let loadID = route.params?.loadDetail.load_id;
   let isFromShipment = route.params?.isFromShipment;
   const global: any = useContext(MyContext);
+  const [startcoordinates, setstartcoordinates] = useState([-100.0, 31.0]);
+  const [midcoordinates, setmidcoordinates] = useState([]);
+  const [endtcoordinates, setendtcoordinates] = useState([-100.0, 31.0]);
+  const [coordinates, setCoordinates] = useState<any>({});
   const [bidModalVisible, setbidModalVisible] = useState(false);
   const [isLoadDetailLoading, setisLoadDetailLoading] = useState(false);
   const [isAcceptLoading, setisAcceptLoading] = useState(false);
@@ -535,6 +548,91 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       socket.off(`chat/${chatRoomid}`);
     };
   }, [chatRoomid]);
+
+  /**
+   * Send the rate apprroval request to the shipper
+   */
+  const _sendRateApproval = async () => {
+    setisAcceptLoading(true);
+    let loadListArray = global.myState.userLoadRequestList.results;
+    let index = loadListArray.findIndex((load) => load.load_id === loadID);
+    await sendRateApproval({ load_id: loadID })
+      .then(() => {
+        setisAcceptLoading(false);
+        // setVisible(true);
+        // setMessage("Request sent Successfully");
+        if (index !== -1) {
+          loadListArray[index].rateApprovalDtls = { load_id: loadID };
+          let updatedLIstObject = {
+            page: global.myState.userLoadRequestList.page,
+            results: [...loadListArray],
+          };
+          global.myDispatch({
+            type: "USER_LOAD_REQUEST_LIST_SUCESS",
+            payload: updatedLIstObject,
+          });
+        }
+        Alert.alert(
+          "",
+          "Acceptance has been sent to Shipper for Approval. So you are expected to wait until shipper approves it!.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.goBack();
+              },
+            },
+          ]
+        );
+      })
+      .catch((e) => {
+        setisAcceptLoading(false);
+        console.log("AcceptLoad error", e.response);
+        if (e.response.data.message === "Payment methods not found") {
+          Alert.alert(
+            "",
+            "You require to create a Stripe Connect Account to proceed, Thus would like to proceed creating a Stripe Connect Account?",
+            [
+              {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel",
+              },
+              {
+                text: "OK",
+                onPress: () => {
+                  navigation.navigate("PayoutAccounts", {
+                    isFrom: "STRIPE_ACCOUNT_NOT_VERIFIED",
+                  });
+                },
+              },
+            ]
+          );
+        } else if (e.response.data.message === "Subscription not exist") {
+          Alert.alert(
+            "",
+            "You require to buy/purchase carrier subscription plan to proceed, Thus would like to proceed?",
+            [
+              {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel",
+              },
+              {
+                text: "OK",
+                onPress: () => {
+                  navigation.navigate("Premium", {
+                    isFrom: "loadDetailScreen",
+                  });
+                },
+              },
+            ]
+          );
+        } else {
+          Alert.alert("Error", e.response.data.message);
+        }
+      });
+  };
 
   const _acceptLoad = async () => {
     setisAcceptLoading(true);
@@ -1872,6 +1970,40 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                       </View>
                     </View>
 
+                    {loadDetail.rc_pdf_url ? (
+                      <View
+                        style={{
+                          flex: 1,
+                          flexDirection: "row",
+                          paddingVertical: deviceHeight / 92,
+                          marginBottom: 10,
+                        }}
+                      >
+                        <View style={{ flex: 1 }}>
+                          <Text style={{ color: "#808F99" }}>
+                            Rate Contract
+                          </Text>
+                          <View style={{ flexDirection: "row" }}>
+                            <Text
+                              onPress={() => {
+                                navigation.navigate("PdfViewer", {
+                                  loadDetails: loadDetail,
+                                });
+                              }}
+                              style={{
+                                marginTop: 10,
+                                color: "#0047AB",
+                                fontWeight: "500",
+                                textDecorationLine: "underline",
+                              }}
+                            >
+                              Click here to view rate contract
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    ) : null}
+
                     {loadDetail.status >= 5 ? (
                       <View
                         style={{
@@ -2542,8 +2674,11 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                       loadDetail.status === 13 ? null : (
                         <TouchableOpacity
                           disabled={
-                            loadDetail.status === 3 &&
-                            !loadDetail?.LoadButtonFlagsforPartner?.enablePickup
+                            (loadDetail.status === 3 &&
+                              !loadDetail?.LoadButtonFlagsforPartner
+                                ?.enablePickup) ||
+                            (loadDetail.status === 2 &&
+                              loadDetail.rateApprovalDtls)
                               ? true
                               : (loadDetail.status === 6 &&
                                   !loadDetail.standby_start) ||
@@ -2594,6 +2729,9 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                                   (loadDetail.status === 4 &&
                                     !loadDetail.standby_pickup)
                                 ? "#454545"
+                                : loadDetail.status === 2 &&
+                                  loadDetail.rateApprovalDtls
+                                ? "#454545"
                                 : colors.background,
                             paddingVertical: deviceHeight / 62,
                             paddingHorizontal: 20,
@@ -2619,9 +2757,13 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                                 color: colors.white,
                               }}
                             >
-                              {loadDetail.status === 2 ||
-                              loadDetail.status === 11
-                                ? "Accept"
+                              {loadDetail.status === 2 &&
+                              loadDetail.rateApprovalDtls
+                                ? loadDetail.rateApprovalDtls.status === 2
+                                  ? "Refused rate approval"
+                                  : "Waiting for shipper approval"
+                                : loadDetail.status === 2
+                                ? "Send Rate Approval"
                                 : loadDetail.status === 3
                                 ? "On the way to pickup"
                                 : loadDetail.status === 4
@@ -2638,6 +2780,8 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                                 ? "Send Feedback"
                                 : loadDetail.status === 9
                                 ? "Cancelled by shipper"
+                                : loadDetail.status === 11
+                                ? "Accept"
                                 : ""}
                             </Text>
                           )}
@@ -3470,7 +3614,7 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
               color: "black",
             }}
           >
-            Accept Load
+            {loadDetail.status === 2 ? "Send Rate Approval" : "Accept Load"}
           </Text>
           <Text
             style={{
@@ -3480,7 +3624,9 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
               marginVertical: deviceHeight / 30,
             }}
           >
-            Are you sure, you want to accept this load request?
+            {loadDetail.status === 2
+              ? "Are you sure, you want to send rate approval for this load?"
+              : "Are you sure, you want to accept this load request?"}
           </Text>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <View style={{ flex: 1, paddingRight: 10 }}>
@@ -3513,7 +3659,11 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
               <TouchableOpacity
                 onPress={async () => {
                   setisShowAcceptModal(false);
-                  _acceptLoad();
+                  if (loadDetail.status === 2) {
+                    _sendRateApproval();
+                  } else {
+                    _acceptLoad();
+                  }
                 }}
                 style={{
                   backgroundColor: colors.background,
@@ -3539,7 +3689,7 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                       color: colors.white,
                     }}
                   >
-                    Accept
+                    {loadDetail.status === 2 ? "Send" : "Accept"}
                   </Text>
                 )}
               </TouchableOpacity>

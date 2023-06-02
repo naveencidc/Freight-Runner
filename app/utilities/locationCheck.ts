@@ -59,9 +59,6 @@ export const checkLocationPermission = async () => {
     })
   )
     .then(async (val) => {
-      console.log("--valvalval---", val);
-      // Alert.alert(val);
-
       if (val === "granted") {
         // To check Location Permission
         let enabled = await _getLocationEnabledStatus();
@@ -74,7 +71,23 @@ export const checkLocationPermission = async () => {
         }
       } else if (val === "blocked") {
         isAllOK = false;
-        // openSettings().catch(() => console.warn("cannot open settings"));
+        // Alert.alert(
+        //   "",
+        //   "Location Permission is Required to Track the Live Location for the In-Progress Loads, Turn on the Location in Settings?",
+        //   [
+        //     {
+        //       text: "Cancel",
+        //       onPress: () => console.log("Cancel Pressed"),
+        //       style: "cancel"
+        //     },
+        //     {
+        //       text: "OK",
+        //       onPress: () => {
+        //         openSettings().catch(() => console.warn("cannot open settings"));
+        //       }
+        //     }
+        //   ]
+        // );
       } else if (val === "denied") {
         request(
           Platform.select({
@@ -98,7 +111,7 @@ export const checkLocationPermission = async () => {
             } else if (value === "blocked") {
               // Snackbar.show({
               //   text: "Turn on your location permission",
-              //   duration: 2000,
+              //   duration: 2000
               // });
               isAllOK = false;
               // openSettings().catch(() => console.warn("cannot open settings"));

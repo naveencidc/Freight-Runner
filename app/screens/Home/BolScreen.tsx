@@ -551,10 +551,10 @@ const BolScreen: React.FC<Props> = ({ navigation, route }) => {
   //     html: source.html,
   //     fileName: "test",
   //     directory: "Documents",
-  //     base64: true
+  //     base64: true,
   //   };
 
-  //   // let file = await RNHTMLtoPDF.convert(options);
+  //   let file = await RNHTMLtoPDF.convert(options);
   //   console.log(file.base64);
   //   // alert(file.filePath);
   // };
