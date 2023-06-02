@@ -61,9 +61,8 @@ const MyLocation: React.FC<Props> = ({ navigation, route }) => {
 
   // getting the current location
   const getHomeCondoLocation = async () => {
-    console.log("*******INSIDE");
     try {
-      const placeInfo = await googlereverseLookup(currentPosition)
+      await googlereverseLookup(currentPosition)
         .then((response) => {
           let cityName = response.data.results[0]?.address_components.find(
             (city) => city.types.includes("locality")

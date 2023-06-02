@@ -26,14 +26,15 @@ import {
 import { MyContext } from "../../context/MyContextProvider";
 import storage from "../../helpers/storage";
 import HeaderWithBack from "../../components/HeaderWithBack";
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 let currentPosition: GeoPosition;
 let features: any = {};
 let currentLocation: Object = {};
 let getData: Array<string> = [];
 let addressObj: Object = {};
 
-const ChooseFromMap: React.FC<Props> = ({ navigation }) => {
-  let isFrom = navigation.state.params?.isFrom;
+const ChooseFromMap: React.FC<Props> = ({ navigation, route }) => {
+  let isFrom = route.params?.isFrom;
   const [coordinates, setCoordinates] = useState<any>({});
   let [address1, setAddress1] = useState<string>("");
   let [address2, setAddress2] = useState<string>("");
@@ -64,18 +65,17 @@ const ChooseFromMap: React.FC<Props> = ({ navigation }) => {
       setCoordinates(currentPosition);
     });
   }, []);
-  console.log("Latitude:,", getData);
-  const getSelectedCoordinates = async (getLocation) => {
+  const changeLocation = async (e: any) => {
     setSelectedCordinates({
       coords: {
-        latitude: getLocation[1],
-        longitude: getLocation[0],
+        latitude: e.nativeEvent.coordinate.latitude,
+        longitude: e.nativeEvent.coordinate.longitude,
       },
     });
     let arrayData = {
       coords: {
-        latitude: getLocation[1],
-        longitude: getLocation[0],
+        latitude: e.nativeEvent.coordinate.latitude,
+        longitude: e.nativeEvent.coordinate.longitude,
       },
     };
     try {
@@ -109,7 +109,46 @@ const ChooseFromMap: React.FC<Props> = ({ navigation }) => {
       ></HeaderWithBack>
       <View style={{ flex: 1 }}>
         {selectedCordinates?.coords?.longitude ? (
-          <View></View>
+          <MapView
+            onPoiClick={(e) => {
+              if (isFrom !== "ProfileBusinessAddress") {
+                changeLocation(e);
+              }
+            }}
+            onPress={(e) => {
+              if (isFrom !== "ProfileBusinessAddress") {
+                changeLocation(e);
+              }
+              // e.stopPropagation();
+            }}
+            showsUserLocation
+            loadingEnabled
+            style={{ flex: 1 }}
+            initialRegion={{
+              latitude: selectedCordinates?.coords?.latitude,
+              longitude: selectedCordinates?.coords?.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            provider={PROVIDER_GOOGLE}
+            region={{
+              latitude: 37.78825,
+              longitude: -122.4324,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            //  onRegionChange={this.onRegionChange}
+          >
+            <Marker
+              draggable
+              coordinate={{
+                latitude: selectedCordinates?.coords?.latitude,
+                longitude: selectedCordinates?.coords?.longitude,
+              }}
+              title={"title"}
+              description={"description"}
+            />
+          </MapView>
         ) : // <MapView
         //   style={{ flex: 1 }}
         //   logoEnabled={false}

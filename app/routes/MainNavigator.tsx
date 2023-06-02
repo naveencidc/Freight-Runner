@@ -50,6 +50,7 @@ import WelcomeScreen from "../screens/Registeration/WelcomeScreen";
 import BolScreen from "../screens/Home/BolScreen";
 import PdfViewer from "../screens/Home/PdfViewer";
 import MyLocation from "../screens/Home/MyLocation";
+import ChooseFromMap from "../screens/Home/ChooseFromMap";
 
 export type RootStackParamList = {
   splash: undefined;
@@ -186,6 +187,7 @@ const MainNavigator = () => {
         <RootStack.Screen name="BolScreen" component={BolScreen} />
         <RootStack.Screen name="PdfViewer" component={PdfViewer} />
         <RootStack.Screen name="MyLocation" component={MyLocation} />
+        <RootStack.Screen name="ChooseFromMap" component={ChooseFromMap} />
       </RootStack.Navigator>
     </NavigationContainer>
   );

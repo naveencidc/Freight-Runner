@@ -41,7 +41,7 @@ export const reverseLookup = (
 export const googlereverseLookup = async (position: GeoPosition) => {
   const { latitude, longitude } = position.coords;
   const res = await axios.get(
-    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${Config.GOOGLE_API_KEY}`
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${"AIzaSyDAmOaaNP3Yx-MBnK2wGTqWMBnAaPPEY_0"}`
   );
   return res;
 };
