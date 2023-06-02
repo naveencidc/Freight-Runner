@@ -313,9 +313,16 @@ const NotificationListScreen: React.FC<Props> = ({ navigation }) => {
           item={item}
           isFrom={""}
           onPress={() => {
-            navigation.navigate("LoadDetailScreen", {
-              loadDetail: { load_id: item.load_id },
-            });
+            if (
+              (item.item.bid_status && item.item.bid_status === 2) ||
+              (item.rate_status && item.rate_status === 2)
+            ) {
+              //Do nothing
+            } else {
+              navigation.navigate("LoadDetailScreen", {
+                loadDetail: { load_id: item.load_id },
+              });
+            }
           }}
         ></NotificationListItem>
       </View>
