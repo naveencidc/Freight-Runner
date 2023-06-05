@@ -77,10 +77,11 @@ function Landing({ navigation }: any) {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
+        showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         indicatorStyle="white"
       >
-        <View style={{ paddingTop: deviceHeight / 9 }}>
+        <View style={{ paddingTop: deviceHeight / 11 }}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >

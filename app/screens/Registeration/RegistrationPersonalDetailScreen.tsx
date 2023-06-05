@@ -362,14 +362,22 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
       .string()
       .required("Please enter a valid email address")
       .email("Please enter a valid email address"),
-    businessEntity: yup.string().when("accountTypePersonal", {
-      is: false,
-      then: yup.string().required("Please enter a valid business entity"),
-    }),
-    federal_id: yup.string().when("accountTypePersonal", {
-      is: false,
-      then: yup.string().required("Please enter a valid federal tax ID entity"),
-    }),
+    businessEntity: yup
+      .string()
+      .when("accountTypePersonal", (accountTypePersonal, schema) => {
+        if (!accountTypePersonal)
+          return yup.string().required("Please enter a valid business entity");
+        else return schema;
+      }),
+    federal_id: yup
+      .string()
+      .when("accountTypePersonal", (accountTypePersonal, schema) => {
+        if (!accountTypePersonal)
+          return yup
+            .string()
+            .required("Please enter a valid federal tax ID entity");
+        else return schema;
+      }),
   });
 
   const editvalidationSchema = yup.object().shape({

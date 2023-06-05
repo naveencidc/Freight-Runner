@@ -175,10 +175,11 @@ function RegistrationTruckDetailScreen({ navigation, route }) {
             type: "GET_USER_TRUCK_LIST",
             payload: userTruckList.data,
           });
-          navigation.navigate("TruckList", {
-            isFrom: "TruckList",
-            isFromOnboarding: isFromOnboarding,
-          });
+          navigation.goBack();
+          // navigation.navigate("TruckList", {
+          //   isFrom: "TruckList",
+          //   isFromOnboarding: isFromOnboarding,
+          // });
         } else {
           setLoading(false);
 
