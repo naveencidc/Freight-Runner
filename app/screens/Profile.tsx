@@ -949,7 +949,7 @@ const Profile: React.FC<Props> = ({ navigation }) => {
                           });
                         await storage.remove("tokens");
                         setlogoutModalVisible(false);
-                        navigation.navigate("Login");
+                        navigateAndSimpleReset("auth");
                         global.myDispatch({
                           type: "LOGOUT",
                         });

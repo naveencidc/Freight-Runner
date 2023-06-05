@@ -63,6 +63,7 @@ const initialValues: FormProps = {
 
 let pushArray = [];
 function RegistrationTruckDetailScreen({ navigation, route }) {
+  const isFromOnboarding = route.params?.isFromOnboarding;
   const [loading, setLoading] = useState(false);
   const [vinSuccess, setVINSuccess] = useState(false);
   const [vehileDetails, setVehileDetails] = useState({});
@@ -174,7 +175,10 @@ function RegistrationTruckDetailScreen({ navigation, route }) {
             type: "GET_USER_TRUCK_LIST",
             payload: userTruckList.data,
           });
-          navigation.navigate("TruckList", { isFrom: "TruckList" });
+          navigation.navigate("TruckList", {
+            isFrom: "TruckList",
+            isFromOnboarding: isFromOnboarding,
+          });
         } else {
           setLoading(false);
 

@@ -1154,6 +1154,7 @@ const Home: React.FC<Props> = ({ navigation }: any) => {
                     numberOfLines={1}
                     ellipsizeMode="tail"
                     style={{
+                      flex: 1,
                       fontSize: fontSizes.regular,
                       marginLeft: 5,
                       color: "#FFFFFF",
@@ -1162,18 +1163,18 @@ const Home: React.FC<Props> = ({ navigation }: any) => {
                   >
                     {currentLocation ? currentLocation.city : "My Location"}
                   </Text>
-                </View>
-                <FastImage
-                  tintColor={colors.white}
-                  style={{
-                    width: 15,
-                    height: 15,
+                  <FastImage
+                    tintColor={colors.white}
+                    style={{
+                      width: 15,
+                      height: 15,
 
-                    // marginHorizontal: 10,
-                    // alignSelf: "center"
-                  }}
-                  source={require("../../assets/images/down.png")}
-                ></FastImage>
+                      // marginHorizontal: 10,
+                      // alignSelf: "center"
+                    }}
+                    source={require("../../assets/images/down.png")}
+                  ></FastImage>
+                </View>
               </View>
             </TouchableOpacity>
             <View style={{}}>

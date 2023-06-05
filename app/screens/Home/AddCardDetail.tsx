@@ -45,7 +45,7 @@ import {
 import { MyContext } from "../../context/MyContextProvider";
 // import { CardField, useStripe } from "@stripe/stripe-react-native";
 
-const AddCardDetail: React.FC<Props> = ({ navigation }) => {
+const AddCardDetail: React.FC<Props> = ({ navigation, route }) => {
   let isFrom = route.params?.isFrom;
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);

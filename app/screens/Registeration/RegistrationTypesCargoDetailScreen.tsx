@@ -20,9 +20,8 @@ import {
   TextStyle,
   FlatList,
   RefreshControl,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
-import { withNavigation } from "react-navigation";
 import {
   Button,
   CustomButton,
@@ -31,27 +30,32 @@ import {
   Screen,
   SimpleInput as Input,
   Text,
-  View
+  View,
 } from "../../components";
-import { NavigationProps } from "../../navigation";
 import { fontSizes, STANDARD_PADDING } from "../../styles/globalStyles";
 import colors1 from "../../styles/colors";
 import HeaderWithBack from "../../components/HeaderWithBack";
 import FastImage from "react-native-fast-image";
 import Spinner from "react-native-spinkit";
 import { getUserCargoPreferences } from "../../services/myProfileServices";
-import { getCargoTypeList, createUserCargoTypes } from "../../services/registrationService";
+import {
+  getCargoTypeList,
+  createUserCargoTypes,
+} from "../../services/registrationService";
 import storage from "../../helpers/storage";
-import { SnackbarContext, SnackbarContextType } from "../../context/SnackbarContext";
+import {
+  SnackbarContext,
+  SnackbarContextType,
+} from "../../context/SnackbarContext";
 import { updateOnbardingStatus } from "../../services/userService";
 import { MyContext } from "../../../app/context/MyContextProvider";
 import CargoTypesLists from "../../components/CargoTypesLists";
 const deviceWidth = Dimensions.get("window").width;
 const deviceHeight = Dimensions.get("window").height;
-type Props = NavigationProps;
+type Props = any;
 let brforeChangeList = [];
 
-function RegistrationTypesCargoDetail({ navigation }: Props) {
+function RegistrationTypesCargoDetailScreen({ navigation, route }: Props) {
   const [loading, setLoading] = useState(false);
   const [cargoListLoading, setcargoListLoading] = useState(false);
   const [disableButton, setdisableButton] = useState(false);
@@ -59,10 +63,11 @@ function RegistrationTypesCargoDetail({ navigation }: Props) {
   const [isPulltoRefershLoading, setisPulltoRefershLoading] = useState(false);
   const [selectedCargoTypeIDList, setselectedCargoTypeIDList] = useState([]);
   const [isAllSelected, setisAllSelected] = useState(false);
-  const { setMessage, setVisible } = useContext<SnackbarContextType>(SnackbarContext);
+  const { setMessage, setVisible } =
+    useContext<SnackbarContextType>(SnackbarContext);
   const global = useContext(MyContext);
-  let isFrom = navigation.state.params?.isFrom;
-  let isFromOnboarding = navigation.state.params?.isFromOnboarding;
+  let isFrom = route.params?.isFrom;
+  let isFromOnboarding = route.params?.isFromOnboarding;
 
   useEffect(() => {
     try {
@@ -74,15 +79,24 @@ function RegistrationTypesCargoDetail({ navigation }: Props) {
         let attachSelectedData: Array<string> = [];
         if (isFrom === "ProfileScreen") {
           setdisableButton(true);
-          global.myState.userCargoPreferences.map(item => {
-            attachSelectedData.push({ ...item.cargoTypeDetails, isSelected: true });
+          global.myState.userCargoPreferences.map((item) => {
+            attachSelectedData.push({
+              ...item.cargoTypeDetails,
+              isSelected: true,
+            });
             tempArray.push(item.cargoTypeDetails.cargo_type_id);
           });
-          if (global.myState.userCargoPreferences.length === response.data.results.length) {
+          if (
+            global.myState.userCargoPreferences.length ===
+            response.data.results.length
+          ) {
             setisAllSelected(true);
           }
           setselectedCargoTypeIDList(tempArray);
-          let fetchData = mergeArrays(response.data.results, attachSelectedData);
+          let fetchData = mergeArrays(
+            response.data.results,
+            attachSelectedData
+          );
           brforeChangeList = tempArray;
           setCargoTypeList(fetchData);
           setcargoListLoading(false);
@@ -93,7 +107,10 @@ function RegistrationTypesCargoDetail({ navigation }: Props) {
       }
       fetchCargoTypeListAPI();
     } catch (error) {
-      Alert.alert("Error", "There was an error accepting this job. Please try again.");
+      Alert.alert(
+        "Error",
+        "There was an error accepting this job. Please try again."
+      );
     }
   }, []);
   useEffect(() => {
@@ -106,7 +123,7 @@ function RegistrationTypesCargoDetail({ navigation }: Props) {
       if (brforeChangeList.length !== selectedCargoTypeIDList.length) {
         setdisableButton(false);
       } else {
-        const containsAll = brforeChangeList.every(element => {
+        const containsAll = brforeChangeList.every((element) => {
           return selectedCargoTypeIDList.indexOf(element) !== -1;
         });
         setdisableButton(containsAll);
@@ -117,12 +134,14 @@ function RegistrationTypesCargoDetail({ navigation }: Props) {
   // let check cargo_type_id for two array data
   const mergeArrays = (arr1 = [], arr2 = []) => {
     let res = [];
-    res = arr1.map(obj => {
-      const index = arr2.findIndex(el => el["cargo_type_id"] == obj["cargo_type_id"]);
+    res = arr1.map((obj) => {
+      const index = arr2.findIndex(
+        (el) => el["cargo_type_id"] == obj["cargo_type_id"]
+      );
       const { isSelected } = index !== -1 ? arr2[index] : {};
       return {
         ...obj,
-        isSelected
+        isSelected,
       };
     });
     return res;
@@ -146,43 +165,49 @@ function RegistrationTypesCargoDetail({ navigation }: Props) {
       try {
         await createUserCargoTypes({
           user_id: userDetail.user_id,
-          cargo_type_id: selectedCargoTypeIDList
+          cargo_type_id: selectedCargoTypeIDList,
         })
-          .then(async response => {
+          .then(async (response) => {
             setLoading(false);
             if (response.status === 201) {
               if (isFrom !== "ProfileScreen") {
-                const updateOnbardingStatusResponse = await updateOnbardingStatus({
-                  user_id: userDetail.user_id,
-                  is_onboard_pending: 2,
-                  completed_step: 3,
-                  is_welcome_screen_viewed: 2
-                });
+                const updateOnbardingStatusResponse =
+                  await updateOnbardingStatus({
+                    user_id: userDetail.user_id,
+                    is_onboard_pending: 2,
+                    completed_step: 3,
+                    is_welcome_screen_viewed: 2,
+                  });
               }
               setMessage("Cargo preferences created successfully.");
               setVisible(true);
               if (isFrom === "ProfileScreen") {
-                const userCargoPreferences = await getUserCargoPreferences(userDetail.user_id);
+                const userCargoPreferences = await getUserCargoPreferences(
+                  userDetail.user_id
+                );
                 global.myDispatch({
                   type: "GET_USER_CARGO_PREFERENCES_LIST",
-                  payload: userCargoPreferences.data
+                  payload: userCargoPreferences.data,
                 });
                 navigation.navigate("CargoTypes");
               } else {
                 navigation.navigate("RegistrationInsuranceRequirementsScreen", {
-                  isFromOnboarding: isFromOnboarding
+                  isFromOnboarding: isFromOnboarding,
                 });
               }
             }
           })
-          .catch(e => {
+          .catch((e) => {
             setLoading(false);
             console.log("login error", e.response);
             Alert.alert("Error", e.response.data.message);
             // returnResponse = e.response;
           });
       } catch (e) {
-        Alert.alert("Error", "There was a error creating cargo type. Please try again later.");
+        Alert.alert(
+          "Error",
+          "There was a error creating cargo type. Please try again later."
+        );
         setLoading(false);
       }
     }
@@ -207,14 +232,19 @@ function RegistrationTypesCargoDetail({ navigation }: Props) {
             let array = [...cargoTypeList];
             array[index].isSelected = true;
             setCargoTypeList(array);
-            setselectedCargoTypeIDList([...selectedCargoTypeIDList, item.cargo_type_id]);
+            setselectedCargoTypeIDList([
+              ...selectedCargoTypeIDList,
+              item.cargo_type_id,
+            ]);
           }
         }}
       >
         <CargoTypesLists
           cargoName={item.cargo_type_name}
           cargoImage={
-            item.image ? { uri: item.image } : require("../../../app/assets/images/cargoType.png")
+            item.image
+              ? { uri: item.image }
+              : require("../../../app/assets/images/cargoType.png")
           }
           cargoDescription={item.description}
           isSelected={item.isSelected}
@@ -254,7 +284,7 @@ function RegistrationTypesCargoDetail({ navigation }: Props) {
         rightOnPress={async () => {
           let array = [...cargoTypeList];
           let tempArray = [...selectedCargoTypeIDList];
-          array.forEach(object => {
+          array.forEach((object) => {
             if (selectedCargoTypeIDList.length) {
               object.isSelected = false;
               tempArray = [];
@@ -275,7 +305,7 @@ function RegistrationTypesCargoDetail({ navigation }: Props) {
               //
               let array = [...cargoTypeList];
               let tempArray = [];
-              array.forEach(object => {
+              array.forEach((object) => {
                 if (isAllSelected) {
                   object.isSelected = false;
                   tempArray = [];
@@ -305,7 +335,7 @@ function RegistrationTypesCargoDetail({ navigation }: Props) {
               color: colors1.background,
               fontSize: 18,
               fontWeight: "600",
-              paddingVertical: deviceHeight / 60
+              paddingVertical: deviceHeight / 60,
             }}
           >
             Select your Cargo Perferences
@@ -318,16 +348,21 @@ function RegistrationTypesCargoDetail({ navigation }: Props) {
               style={{
                 flex: 1,
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
               }}
             >
-              <Spinner isVisible={cargoListLoading} size={40} type={"Wave"} color={"black"} />
+              <Spinner
+                isVisible={cargoListLoading}
+                size={40}
+                type={"Wave"}
+                color={"black"}
+              />
               <Text
                 style={{
                   textAlign: "center",
                   marginTop: deviceHeight / 40,
                   fontSize: 16,
-                  color: "black"
+                  color: "black",
                 }}
               >
                 Loading...
@@ -367,35 +402,35 @@ const styles = StyleSheet.create<Styles>({
   buttons: {
     alignSelf: "center",
     marginTop: 10,
-    width: "95%"
+    width: "95%",
   },
   bottom: {
     flexDirection: "row",
     marginLeft: 25,
     alignSelf: "center",
-    marginTop: 20
+    marginTop: 20,
   },
   termsBotton: {
     flexDirection: "row",
     marginLeft: Platform.OS === "ios" ? 30 : 5,
-    marginTop: -15
+    marginTop: -15,
   },
   termsLink: {
     marginTop: -13,
-    marginLeft: Platform.OS === "ios" ? -25 : 0
+    marginLeft: Platform.OS === "ios" ? -25 : 0,
   },
   signUpButton: {
     marginTop: -15,
-    marginLeft: -25
+    marginLeft: -25,
   },
   name: {
-    fontSize: 12
+    fontSize: 12,
   },
   container: {
     backgroundColor: "white",
-    flex: 1
+    flex: 1,
     // paddingHorizontal: STANDARD_PADDING
-  }
+  },
 });
 
-export default withNavigation(RegistrationTypesCargoDetail);
+export default RegistrationTypesCargoDetailScreen;

@@ -224,6 +224,7 @@ const TruckList: React.FC<Props> = ({ navigation, route }) => {
           isFromOnboarding
             ? navigation.navigate("RegistrationTruckDetailScreen", {
                 isFrom: "TruckList",
+                isFromOnboarding: isFromOnboarding,
               })
             : navigation.navigate("RegistrationTruckDetailScreen", {
                 isFrom: "TruckList",

@@ -51,6 +51,8 @@ import BolScreen from "../screens/Home/BolScreen";
 import PdfViewer from "../screens/Home/PdfViewer";
 import MyLocation from "../screens/Home/MyLocation";
 import ChooseFromMap from "../screens/Home/ChooseFromMap";
+import RegistrationTypesCargoDetailScreen from "../screens/Registeration/RegistrationTypesCargoDetailScreen";
+import RegistrationInsuranceRequirementsScreen from "../screens/Registeration/RegistrationInsuranceRequirementsScreen";
 
 export type RootStackParamList = {
   splash: undefined;
@@ -107,6 +109,17 @@ const MainNavigator = () => {
           name="RegistrationTrailerDetailScreen"
           component={RegistrationTrailerDetailScreen}
         />
+
+        <RootStack.Screen
+          name="RegistrationTypesCargoDetailScreen"
+          component={RegistrationTypesCargoDetailScreen}
+        />
+
+        <RootStack.Screen
+          name="RegistrationInsuranceRequirementsScreen"
+          component={RegistrationInsuranceRequirementsScreen}
+        />
+
         <RootStack.Screen
           name="RegistrationServiceAreasScreen"
           component={RegistrationServiceAreasScreen}
