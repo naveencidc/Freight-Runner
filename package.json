@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.12",
     "@react-native-clipboard/clipboard": "^1.11.2",
+    "@react-native-community/netinfo": "^9.3.10",
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/stack": "^6.3.16",
@@ -32,6 +33,7 @@
     "react-native-calendar-events": "^2.2.0",
     "react-native-config": "^1.5.0",
     "react-native-confirmation-code-field": "^7.3.1",
+    "react-native-date-picker": "^4.2.13",
     "react-native-device-info": "^10.4.0",
     "react-native-document-picker": "^8.2.0",
     "react-native-element-dropdown": "^2.9.0",
@@ -48,6 +50,7 @@
     "react-native-linear-gradient": "^2.6.2",
     "react-native-maps": "^1.5.0",
     "react-native-maps-directions": "^1.9.0",
+    "react-native-network-info": "^5.2.1",
     "react-native-onesignal": "^4.5.1",
     "react-native-pdf": "^6.6.2",
     "react-native-permissions": "^3.6.1",

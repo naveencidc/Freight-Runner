@@ -189,7 +189,7 @@ function RegistrationTypesCargoDetailScreen({ navigation, route }: Props) {
                   type: "GET_USER_CARGO_PREFERENCES_LIST",
                   payload: userCargoPreferences.data,
                 });
-                navigation.navigate("CargoTypes");
+                navigation.goBack();
               } else {
                 navigation.navigate("RegistrationInsuranceRequirementsScreen", {
                   isFromOnboarding: isFromOnboarding,
@@ -300,6 +300,7 @@ function RegistrationTypesCargoDetailScreen({ navigation, route }: Props) {
       <View style={{ paddingHorizontal: deviceWidth / 20, flex: 1 }}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <TouchableOpacity
+            style={{ flexDirection: "row", alignItems: "center" }}
             onPress={() => {
               setisAllSelected(!isAllSelected);
               //
@@ -328,18 +329,17 @@ function RegistrationTypesCargoDetailScreen({ navigation, route }: Props) {
               }
               style={{ height: 20, width: 20, margin: 10 }}
             />
+            <Text
+              style={{
+                color: colors1.background,
+                fontSize: 18,
+                fontWeight: "600",
+                paddingVertical: deviceHeight / 60,
+              }}
+            >
+              Select your Cargo Perferences
+            </Text>
           </TouchableOpacity>
-
-          <Text
-            style={{
-              color: colors1.background,
-              fontSize: 18,
-              fontWeight: "600",
-              paddingVertical: deviceHeight / 60,
-            }}
-          >
-            Select your Cargo Perferences
-          </Text>
         </View>
 
         <View style={{ flex: 1, backgroundColor: "white", padding: 5 }}>

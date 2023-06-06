@@ -53,6 +53,7 @@ import MyLocation from "../screens/Home/MyLocation";
 import ChooseFromMap from "../screens/Home/ChooseFromMap";
 import RegistrationTypesCargoDetailScreen from "../screens/Registeration/RegistrationTypesCargoDetailScreen";
 import RegistrationInsuranceRequirementsScreen from "../screens/Registeration/RegistrationInsuranceRequirementsScreen";
+import AddStripeConnectAccounts from "../screens/Home/AddStripeConnectAccounts";
 
 export type RootStackParamList = {
   splash: undefined;
@@ -201,6 +202,10 @@ const MainNavigator = () => {
         <RootStack.Screen name="PdfViewer" component={PdfViewer} />
         <RootStack.Screen name="MyLocation" component={MyLocation} />
         <RootStack.Screen name="ChooseFromMap" component={ChooseFromMap} />
+        <RootStack.Screen
+          name="AddStripeConnectAccounts"
+          component={AddStripeConnectAccounts}
+        />
       </RootStack.Navigator>
     </NavigationContainer>
   );
