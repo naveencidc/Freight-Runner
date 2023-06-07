@@ -37,6 +37,7 @@ import {
 } from "../../services/userService";
 import storage from "../../helpers/storage";
 import { MyContext } from "../../context/MyContextProvider";
+import { navigateAndSimpleReset } from "../../utils/Utility";
 
 const deviceWidth = Dimensions.get("window").width;
 const deviceHeight = Dimensions.get("window").height;
@@ -72,7 +73,7 @@ function RegistrationInsuranceRequirementsScreen({ navigation, route }: Props) {
           })
           .catch((e) => {
             console.log("Navigation failed", e.response);
-            navigation.navigate("Login");
+            navigateAndSimpleReset("auth");
           });
       }
       fetchStateListAPI();
@@ -85,7 +86,6 @@ function RegistrationInsuranceRequirementsScreen({ navigation, route }: Props) {
     global.myState.userProfileDetails &&
     global.myState.userProfileDetails.partnerProfile;
 
-  console.log("----$$$", userProfileDetails);
   return (
     <SafeAreaView style={styles.container}>
       <HeaderWithBack

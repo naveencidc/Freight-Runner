@@ -162,10 +162,7 @@ dependencies {
     implementation("com.facebook.react:react-android")
     implementation project(':react-native-vector-icons')
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
-    implementation(project(':react-native-onesignal')){
-      exclude group: 'com.google.android.gms'
-    }
-
+   
     implementation(project(':react-native-maps')){
         exclude group: 'com.google.android.gms'
     }

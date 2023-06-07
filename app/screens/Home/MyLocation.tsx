@@ -109,7 +109,6 @@ const MyLocation: React.FC<Props> = ({ navigation, route }) => {
           let cityName = response.data.results[0]?.address_components.find(
             (city) => city.types.includes("locality")
           );
-          console.log("---LONG", cityName);
           addressObj = {
             address_line1: "",
             address_line2: "",

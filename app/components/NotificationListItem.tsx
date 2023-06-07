@@ -121,13 +121,33 @@ const NotificationListItem: React.FC<Props> = ({ isFrom, item, onPress }) => {
             your{" "}
             <Text style={{ fontWeight: "bold" }}>Load #{item.load_id}</Text>
           </Text>
+        ) : item.status === 12 && item.status_name === "Payment approved" ? (
+          <Text>
+            {/* <Text style={{ fontWeight: "bold" }}>Congrats, </Text> */}
+            <Text>
+              <Text style={{ fontWeight: "bold" }}>
+                {item.first_name} {item.last_name}
+              </Text>{" "}
+              has{" "}
+              <Text style={{ color: "green", fontWeight: "500" }}>Paid</Text>{" "}
+              for your{" "}
+              <Text style={{ fontWeight: "bold" }}>Load #{item.load_id}</Text>
+            </Text>
+          </Text>
         ) : item.status === 12 ? (
           <Text>
-            <Text style={{ fontWeight: "bold" }}>Congrats, </Text>You have
-            Received{" "}
-            <Text style={{ fontWeight: "bold", color: "green" }}>$12</Text> Upon
-            Completing the Delivery for the{" "}
-            <Text style={{ fontWeight: "bold" }}>Load #{item.load_id}</Text>
+            {/* <Text style={{ fontWeight: "bold" }}>Congrats, </Text> */}
+            <Text>
+              <Text style={{ fontWeight: "bold" }}>
+                {item.first_name} {item.last_name}
+              </Text>{" "}
+              has{" "}
+              <Text style={{ color: "green", fontWeight: "500" }}>
+                {item.status_name}
+              </Text>{" "}
+              your{" "}
+              <Text style={{ fontWeight: "bold" }}>Load #{item.load_id}</Text>
+            </Text>
           </Text>
         ) : item.status === 13 ? (
           <Text>
@@ -152,6 +172,21 @@ const NotificationListItem: React.FC<Props> = ({ isFrom, item, onPress }) => {
             your <Text style={{ fontWeight: "bold" }}>Rate approval</Text> for
             the <Text style={{ fontWeight: "bold" }}>Load #{item.load_id}</Text>
             .
+          </Text>
+        ) : item.status_name === "Transfer Completed" ? (
+          <Text>
+            <Text style={{ fontWeight: "bold" }}>Congrats, </Text>
+            <Text>
+              {/* <Text style={{ fontWeight: "bold" }}>
+                {item.first_name} {item.last_name}
+              </Text>{" "} */}
+              as you have received{" "}
+              <Text style={{ fontWeight: "500", color: "green" }}>
+                ${item.transfer_amt}
+              </Text>{" "}
+              uopn completing the delivery for{" "}
+              <Text style={{ fontWeight: "bold" }}>Load #{item.load_id}</Text>
+            </Text>
           </Text>
         ) : (
           <Text>{item.status_name}</Text>

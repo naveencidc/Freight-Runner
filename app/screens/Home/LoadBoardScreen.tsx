@@ -606,8 +606,16 @@ const LoadBoardScreen: React.FC<Props> = ({ navigation }) => {
         keyExtractor={(item, index) => index.toString()}
         showsVerticalScrollIndicator={false}
         onEndReachedThreshold={0.1}
+        initialNumToRender={10}
         ListFooterComponent={_loadMoreLoading.bind(this)}
-        onEndReached={loadMoreList.bind(this)}
+        onEndReached={() => {
+          if (
+            global.myState.userLoadBoardList.totalResults >
+            global.myState.userLoadBoardList.results.length
+          ) {
+            loadMoreList.bind(this);
+          }
+        }}
         refreshControl={
           <RefreshControl
             tintColor={[colors.greyLight]}

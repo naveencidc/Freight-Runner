@@ -421,7 +421,6 @@ function RegistrationApprovedScreen({ navigation, route }) {
             })
               .then(async (item: any) => {
                 if (!item.fileName) item.filename = item.path.split("/").pop();
-                console.log("-----camera image--", item);
                 global.myDispatch({ type: "UPLOADING_INIT", payload: true });
                 setLoading(true);
                 const response = await uploadToS3(item, "image", global);
@@ -487,7 +486,6 @@ function RegistrationApprovedScreen({ navigation, route }) {
             })
               .then(async (item: any) => {
                 if (!item.fileName) item.filename = item.path.split("/").pop();
-                console.log("-----------selected image-", item, selectedTab);
                 // setLoading(true);
                 global.myDispatch({ type: "UPLOADING_INIT", payload: true });
                 const response = await uploadToS3(item, "image", global);

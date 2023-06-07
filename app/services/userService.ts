@@ -134,7 +134,6 @@ export const refershToken = async ({ navigation }: any) => {
   let returnResponse = undefined;
   // await storage.remove("tokens");
   const userToken: any = await storage.get("tokens"); // Get previous tokens
-  console.log("----", userToken);
   if (
     !userToken ||
     !userToken.refresh ||
@@ -263,7 +262,7 @@ export const navigateToScreenAfterApproval = async (
     })
     .catch((e) => {
       console.log("Navigation failed", e.response);
-      navigation.navigate("Login");
+      navigateAndSimpleReset("auth");
     });
 };
 export const navigateToScreen = async (
@@ -350,7 +349,7 @@ export const navigateToScreen = async (
     })
     .catch((e) => {
       console.log("Navigation failed", e.response);
-      navigation.navigate("Login");
+      navigateAndSimpleReset("auth");
       // returnResponse = e.response;
     });
 };

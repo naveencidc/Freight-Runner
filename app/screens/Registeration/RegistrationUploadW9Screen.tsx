@@ -71,7 +71,6 @@ function RegistrationUploadW9Screen({ navigation, route }) {
       async function fetchAPI() {
         //To get w9 from detals
         const response = await getW9Form();
-        console.log("---W-9Response--", response);
         if (response.data) {
           setw_9Details(response.data);
         }
@@ -110,7 +109,6 @@ function RegistrationUploadW9Screen({ navigation, route }) {
         title: `${title}.pdf`,
       };
     }
-    console.log("------gggggggg---,", option);
     // let options = {
     //   fileCache: true,
     //   addAndroidDownloads: {
@@ -169,7 +167,6 @@ function RegistrationUploadW9Screen({ navigation, route }) {
             message: "This app needs access to your storage to download file",
           }
         ).then((granted) => {
-          console.log("---ASASASAS", granted);
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
             //Once user grant the permission start downloading
             console.log("Storage Permission Granted.");
@@ -221,12 +218,10 @@ function RegistrationUploadW9Screen({ navigation, route }) {
         type: [DocumentPicker.types.pdf],
         allowMultiSelection: false,
       });
-      console.log("------document picker---", res);
       if (res) {
         setLoading(true);
         global.myDispatch({ type: "UPLOADING_INIT", payload: true });
         const response = await uploadToS3(res[0], "document", global);
-        console.log("----response s3--", response);
         if (response) {
           const userDetail = await storage.get("userData");
           await uploadDocument({

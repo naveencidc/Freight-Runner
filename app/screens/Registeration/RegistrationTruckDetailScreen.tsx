@@ -77,7 +77,7 @@ function RegistrationTruckDetailScreen({ navigation, route }) {
   const [isShowModel, setisShowModel] = useState(false);
   const [selectedPowerTypeId, setselectedPowerTypeId] = useState();
   const [powerTypeList, setpowerTypeList] = useState([]);
-  const [selectedTrailerCapacity, setselectedTrailerCapacity] = useState("");
+  const [selectedTruckCapacity, setselectedTruckCapacity] = useState("");
 
   let isFrom = route.params?.isFrom;
   const global = useContext(MyContext);
@@ -161,6 +161,7 @@ function RegistrationTruckDetailScreen({ navigation, route }) {
         year: vehileDetails && vehileDetails.year ? vehileDetails.year : year,
         vin: vehileDetails.vin,
         power_type_id: selectedPowerTypeId,
+        max_load_capacity: parseInt(selectedTruckCapacity),
       });
       if (createUserTruckResponse) {
         setMessage("Truck created successfully.");
@@ -582,16 +583,20 @@ function RegistrationTruckDetailScreen({ navigation, route }) {
                   />
                 </View>
 
-                {/* <View
+                <View
                   style={[
                     styles.textInputView,
-                    { marginTop: deviceHeight / 55, paddingVertical: 10 }
+                    { marginTop: deviceHeight / 55, paddingVertical: 10 },
                   ]}
                 >
-                  <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
+                  <Text
+                    style={{ fontSize: 14, fontWeight: "500", color: "gray" }}
+                  >
                     Max Load Capacity(Lbs)
                   </Text>
-                  <View style={{ flexDirection: "row", marginVertical: 5, flex: 1 }}>
+                  <View
+                    style={{ flexDirection: "row", marginVertical: 5, flex: 1 }}
+                  >
                     <TextInput
                       // editable={!selectedHookupID ? false : true}
                       maxLength={6}
@@ -599,16 +604,17 @@ function RegistrationTruckDetailScreen({ navigation, route }) {
                         padding: 0,
                         fontWeight: "500",
                         fontSize: 16,
-                        flex: 1
+                        flex: 1,
                       }}
-                      onChangeText={newText => setselectedTrailerCapacity(newText)}
-                      value={selectedTrailerCapacity}
+                      onChangeText={(newText) =>
+                        setselectedTruckCapacity(newText)
+                      }
+                      value={selectedTruckCapacity}
                       placeholder="0"
                       keyboardType="number-pad"
                     />
-                    <Text style={{ marginLeft: 10, fontWeight: "500", fontSize: 16 }}>lbs.</Text>
                   </View>
-                </View> */}
+                </View>
 
                 <View
                   style={{

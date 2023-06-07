@@ -198,14 +198,10 @@ const AddStripeConnectAccounts: React.FC<Props> = ({ navigation, route }) => {
     return !!urlPattern.test(urlString);
   };
   const _checkOnboardingState = async (state: object) => {
-    console.log("-state---", state);
     if (state.title === "FreightRunner Verification") {
-      console.log("---INside");
       await getUserConnectedAccountDetails()
         .then(async (response) => {
-          console.log("--getUserConnectedAccountDetails-", response);
           if (response.data) {
-            console.log("--3333-", response);
             if (response.data.created) {
               //Stripe Onboarding success
               //Call Connect account details api and paymenthods list api
@@ -326,7 +322,6 @@ const AddStripeConnectAccounts: React.FC<Props> = ({ navigation, route }) => {
         url: url,
         ip: ip,
       };
-      console.log("----****----", params);
       await createStripeConnectedAccount({
         params: params,
       })
@@ -370,7 +365,6 @@ const AddStripeConnectAccounts: React.FC<Props> = ({ navigation, route }) => {
       Alert.alert("Error", "Please enter postalCode");
     } else {
       setLoading(true);
-      console.log("--_handleSubmit-");
       let params = {
         fullName: firstName.trim() + lastName.trim(),
         email: email,
@@ -385,7 +379,6 @@ const AddStripeConnectAccounts: React.FC<Props> = ({ navigation, route }) => {
         url: url,
         ip: ip,
       };
-      console.log("----****----", params);
       await createStripeConnectedAccount({
         params: params,
       })

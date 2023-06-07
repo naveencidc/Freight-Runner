@@ -54,6 +54,8 @@ import ChooseFromMap from "../screens/Home/ChooseFromMap";
 import RegistrationTypesCargoDetailScreen from "../screens/Registeration/RegistrationTypesCargoDetailScreen";
 import RegistrationInsuranceRequirementsScreen from "../screens/Registeration/RegistrationInsuranceRequirementsScreen";
 import AddStripeConnectAccounts from "../screens/Home/AddStripeConnectAccounts";
+import RegistrationBusinessAddressScreen from "../screens/Registeration/RegistrationBusinessAddressScreen";
+import ShipmentComplete from "../screens/Home/ShipmentComplete";
 
 export type RootStackParamList = {
   splash: undefined;
@@ -119,6 +121,11 @@ const MainNavigator = () => {
         <RootStack.Screen
           name="RegistrationInsuranceRequirementsScreen"
           component={RegistrationInsuranceRequirementsScreen}
+        />
+
+        <RootStack.Screen
+          name="RegistrationBusinessAddressScreen"
+          component={RegistrationBusinessAddressScreen}
         />
 
         <RootStack.Screen
@@ -205,6 +212,10 @@ const MainNavigator = () => {
         <RootStack.Screen
           name="AddStripeConnectAccounts"
           component={AddStripeConnectAccounts}
+        />
+        <RootStack.Screen
+          name="ShipmentComplete"
+          component={ShipmentComplete}
         />
       </RootStack.Navigator>
     </NavigationContainer>

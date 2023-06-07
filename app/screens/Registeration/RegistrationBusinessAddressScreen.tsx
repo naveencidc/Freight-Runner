@@ -19,7 +19,7 @@ import {
   ImageStyle,
   TextStyle,
   FlatList,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { CheckBox, colors } from "react-native-elements";
 import { Dropdown } from "react-native-material-dropdown";
@@ -34,10 +34,8 @@ import {
   Screen,
   SimpleInput as Input,
   Text,
-  View
+  View,
 } from "../../components";
-import { SessionContext } from "../../context/SessionContextProvider";
-import { NavigationProps } from "../../navigation";
 import { saveBusinessAddress } from "../../services/registrationService";
 import { fontSizes, STANDARD_PADDING } from "../../styles/globalStyles";
 import { extractError } from "../../utilities/errorUtilities";
@@ -46,14 +44,14 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import HeaderWithBack from "../../components/HeaderWithBack";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import FastImage from "react-native-fast-image";
-import { reverseLookup } from "../../services/mapboxService";
 import { getCurrentLocation } from "../../utilities/gpsUtilities";
-import MapboxGL from "@react-native-mapbox-gl/maps";
 import { GeoPosition } from "react-native-geolocation-service";
 import { MyContext } from ".././../../app/context/MyContextProvider";
-import Config from "react-native-config";
 import storage from "../../helpers/storage";
-import { SnackbarContext, SnackbarContextType } from "../../context/SnackbarContext";
+import {
+  SnackbarContext,
+  SnackbarContextType,
+} from "../../context/SnackbarContext";
 import { updateOnbardingStatus } from "../../services/userService";
 const deviceWidth = Dimensions.get("window").width;
 const deviceHeight = Dimensions.get("window").height;
@@ -62,9 +60,8 @@ let currentPosition: GeoPosition;
 let features: any = {};
 let addressObj: Object = {};
 let currentLocation: any = {};
-MapboxGL.setAccessToken(Config.MAPBOX_API_KEY);
 
-type Props = NavigationProps;
+type Props = any;
 type FormProps = {
   email: string;
   role: string;
@@ -74,13 +71,13 @@ type FormProps = {
 const initialValues: FormProps = {
   email: "",
   role: "",
-  terms_accepted: true
+  terms_accepted: true,
 };
 
-function RegistrationBusinessAddress({ navigation }: Props) {
-  const { setUser, setSetup, signOut } = useContext(SessionContext);
+function RegistrationBusinessAddressScreen({ navigation, route }: Props) {
   const [loading, setLoading] = useState(false);
-  const { setMessage, setVisible } = useContext<SnackbarContextType>(SnackbarContext);
+  const { setMessage, setVisible } =
+    useContext<SnackbarContextType>(SnackbarContext);
   const [selectedRole, setSelectedRole] = useState<string>("");
   let [address1, setAddress1] = useState<string>("");
   let [address2, setAddress2] = useState<string>("");
@@ -90,11 +87,11 @@ function RegistrationBusinessAddress({ navigation }: Props) {
   let [hideText, setHideText] = useState(false);
 
   const global = useContext(MyContext);
-  let isFromOnboarding = navigation.state.params?.isFromOnboarding;
+  let isFromOnboarding = route.params?.isFromOnboarding;
 
   console.log("-state", global.myState);
   useEffect(() => {
-    getCurrentLocation(position => {
+    getCurrentLocation((position) => {
       currentPosition = position;
     });
   }, []);
@@ -113,23 +110,24 @@ function RegistrationBusinessAddress({ navigation }: Props) {
     // };
     try {
       const userDetail = await storage.get("userData");
-      console.log("&***0", data, details);
       await saveBusinessAddress({
         user_id: userDetail.user_id,
         address: data.description,
         lat: details?.geometry?.location.lat,
-        long: details?.geometry?.location.lng
+        long: details?.geometry?.location.lng,
       })
-        .then(async response => {
+        .then(async (response) => {
           setLoading(false);
-          console.log(" Login response", response);
           if (response.status === 201) {
-            global.myDispatch({ type: "REGISTER_BUSINESS_INFO_SUCCESS", payload: response });
+            global.myDispatch({
+              type: "REGISTER_BUSINESS_INFO_SUCCESS",
+              payload: response,
+            });
             const updateOnbardingStatusResponse = await updateOnbardingStatus({
               user_id: userDetail.user_id,
               is_onboard_pending: 2,
               completed_step: 5,
-              is_welcome_screen_viewed: 2
+              is_welcome_screen_viewed: 2,
             });
             setMessage("Business Address Updated Successfully");
             navigation.navigate("RegistrationServiceAreasScreen");
@@ -137,7 +135,7 @@ function RegistrationBusinessAddress({ navigation }: Props) {
             setLoading(false);
           }
         })
-        .catch(e => {
+        .catch((e) => {
           setLoading(false);
           Alert.alert("Error", e.response.data.message);
           // returnResponse = e.response;
@@ -231,12 +229,14 @@ function RegistrationBusinessAddress({ navigation }: Props) {
           query={{
             key: "AIzaSyDAmOaaNP3Yx-MBnK2wGTqWMBnAaPPEY_0",
             language: "en",
-            components: "country:us"
+            components: "country:us",
           }}
           renderHeaderComponent={() => {
             return (
               <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
-                <Text style={{ fontSize: fontSizes.small, color: colors1.grey }}>
+                <Text
+                  style={{ fontSize: fontSizes.small, color: colors1.grey }}
+                >
                   {hideText === true ? null : "Search Results"}
                 </Text>
               </View>
@@ -257,7 +257,7 @@ function RegistrationBusinessAddress({ navigation }: Props) {
                   alignItems: "center",
                   justifyContent: "center",
                   marginTop: 15,
-                  height: deviceHeight / 14
+                  height: deviceHeight / 14,
                 }}
               >
                 <FastImage
@@ -274,13 +274,26 @@ function RegistrationBusinessAddress({ navigation }: Props) {
                 <FastImage
                   resizeMode={"contain"}
                   source={require("../../../app/assets/images/LocationGray.png")}
-                  style={{ height: 25, width: 25, marginVertical: 12, marginRight: 12 }}
+                  style={{
+                    height: 25,
+                    width: 25,
+                    marginVertical: 12,
+                    marginRight: 12,
+                  }}
                 />
                 <View>
-                  <Text style={{ color: colors1.background, fontWeight: "600" }}>
+                  <Text
+                    style={{ color: colors1.background, fontWeight: "600" }}
+                  >
                     {data.structured_formatting.main_text}
                   </Text>
-                  <Text style={{ color: colors1.grey, fontSize: fontSizes.xSmall, marginTop: 5 }}>
+                  <Text
+                    style={{
+                      color: colors1.grey,
+                      fontSize: fontSizes.xSmall,
+                      marginTop: 5,
+                    }}
+                  >
                     {data.structured_formatting.secondary_text}
                   </Text>
                 </View>
@@ -295,7 +308,7 @@ function RegistrationBusinessAddress({ navigation }: Props) {
                   alignSelf: "center",
                   marginTop: 10,
                   // fontFamily: "SofiaPro-Regular",
-                  color: "#A19B9B"
+                  color: "#A19B9B",
                 }}
               >
                 {hideText === true ? null : "No results founds"}
@@ -321,10 +334,9 @@ function RegistrationBusinessAddress({ navigation }: Props) {
             autoFocus: true,
             autoCorrect: false,
             spellCheck: false,
-            clearButtonMode: "never"
+            clearButtonMode: "never",
           }}
           onPress={(data, details = null) => {
-            console.log("----", data, details);
             // let setCoordinates = [
             //   JSON.stringify(details?.geometry?.location.lat),
             //   JSON.stringify(details?.geometry?.location.lng)
@@ -335,8 +347,8 @@ function RegistrationBusinessAddress({ navigation }: Props) {
           styles={{
             row: {
               padding: 10,
-              backgroundColor: colors1.white
-            }
+              backgroundColor: colors1.white,
+            },
           }}
         />
       </KeyboardAwareScrollView>
@@ -367,44 +379,44 @@ const styles = StyleSheet.create<Styles>({
   buttons: {
     alignSelf: "center",
     marginTop: 10,
-    width: "95%"
+    width: "95%",
   },
   bottom: {
     flexDirection: "row",
     marginLeft: 25,
     alignSelf: "center",
-    marginTop: 20
+    marginTop: 20,
   },
   termsBotton: {
     flexDirection: "row",
     marginLeft: Platform.OS === "ios" ? 30 : 5,
-    marginTop: -15
+    marginTop: -15,
   },
   termsLink: {
     marginTop: -13,
-    marginLeft: Platform.OS === "ios" ? -25 : 0
+    marginLeft: Platform.OS === "ios" ? -25 : 0,
   },
   signUpButton: {
     marginTop: -15,
-    marginLeft: -25
+    marginLeft: -25,
   },
   name: {
-    fontSize: 12
+    fontSize: 12,
   },
   container: {
     backgroundColor: "white",
-    flex: 1
+    flex: 1,
     // paddingHorizontal: STANDARD_PADDING
   },
   dropdown3BtnStyle: {
     width: "100%",
-    paddingHorizontal: 0
+    paddingHorizontal: 0,
   },
   dropdown3BtnChildStyle: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
   },
   dropdown3BtnImage: { width: 45, height: 45, resizeMode: "cover" },
   dropdown3BtnTxt: {
@@ -412,20 +424,20 @@ const styles = StyleSheet.create<Styles>({
     color: "#444",
     // textAlign: 'center',
     fontWeight: "600",
-    fontSize: 18
+    fontSize: 18,
   },
   dropdown3DropdownStyle: { backgroundColor: "#EFEFEF", borderRadius: 5 },
   dropdown3RowStyle: {
     // backgroundColor: 'slategray',
     borderBottomColor: "#EFEFEF",
-    height: 50
+    height: 50,
   },
   dropdown3RowChildStyle: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingHorizontal: 18
+    paddingHorizontal: 18,
   },
   dropdownRowImage: { width: 45, height: 45, resizeMode: "contain" },
   dropdown3RowTxt: {
@@ -433,8 +445,8 @@ const styles = StyleSheet.create<Styles>({
     fontWeight: "500",
     fontSize: 18,
     // marginHorizontal: 12,
-    flex: 1
-  }
+    flex: 1,
+  },
 });
 
-export default withNavigation(RegistrationBusinessAddress);
+export default RegistrationBusinessAddressScreen;

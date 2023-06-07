@@ -368,7 +368,6 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                     ],
                   })
                     .then((value) => {
-                      console.log("-EVENT ID---->", value);
                       setVisible(true);
                       setMessage(
                         "Wow, a new pickup as an event has been created in your calendar."
@@ -2004,7 +2003,7 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                       </View>
                     ) : null}
 
-                    {loadDetail.status >= 5 ? (
+                    {loadDetail.status >= 5 && loadDetail.status !== 11 ? (
                       <View
                         style={{
                           flex: 1,
@@ -3122,7 +3121,7 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                               color: "#858C97",
                               fontSize: fontSizes.xSmall,
                             }}
-                            dateTo={item.createdAt}
+                            dateTo={moment(item.createdAt)}
                           />
                         </View>
                         <View style={{ flexDirection: "row" }}>

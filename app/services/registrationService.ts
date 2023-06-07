@@ -39,7 +39,7 @@ export const createProfile = (config: {
   businessEntity: any;
   federal_id: any;
   referral_code: string;
-  max_load_capacity: number;
+  max_load_capacity: null;
 }) => {
   const {
     email,
@@ -93,7 +93,7 @@ export const updateProfile = (config: {
   mobile_number: string;
   zip: string;
   user_id: number;
-  max_load_capacity: number;
+  max_load_capacity: null;
 }) => {
   const {
     first_name,
@@ -240,8 +240,17 @@ export const createUserTruck = (config: {
   year: number;
   vin: string;
   power_type_id: number;
+  max_load_capacity: number;
 }) => {
-  const { user_id, model_id, brand_id, year, vin, power_type_id } = config;
+  const {
+    user_id,
+    model_id,
+    brand_id,
+    year,
+    vin,
+    power_type_id,
+    max_load_capacity,
+  } = config;
   return post({
     endpoint: `user-truck`,
     data: {
@@ -251,6 +260,7 @@ export const createUserTruck = (config: {
       year: year,
       vin: vin,
       power_type_id: power_type_id,
+      max_load_capacity: max_load_capacity,
     },
   });
 };
@@ -286,7 +296,7 @@ export const createUserTrailer = (config: {
       trailer_connection_id: trailer_connection_id,
       trailer_platform_id: trailer_platform_id,
       trailer_axle_id: trailer_axle_id,
-      offload_equipments: offload_equipments,
+      offload_equipments: [],
       length: length,
       capacity: capacity,
       trailer_hookup_id,
@@ -299,7 +309,6 @@ export const createUserCargoTypes = (config: {
   cargo_type_id: Array<number>;
 }) => {
   const { user_id, cargo_type_id } = config;
-  console.log("---ggg ut--", user_id, cargo_type_id);
 
   return post({
     endpoint: `user-cargo`,
@@ -315,7 +324,6 @@ export const createDriverServiceArea = (config: {
   service_areas: Array<number>;
 }) => {
   const { user_id, service_areas } = config;
-  console.log("---ggg ut--", user_id, service_areas);
 
   return post({
     endpoint: `partner/service-area`,
@@ -328,7 +336,6 @@ export const createDriverServiceArea = (config: {
 
 export const forgotPassword = (config: { email: string }) => {
   const { email } = config;
-  console.log("---ggg ut--", email);
   return post({
     endpoint: `auth/forgot-password`,
     data: {
@@ -339,7 +346,6 @@ export const forgotPassword = (config: { email: string }) => {
 
 export const validateOTP = (config: { otp: string; email: string }) => {
   const { otp, email } = config;
-  console.log("---ggg ut--", otp, email);
   return post({
     endpoint: `auth/validate-OTP`,
     data: {
@@ -382,7 +388,6 @@ export const changePassword = (config: {
 
 export const resendOTP = (config: { email: string }) => {
   const { email } = config;
-  console.log("---ggg ut--", email);
   return post({
     endpoint: `auth/resend-OTP`,
     data: {

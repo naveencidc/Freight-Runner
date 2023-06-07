@@ -100,7 +100,7 @@ function App(): JSX.Element {
               },
             });
             // Complete with null means don't show a notification.
-            notificationReceivedEvent.complete(notification);
+            notificationReceivedEvent.complete();
           }
         );
 

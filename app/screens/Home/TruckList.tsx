@@ -154,6 +154,7 @@ const TruckList: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const _renderFlatList = () => {
+    console.log("Flat List Loading", global.myState.userTruckList.results);
     return (
       <FlatList
         data={global.myState.userTruckList.results}

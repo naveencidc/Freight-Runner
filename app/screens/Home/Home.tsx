@@ -97,7 +97,6 @@ const Home: React.FC<Props> = ({ navigation }: any) => {
   const route = useRoute();
   // let loadDetail = route.params?.loadDetail;
   let selectLocation = route;
-  console.log("*******123", selectLocation);
   let currentPosition: GeoPosition;
   let features: any = {};
   let addressObj: Object = {};
@@ -119,7 +118,6 @@ const Home: React.FC<Props> = ({ navigation }: any) => {
   const [searchText, setsearchText] = useState("");
   const [backPressedCount, setBackPressedCount] = useState(0);
   const [isShowModal, setisShowModal] = useState(false);
-  console.log("$$$$ is", currentLocation);
   let interval: any;
   // const [backCount, setBackCount] = useState(0);
   let backCount = 0;

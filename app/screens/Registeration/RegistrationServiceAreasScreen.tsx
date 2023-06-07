@@ -90,7 +90,7 @@ function RegistrationServiceAreasScreen({ navigation, route }) {
           })
           .catch((e) => {
             console.log("Navigation failed", e.response);
-            navigation.navigate("Login");
+            navigateAndSimpleReset("auth");
           });
       }
       fetchStateListAPI();
@@ -245,7 +245,6 @@ function RegistrationServiceAreasScreen({ navigation, route }) {
     } else {
       const userDetail = await storage.get("userData");
       try {
-        console.log("----", selectedServiceAreaList);
         await createDriverServiceArea({
           user_id: userDetail.user_id,
           service_areas: selectedServiceAreaList,

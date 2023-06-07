@@ -89,7 +89,6 @@ const BolScreen: React.FC<Props> = ({ navigation, route }) => {
       .then(async (response) => {
         setloadDetails(response.data);
         setSign(response.data?.bolDetails?.partner_sign_url);
-        console.log(" Load response", response);
       })
       .catch((e) => {
         console.log("loadDetail error", e.response);
@@ -100,7 +99,6 @@ const BolScreen: React.FC<Props> = ({ navigation, route }) => {
     settempSign(signature);
     setshowbolAlert(true);
   };
-  console.log("***", loadDetails);
   const handleEmpty = () => {
     Alert.alert("Please E-Sign the BOL Document to Proceed.");
     console.log("Empty");
@@ -727,7 +725,6 @@ const BolScreen: React.FC<Props> = ({ navigation, route }) => {
                       });
                       setSign(tempSign);
                       setsignLoading(false);
-                      console.log("---updateResponse", updateResponse);
                       setopenSignPad(false);
                       setshowbolAlert(false);
                     }

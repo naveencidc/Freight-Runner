@@ -136,7 +136,6 @@ function ChangePassword({ navigation, route }) {
       setCheckMaxLength(false);
     }
   };
-  console.log("---", isShowError);
   return (
     <SafeAreaView style={styles.container}>
       <HeaderWithBack

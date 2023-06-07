@@ -86,7 +86,6 @@ const NotificationListScreen: React.FC<Props> = ({ navigation }) => {
       limit: 10,
       type: userSelectedTab === 1 ? "today" : "past",
     };
-    console.log("---grweuyguy", params);
     if (!endReached) {
       await getUserNotificationList(params)
         .then(async (response) => {
@@ -144,7 +143,6 @@ const NotificationListScreen: React.FC<Props> = ({ navigation }) => {
       limit: 10,
       type: userSelectedTab === 1 ? "today" : "past",
     };
-    console.log("---grweuyguy", params);
     if (!endReached) {
       await getUserNotificationList(params)
         .then(async (response) => {

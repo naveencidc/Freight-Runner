@@ -39,7 +39,6 @@ const _showLocationStatus = () => {
       console.log(position);
     },
     (error) => {
-      console.log("---------off---location-----");
       // See error code charts below.
       console.log(error.code, error.message);
     },
@@ -62,7 +61,6 @@ export const checkLocationPermission = async () => {
       if (val === "granted") {
         // To check Location Permission
         let enabled = await _getLocationEnabledStatus();
-        console.log("---_getLocationEnabledStatus", enabled);
         if (enabled) {
           isAllOK = true;
           //Do action

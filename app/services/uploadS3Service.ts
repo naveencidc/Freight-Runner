@@ -68,7 +68,6 @@ export const uploadToS3 = async (
       });
     },
   });
-  console.log("-------uploadresponse---", uploadFile);
   if (uploadFile.status === 200) {
     global.myDispatch({ type: "UPLOADING_FINALIZING", payload: true });
     return true;
@@ -114,7 +113,6 @@ export const uploadESignToS3 = async (
       });
     },
   });
-  console.log("-------uploadresponse---", uploadFile);
   if (uploadFile.status === 200) {
     // global.myDispatch({ type: "UPLOADING_FINALIZING", payload: true });
     return true;

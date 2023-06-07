@@ -73,7 +73,7 @@ type FormProps = {
   us_dot: string;
   businessEntity: string;
   federal_id: string;
-  max_load_capacity: string;
+  max_load_capacity: null;
 };
 
 function RegistrationPersonalDetailScreen({ navigation, route }) {
@@ -113,7 +113,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
     us_dot: "",
     businessEntity: "",
     federal_id: "",
-    max_load_capacity: "",
+    max_load_capacity: null,
   });
   const [referral, setReferral] = useState("");
   let isFromEdit = route.params?.isFromEdit;
@@ -155,7 +155,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
             us_dot: "",
             businessEntity: "",
             federal_id: "",
-            max_load_capacity: userPersonalDetail.max_load_capacity.toString(),
+            max_load_capacity: null,
           });
         }
       }
@@ -181,7 +181,6 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
   };
 
   const _checkIsValueEntered = async (values, boolvalue, setFieldValue) => {
-    console.log("---stst", values);
     if (
       values.businessEntity !== "" ||
       values.city !== "" ||
@@ -250,7 +249,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
           mobile_number: `+1${values.mobile}`,
           zip: values.zipCode,
           user_id: userDetail.user_id,
-          max_load_capacity: parseInt(values.max_load_capacity),
+          max_load_capacity: null,
         })
           .then(async (response) => {
             setLoading(false);
@@ -285,7 +284,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
             zip: values.zipCode,
             mc: values.mc,
             us_dot: values.us_dot,
-            max_load_capacity: parseInt(values.max_load_capacity),
+            max_load_capacity: null,
             businessEntity: !accountTypePersonal ? values.businessEntity : null,
             federal_id: !accountTypePersonal ? values.federal_id : null,
             referral_code: referral,
@@ -347,9 +346,6 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
     lastName: yup.string().required("Please enter a valid last name"),
     mc: yup.string().required("Please enter a valid MC#"),
     us_dot: yup.string().required("Please enter a valid US DOT#"),
-    max_load_capacity: yup
-      .string()
-      .required("Please enter a valid Max Load Capacity"),
     city: yup.string().required("Please enter a valid city"),
     state: yup.string().required("Please enter a valid state"),
     mobile: yup
@@ -362,22 +358,19 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
       .string()
       .required("Please enter a valid email address")
       .email("Please enter a valid email address"),
-    businessEntity: yup
-      .string()
-      .when("accountTypePersonal", (accountTypePersonal, schema) => {
-        if (!accountTypePersonal)
-          return yup.string().required("Please enter a valid business entity");
-        else return schema;
-      }),
-    federal_id: yup
-      .string()
-      .when("accountTypePersonal", (accountTypePersonal, schema) => {
-        if (!accountTypePersonal)
-          return yup
-            .string()
-            .required("Please enter a valid federal tax ID entity");
-        else return schema;
-      }),
+    businessEntity: yup.string().when("accountTypePersonal", {
+      is: true,
+      then: (schema) => schema.notRequired(),
+      otherwise: (schema) =>
+        schema.required("Please enter a valid business entity"),
+    }),
+
+    federal_id: yup.string().when("accountTypePersonal", {
+      is: true,
+      then: (schema) => schema.notRequired(),
+      otherwise: (schema) =>
+        schema.required("Please enter a valid federal tax ID entity"),
+    }),
   });
 
   const editvalidationSchema = yup.object().shape({
@@ -391,9 +384,6 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
       .matches(/^[0-9]+$/, "Please enter a valid cell number")
       .required("Please enter a valid mobile number"),
     zipCode: yup.string().required("Please enter a valid zip code"),
-    max_load_capacity: yup
-      .string()
-      .required("Please enter a valid Max Load Capacity"),
   });
 
   const ref_lastName = useRef();
@@ -701,7 +691,9 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
                             ? isFromEdit
                               ? ref_city.current.focus()
                               : ref_mc.current.focus()
-                            : ref_city.current.focus()
+                            : isFromEdit
+                            ? ref_city.current.focus()
+                            : ref_businessName.current.focus()
                         }
                         blurOnSubmit={false}
                       />
@@ -894,7 +886,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
                     </>
                   ) : null}
 
-                  <View
+                  {/* <View
                     style={[
                       styles.textInputView,
                       { marginTop: deviceHeight / 55 },
@@ -933,7 +925,7 @@ function RegistrationPersonalDetailScreen({ navigation, route }) {
                         blurOnSubmit={false}
                       />
                     </View>
-                  </View>
+                  </View> */}
 
                   <View
                     style={[
