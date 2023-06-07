@@ -1969,6 +1969,24 @@ const LoadDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                       </View>
                     </View>
 
+                    <View
+                      style={{
+                        flex: 1,
+                        flexDirection: "row",
+                        paddingVertical: deviceHeight / 92,
+                        marginBottom: 10,
+                      }}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ color: "#808F99" }}>
+                          Cargo Securement Notes
+                        </Text>
+                        <Text style={{ marginTop: 10 }}>
+                          {loadDetail.additional_cargo_load_notes}
+                        </Text>
+                      </View>
+                    </View>
+
                     {loadDetail.rc_pdf_url ? (
                       <View
                         style={{

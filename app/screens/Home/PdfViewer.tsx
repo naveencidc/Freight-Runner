@@ -19,6 +19,7 @@ import {
   TouchableOpacity,
   Text,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import HeaderWithBack from "../../components/HeaderWithBack";
 import colors from "../../styles/colors";
@@ -33,8 +34,7 @@ const deviceHeight = Dimensions.get("window").height;
 
 const PdfViewer: React.FC<Props> = ({ navigation, route }) => {
   let loadDetails = route.params?.loadDetails;
-  console.log("loadDetails", loadDetails);
-
+  const [pdfLoading, setpdfLoading] = useState(true);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <HeaderWithBack
@@ -49,11 +49,18 @@ const PdfViewer: React.FC<Props> = ({ navigation, route }) => {
         rightOnPress={async () => {}}
       />
       <Pdf
-        source={{ uri: loadDetails.rc_pdf_url, cache: true }}
+        renderActivityIndicator={() => {}}
+        onLoadProgress={(percent) => {
+          setpdfLoading(true);
+          console.log("1288", percent);
+        }}
+        trustAllCerts={false}
+        source={{ uri: `${loadDetails.rc_pdf_url}`, cache: true }}
         onLoadComplete={(numberOfPages, filePath) => {
-          console.log(`Number of pages: ${numberOfPages}`);
+          console.log(`Number of pages Loading Completed: ${numberOfPages}`);
         }}
         onPageChanged={(page, numberOfPages) => {
+          setpdfLoading(false);
           console.log(`Current page: ${page}`);
         }}
         onError={(error) => {
@@ -64,6 +71,21 @@ const PdfViewer: React.FC<Props> = ({ navigation, route }) => {
         }}
         style={{ flex: 1 }}
       />
+      {pdfLoading ? (
+        <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+          }}
+        >
+          <ActivityIndicator color={colors.background} />
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 };

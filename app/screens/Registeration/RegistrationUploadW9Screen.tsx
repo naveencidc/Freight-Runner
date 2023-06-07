@@ -23,6 +23,7 @@ import {
   PermissionsAndroid,
   ScrollView,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -63,6 +64,7 @@ const deviceHeight = Dimensions.get("window").height;
 function RegistrationUploadW9Screen({ navigation, route }) {
   const [w_9Details, setw_9Details] = useState({});
   const [loading, setLoading] = useState(false);
+  const [pdfLoading, setpdfLoading] = useState(true);
   const { setMessage, setVisible } =
     useContext<SnackbarContextType>(SnackbarContext);
   const global: any = useContext(MyContext);
@@ -325,12 +327,17 @@ function RegistrationUploadW9Screen({ navigation, route }) {
               />
             </TouchableOpacity>
             <Pdf
+              renderActivityIndicator={() => {}}
+              onLoadProgress={(percent) => {
+                setpdfLoading(true);
+              }}
               trustAllCerts={false}
               source={{ uri: `${w_9Details.file_path}`, cache: true }}
               onLoadComplete={(numberOfPages, filePath) => {
                 console.log(`Number of pages: ${numberOfPages}`);
               }}
               onPageChanged={(page, numberOfPages) => {
+                setpdfLoading(false);
                 console.log(`Current page: ${page}`);
               }}
               onError={(error) => {
@@ -341,6 +348,21 @@ function RegistrationUploadW9Screen({ navigation, route }) {
               }}
               style={{ backgroundColor: "white", height: deviceHeight / 2.6 }}
             />
+            {pdfLoading ? (
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                }}
+              >
+                <ActivityIndicator color={colors1.background} />
+              </View>
+            ) : null}
           </View>
           <View
             style={{

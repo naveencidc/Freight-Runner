@@ -300,12 +300,7 @@ function ShipmentComplete({ navigation, route }: Props) {
           justifyContent: "center",
         }}
       >
-        <TouchableOpacity
-          style={{}}
-          onPress={() =>
-            navigation.navigate("LoadDetailScreen", { isFromShipment: true })
-          }
-        >
+        <TouchableOpacity style={{}} onPress={() => navigation.goBack()}>
           <Text
             style={{
               fontSize: fontSizes.small,
